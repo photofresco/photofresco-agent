@@ -1,0 +1,28 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "assistant.open",
+   "tool_name": "assistant_open",
+   "description": "Open or close the AI assistant chat using the same addressable view as the UI. Fails, naming the reason, when this account may not open it: signed out, assistant_chat flag off for it, or its plan does not meet the required tier of the flag.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "open": {
+      "type": "boolean",
+      "description": "Open the view (default true)."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

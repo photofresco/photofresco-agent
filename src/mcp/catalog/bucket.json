@@ -1,0 +1,104 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "bucket.fill",
+   "tool_name": "bucket_fill",
+   "description": "Paint-bucket: flood-fill similar colors from (x, y) on the active layer with foreground color or the active/named pattern.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Seed x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Seed y"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "source": {
+      "type": "string",
+      "description": "foreground (default) or pattern",
+      "enum": [
+       "foreground",
+       "pattern"
+      ]
+     },
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id; defaults to active pattern when source is pattern"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 opacity (default 1)"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 (default 32)"
+     },
+     "anti_alias": {
+      "type": "boolean",
+      "description": "Soften the flood edge (default current bucket option)"
+     },
+     "contiguous": {
+      "type": "boolean",
+      "description": "Connected region only (default true)"
+     },
+     "all_layers": {
+      "type": "boolean",
+      "description": "Sample the merged document instead of only the active layer"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

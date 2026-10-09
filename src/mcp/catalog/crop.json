@@ -1,0 +1,245 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "crop.apply",
+   "tool_name": "crop_apply",
+   "description": "Apply pending crop or set a rectangle then apply. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Document x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Document y"
+     },
+     "width": {
+      "type": "number",
+      "description": "Width"
+     },
+     "height": {
+      "type": "number",
+      "description": "Height"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.clear_options",
+   "tool_name": "crop_clear_options",
+   "description": "Clear crop width, height and resolution.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.fit_to_image",
+   "tool_name": "crop_fit_to_image",
+   "description": "Fit canvas to visible image extent. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.get_options",
+   "tool_name": "crop_get_options",
+   "description": "Read crop options.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.perspective",
+   "tool_name": "crop_perspective",
+   "description": "Perspective Crop: map a four-corner document-space quad to a rectangular canvas crop. quad order is top-left, top-right, bottom-right, bottom-left. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "quad": {
+      "type": "array",
+      "description": "Four corners as flat [x1,y1,x2,y2,x3,y3,x4,y4] or [{x,y}...]"
+     },
+     "width": {
+      "type": "number",
+      "description": "Optional output width px; defaults from quad edge lengths"
+     },
+     "height": {
+      "type": "number",
+      "description": "Optional output height px; defaults from quad edge lengths"
+     }
+    },
+    "required": [
+     "quad"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.set_options",
+   "tool_name": "crop_set_options",
+   "description": "Set crop options without applying a crop.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Crop mode",
+      "enum": [
+       "normal",
+       "perspective"
+      ]
+     },
+     "ratio_mode": {
+      "type": "string",
+      "description": "Ratio mode",
+      "enum": [
+       "ratio",
+       "size",
+       "original",
+       "1:1",
+       "4:5",
+       "5:7",
+       "2:3",
+       "16:9"
+      ]
+     },
+     "width": {
+      "type": "number",
+      "description": "Ratio component or output width in pixels"
+     },
+     "height": {
+      "type": "number",
+      "description": "Ratio component or output height in pixels"
+     },
+     "resolution": {
+      "type": "number",
+      "description": "Output resolution in ppi"
+     },
+     "overlay": {
+      "type": "string",
+      "description": "Crop overlay",
+      "enum": [
+       "thirds",
+       "grid",
+       "none"
+      ]
+     },
+     "show_shield": {
+      "type": "boolean",
+      "description": "Show crop shield"
+     },
+     "delete_cropped_pixels": {
+      "type": "boolean",
+      "description": "Delete pixels outside crop"
+     },
+     "fill": {
+      "type": "string",
+      "description": "Expanded canvas fill",
+      "enum": [
+       "background",
+       "transparent"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "crop.straighten",
+   "tool_name": "crop_straighten",
+   "description": "Rotate the active raster layer to straighten a horizon line. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x0": {
+      "type": "number",
+      "description": "Line start x"
+     },
+     "y0": {
+      "type": "number",
+      "description": "Line start y"
+     },
+     "x1": {
+      "type": "number",
+      "description": "Line end x"
+     },
+     "y1": {
+      "type": "number",
+      "description": "Line end y"
+     }
+    },
+    "required": [
+     "x0",
+     "y0",
+     "x1",
+     "y1"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "photofresco",
+  "owner": {
+    "name": "PhotoFresco",
+    "email": "hello@photofresco.com",
+    "url": "https://photofresco.com/"
+  },
+  "description": "The PhotoFresco plugin: an MCP server and agent skill for editing images in a PhotoFresco window you approve.",
+  "plugins": [
+    {
+      "name": "photofresco",
+      "source": "./",
+      "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+      "category": "design"
+    }
+  ]
+}

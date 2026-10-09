@@ -1,0 +1,160 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "render.mask",
+   "tool_name": "render_mask",
+   "description": "Preview a mask over a document-space region as a grayscale PNG (black 0 = hidden/unselected, white 255 = shown/selected) with exact coverage statistics { pixels, nonzero, full, mean } computed at document resolution over the region. source \"layer\" (default) is a layer's raster mask (layer_id, default the active layer), placed at its document position; source \"selection\" is the current selection. Read-only. Returns image { mime_type: \"image/png\", data_base64, width, height, byte_length } plus document_id, revision (the document revision rendered), document { width, height }, requested and region { x, y, width, height } (region = requested clipped to the canvas; clipped: true when they differ), scale { x, y } and the coordinate convention. Errors carry code: invalid_region, region_out_of_bounds, preview_too_large, unknown_layer, unsupported_layer_kind, mask_unavailable, stale_revision (the document changed while rendering). Limits: output ≤ 2048 px per side and 4194304 px, PNG ≤ 8.0 MiB; the source is read in strips of ≤ 8.0 MiB so a small region of a huge document stays small.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Left edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+      "minimum": -60000,
+      "maximum": 60000
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+      "minimum": -60000,
+      "maximum": 60000
+     },
+     "width": {
+      "type": "number",
+      "description": "Region width in document pixels (whole number; default: to the right canvas edge)",
+      "minimum": 1,
+      "maximum": 60000
+     },
+     "height": {
+      "type": "number",
+      "description": "Region height in document pixels (whole number; default: to the bottom canvas edge)",
+      "minimum": 1,
+      "maximum": 60000
+     },
+     "max_size": {
+      "type": "number",
+      "description": "Fit the preview inside this many pixels per side, never magnifying (default 1024). Use scale instead for exact detail",
+      "minimum": 1,
+      "maximum": 2048
+     },
+     "scale": {
+      "type": "number",
+      "description": "Exact output pixels per document pixel (1 = actual pixels, 4 = 4× magnified with nearest sampling, 0.25 = area-averaged). Output is limited to 2048 px per side and 4194304 px",
+      "minimum": 0.0001,
+      "maximum": 16
+     },
+     "source": {
+      "type": "string",
+      "description": "layer: the raster mask of layer_id (default); selection: the active selection",
+      "enum": [
+       "layer",
+       "selection"
+      ]
+     },
+     "layer_id": {
+      "type": "string",
+      "description": "Layer whose raster mask to show (source layer; default the active layer)",
+      "minLength": 1,
+      "maxLength": 128
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "render.preview",
+   "tool_name": "render_preview",
+   "description": "Render the whole flattened composite to a PNG data URL, downscaled to fit max_size (never magnified). Use after edits to see the result. For a region at detail scale, one layer, a mask, or coordinate metadata use render.region / render.mask.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "max_size": {
+      "type": "number",
+      "description": "Max width/height in px (default 512, at most 2048)",
+      "minimum": 1,
+      "maximum": 2048
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "render.region",
+   "tool_name": "render_region",
+   "description": "Preview a document-space region at a chosen scale as a PNG, without rendering the whole document. Without layer_id it shows the flattened visible composite (same compositor as PNG export); with layer_id it shows that layer's own pixels (raster, text, shape or smart object) before its mask, opacity, blend mode and effects. Use scale 1–16 to inspect detail at actual or magnified pixels, or max_size to fit an overview. Read-only; nothing is added to history. Returns image { mime_type: \"image/png\", data_base64, width, height, byte_length } plus document_id, revision (the document revision rendered), document { width, height }, requested and region { x, y, width, height } (region = requested clipped to the canvas; clipped: true when they differ), scale { x, y } and the coordinate convention. Errors carry code: invalid_region, region_out_of_bounds, preview_too_large, unknown_layer, unsupported_layer_kind, mask_unavailable, stale_revision (the document changed while rendering). Limits: output ≤ 2048 px per side and 4194304 px, PNG ≤ 8.0 MiB; the source is read in strips of ≤ 8.0 MiB so a small region of a huge document stays small.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Left edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+      "minimum": -60000,
+      "maximum": 60000
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+      "minimum": -60000,
+      "maximum": 60000
+     },
+     "width": {
+      "type": "number",
+      "description": "Region width in document pixels (whole number; default: to the right canvas edge)",
+      "minimum": 1,
+      "maximum": 60000
+     },
+     "height": {
+      "type": "number",
+      "description": "Region height in document pixels (whole number; default: to the bottom canvas edge)",
+      "minimum": 1,
+      "maximum": 60000
+     },
+     "max_size": {
+      "type": "number",
+      "description": "Fit the preview inside this many pixels per side, never magnifying (default 1024). Use scale instead for exact detail",
+      "minimum": 1,
+      "maximum": 2048
+     },
+     "scale": {
+      "type": "number",
+      "description": "Exact output pixels per document pixel (1 = actual pixels, 4 = 4× magnified with nearest sampling, 0.25 = area-averaged). Output is limited to 2048 px per side and 4194304 px",
+      "minimum": 0.0001,
+      "maximum": 16
+     },
+     "layer_id": {
+      "type": "string",
+      "description": "Optional layer id (doc.get_state) to preview that layer alone instead of the composite",
+      "minLength": 1,
+      "maxLength": 128
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  }
+ ]
+}

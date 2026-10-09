@@ -1,0 +1,977 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "selection.all",
+   "tool_name": "selection_all",
+   "description": "Select the whole document.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.color_range",
+   "tool_name": "selection_color_range",
+   "description": "Select pixels document-wide by soft color similarity on the flattened composite. Use sampled color(s) or a preset range; fuzziness is 0-200 and defaults to 40.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "color": {
+      "type": "array",
+      "description": "[r, g, b] reference color; default is foreground color"
+     },
+     "colors": {
+      "type": "array",
+      "description": "Multiple samples: [[r,g,b],...] or flat [r,g,b,r,g,b,...]"
+     },
+     "preset": {
+      "type": "string",
+      "description": "Preset range instead of sampled colors",
+      "enum": [
+       "reds",
+       "yellows",
+       "greens",
+       "cyans",
+       "blues",
+       "magentas",
+       "highlights",
+       "midtones",
+       "shadows"
+      ]
+     },
+     "fuzziness": {
+      "type": "number",
+      "description": "Soft matching radius, 0-200 (default 40)"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.column",
+   "tool_name": "selection_column",
+   "description": "Select a single 1px-wide document column at x.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Column x coordinate"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "x"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.ellipse",
+   "tool_name": "selection_ellipse",
+   "description": "Select an ellipse inscribed in the given rect (doc coordinates).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Left"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top"
+     },
+     "w": {
+      "type": "number",
+      "description": "Width"
+     },
+     "h": {
+      "type": "number",
+      "description": "Height"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "x",
+     "y",
+     "w",
+     "h"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.feather",
+   "tool_name": "selection_feather",
+   "description": "Feather (soften) the current selection by a radius in px.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "radius": {
+      "type": "number",
+      "description": "Feather radius"
+     }
+    },
+    "required": [
+     "radius"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.grow",
+   "tool_name": "selection_grow",
+   "description": "Select ▸ Grow/Similar: extend the selection to pixels matching its average color within tolerance — adjacent only (grow) or document-wide (similar).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "grow (adjacent) or similar (everywhere)",
+      "enum": [
+       "grow",
+       "similar"
+      ]
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 (default 32)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.invert",
+   "tool_name": "selection_invert",
+   "description": "Invert the current selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.load",
+   "tool_name": "selection_load",
+   "description": "Load a named saved selection. mode defaults to replace; add/subtract/intersect combine with the current selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Saved selection name"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.magnetic",
+   "tool_name": "selection_magnetic",
+   "description": "Magnetic lasso: snap each input polygon point to the strongest nearby luminance edge on the flattened composite, then select the snapped polygon.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥3 points in doc coordinates"
+     },
+     "radius": {
+      "type": "number",
+      "description": "Legacy alias for width in px (default 12)"
+     },
+     "width": {
+      "type": "number",
+      "description": "Livewire search width in px (default 12)"
+     },
+     "contrast": {
+      "type": "number",
+      "description": "Edge attraction, 0..100 (default 50)"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.modify",
+   "tool_name": "selection_modify",
+   "description": "Morph the selection: expand, contract, border (band around the edge), or smooth, by a radius in px.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "operation": {
+      "type": "string",
+      "description": "Which morphology",
+      "enum": [
+       "expand",
+       "contract",
+       "border",
+       "smooth"
+      ]
+     },
+     "radius": {
+      "type": "number",
+      "description": "Radius px"
+     }
+    },
+    "required": [
+     "operation",
+     "radius"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.none",
+   "tool_name": "selection_none",
+   "description": "Deselect — clear the selection so edits affect the whole canvas again.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.object",
+   "tool_name": "selection_object",
+   "description": "Object Selection: heuristic GrabCut-style segmentation seeded by a rough rectangle (x/y/w/h) or lasso polygon (points) around an object — the selection snaps to the object inside. Color k-means models + edge-aware smoothing on the flattened composite; NOT ML, so it works best on color-separable objects.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Seed rect left (rect mode)"
+     },
+     "y": {
+      "type": "number",
+      "description": "Seed rect top (rect mode)"
+     },
+     "w": {
+      "type": "number",
+      "description": "Seed rect width (rect mode)"
+     },
+     "h": {
+      "type": "number",
+      "description": "Seed rect height (rect mode)"
+     },
+     "points": {
+      "type": "array",
+      "description": "Lasso mode instead of rect: flat [x1,y1,x2,y2,...], ≥3 points"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample flattened visible document instead of only active raster layer"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.options",
+   "tool_name": "selection_options",
+   "description": "Get or set selection-tool options used by marquee, lasso, magic wand, and quick selection. Pass only fields to change.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "New/Add/Subtract/Intersect selection combine mode",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "shape": {
+      "type": "string",
+      "description": "Marquee shape: rect or ellipse",
+      "enum": [
+       "rect",
+       "ellipse"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Selection feather radius in px"
+     },
+     "anti_alias": {
+      "type": "boolean",
+      "description": "Anti-alias selection edges where supported"
+     },
+     "style": {
+      "type": "string",
+      "description": "Marquee style: normal, fixed-ratio, or fixed-size",
+      "enum": [
+       "normal",
+       "fixed-ratio",
+       "fixed-size"
+      ]
+     },
+     "width": {
+      "type": "number",
+      "description": "Marquee W field: ratio unit or fixed-size width in px"
+     },
+     "height": {
+      "type": "number",
+      "description": "Marquee H field: ratio unit or fixed-size height in px"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "Magic wand / quick selection color tolerance, 0-255"
+     },
+     "contiguous": {
+      "type": "boolean",
+      "description": "Magic wand contiguous matching"
+     },
+     "sample_size": {
+      "type": "number",
+      "description": "Magic wand sample size in px; rounded to an odd value from 1 to 101"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample flattened visible document instead of only the active raster layer"
+     },
+     "hard_edge": {
+      "type": "boolean",
+      "description": "Quick Selection hard-edge mask; false softens stamp edges"
+     },
+     "magnetic_width": {
+      "type": "number",
+      "description": "Magnetic Lasso edge-search width in px"
+     },
+     "magnetic_contrast": {
+      "type": "number",
+      "description": "Magnetic Lasso edge contrast attraction, 0-100"
+     },
+     "magnetic_frequency": {
+      "type": "number",
+      "description": "Magnetic Lasso automatic anchor spacing in px"
+     },
+     "object_mode": {
+      "type": "string",
+      "description": "Object Selection drag mode: rect or lasso",
+      "enum": [
+       "rect",
+       "lasso"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.polygon",
+   "tool_name": "selection_polygon",
+   "description": "Select a closed polygon. points is a flat array [x1,y1,x2,y2,...] in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥3 points"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.quick_select",
+   "tool_name": "selection_quick_select",
+   "description": "Quick Selection: union or subtract contiguous flood selections from explicit stamp centers on the flattened composite. points is a flat [x1,y1,x2,y2,...] array in doc coordinates; default mode is add.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...] stamp centers, ≥1 point"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 color distance (default 32)"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection (default add)",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample flattened visible document instead of only active raster layer"
+     },
+     "hard_edge": {
+      "type": "boolean",
+      "description": "Keep stamp edges hard; false softens the selection edge"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.quickmask",
+   "tool_name": "selection_quickmask",
+   "description": "Enter or exit Quick Mask mode. Entering converts the current selection to a paintable grayscale mask and clears the live selection; exiting converts that mask back to a selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "enabled": {
+      "type": "boolean",
+      "description": "true enters Quick Mask; false exits it"
+     }
+    },
+    "required": [
+     "enabled"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.rect",
+   "tool_name": "selection_rect",
+   "description": "Select a rectangle in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Left"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top"
+     },
+     "w": {
+      "type": "number",
+      "description": "Width"
+     },
+     "h": {
+      "type": "number",
+      "description": "Height"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "x",
+     "y",
+     "w",
+     "h"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.refine",
+   "tool_name": "selection_refine",
+   "description": "Select and Mask / Refine Edge: smooth, feather, contrast, then shift edge. output defaults to selection; layer_mask, new_layer, and new_layer_mask mirror the workspace outputs.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "smooth": {
+      "type": "number",
+      "description": "Smooth radius px, 0-20"
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius px, 0-50"
+     },
+     "contrast": {
+      "type": "number",
+      "description": "Edge contrast percent, 0-100"
+     },
+     "shift_edge": {
+      "type": "number",
+      "description": "Shift edge percent, -100..100"
+     },
+     "output": {
+      "type": "string",
+      "description": "Refined output target",
+      "enum": [
+       "selection",
+       "layer_mask",
+       "new_layer",
+       "new_layer_mask"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.reselect",
+   "tool_name": "selection_reselect",
+   "description": "Restore the last deselected selection, if one exists.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.row",
+   "tool_name": "selection_row",
+   "description": "Select a single 1px-tall document row at y.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "y": {
+      "type": "number",
+      "description": "Row y coordinate"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.save",
+   "tool_name": "selection_save",
+   "description": "Save the current selection mask under a name for later loading.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Saved selection name"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.subject",
+   "tool_name": "selection_subject",
+   "description": "Select Subject: heuristic segmentation of the main subject — background color models are seeded from the document border and the largest central foreground regions are kept. NOT ML (Photoshop uses a trained model); expect rougher results on busy scenes.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample flattened visible document instead of only active raster layer"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.transform",
+   "tool_name": "selection_transform",
+   "description": "Transform the current selection mask itself: scale/rotate about selection center and/or translate. One undoable step.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "scale_x": {
+      "type": "number",
+      "description": "Horizontal scale factor (default 1)"
+     },
+     "scale_y": {
+      "type": "number",
+      "description": "Vertical scale factor (default 1)"
+     },
+     "rotate_deg": {
+      "type": "number",
+      "description": "Rotation in degrees clockwise (default 0)"
+     },
+     "dx": {
+      "type": "number",
+      "description": "Translate x in px (default 0)"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Translate y in px (default 0)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "selection.wand",
+   "tool_name": "selection_wand",
+   "description": "Magic wand: select pixels similar in color to the one at (x, y) on the flattened composite.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Sample x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Sample y"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 color distance (default 32)"
+     },
+     "contiguous": {
+      "type": "boolean",
+      "description": "Connected region only (default true)"
+     },
+     "sample_size": {
+      "type": "number",
+      "description": "Average sample size in px; rounded to an odd value from 1 to 101"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample flattened visible document instead of only active raster layer"
+     },
+     "anti_alias": {
+      "type": "boolean",
+      "description": "Soften selection edge coverage"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius in px (softens the edge)"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

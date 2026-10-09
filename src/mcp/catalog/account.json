@@ -1,0 +1,46 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "account.get_usage",
+   "tool_name": "account_get_usage",
+   "description": "Read signed-in credit activity, newest first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "limit": {
+      "type": "number",
+      "description": "Max entries, 1–200 (default 50)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "account.show_panel",
+   "tool_name": "account_show_panel",
+   "description": "Open the signed-in account panel. Operations never open the auth modal.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  }
+ ]
+}

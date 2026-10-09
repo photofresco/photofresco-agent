@@ -1,0 +1,166 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "liquify.begin",
+   "tool_name": "liquify_begin",
+   "description": "Open a headless Liquify session for the active raster layer. Strokes edit an in-memory displacement mesh until liquify.commit applies one undoable command.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "grid_spacing": {
+      "type": "number",
+      "description": "Control point spacing in px (default 32)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "liquify.cancel",
+   "tool_name": "liquify_cancel",
+   "description": "Discard the active Liquify session without changing document pixels.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "liquify.commit",
+   "tool_name": "liquify_commit",
+   "description": "Commit the active Liquify session to the target layer as one undoable Command, then close the session.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "liquify.set_freeze",
+   "tool_name": "liquify_set_freeze",
+   "description": "Paint or clear the Liquify freeze mask in the active session. op=freeze blocks later mesh movement; op=thaw removes freeze; op=clear empties the mask. points are flat doc coordinates for freeze/thaw.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "op": {
+      "type": "string",
+      "description": "freeze, thaw, or clear",
+      "enum": [
+       "freeze",
+       "thaw",
+       "clear"
+      ]
+     },
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,...] in document coordinates; required unless op=clear"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default 80)"
+     },
+     "pressure": {
+      "type": "number",
+      "description": "0..1 brush pressure/strength"
+     },
+     "density": {
+      "type": "number",
+      "description": "0..1 falloff strength"
+     }
+    },
+    "required": [
+     "op"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "liquify.stroke",
+   "tool_name": "liquify_stroke",
+   "description": "Apply a Liquify mesh stroke in the active session. tool: forward, reconstruct, smooth, twirl-cw, twirl-ccw, pucker, bloat, push-left. points are flat doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "tool": {
+      "type": "string",
+      "description": "Liquify deformation tool",
+      "enum": [
+       "forward",
+       "reconstruct",
+       "smooth",
+       "twirl-cw",
+       "twirl-ccw",
+       "pucker",
+       "bloat",
+       "push-left"
+      ]
+     },
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...] in document coordinates"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default 80)"
+     },
+     "pressure": {
+      "type": "number",
+      "description": "0..1 brush pressure/strength"
+     },
+     "density": {
+      "type": "number",
+      "description": "0..1 falloff strength"
+     },
+     "rate": {
+      "type": "number",
+      "description": "0..1 continuous tool rate"
+     }
+    },
+    "required": [
+     "tool",
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "autosave.discard",
+   "tool_name": "autosave_discard",
+   "description": "Discard all orphaned recovery slots that were discovered but are not yet restored, without opening them.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "autosave.flush",
+   "tool_name": "autosave_flush",
+   "description": "Write any pending autosave state to local storage immediately (normally it waits for ~5s of idle). Returns the number of documents saved.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "autosave.recover",
+   "tool_name": "autosave_recover",
+   "description": "Restore all orphaned recovery slots that were discovered but are not yet restored into new tabs. Returns the number of documents recovered, or 0 when none are pending.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "autosave.status",
+   "tool_name": "autosave_status",
+   "description": "Local autosave status: whether it is supported, pending unsaved documents, per-document slot ids and last-save times, and any orphaned recovery slots discovered but not yet restored.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

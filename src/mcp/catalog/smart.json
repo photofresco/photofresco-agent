@@ -1,0 +1,413 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "smart.convert",
+   "tool_name": "smart_convert",
+   "description": "Convert the active/selected layer tree nodes into an embedded smart object. copy=true creates New Smart Object via Copy and leaves originals in place.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ids": {
+      "type": "array",
+      "description": "Optional layer node ids. Defaults to selected nodes, then active node."
+     },
+     "copy": {
+      "type": "boolean",
+      "description": "Create New Smart Object via Copy instead of moving originals into the embedded source."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.edit_contents",
+   "tool_name": "smart_edit_contents",
+   "description": "Open the embedded source document for the active smart object as a separate editable tab.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "source_id": {
+      "type": "string",
+      "description": "Embedded source id; bypasses layer lookup when provided."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.filter_add",
+   "tool_name": "smart_filter_add",
+   "description": "Append a re-editable smart filter to a smart object stack. Uses the same filter_type/params shape as filter.apply.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "filter_type": {
+      "type": "string",
+      "description": "Which filter",
+      "enum": [
+       "gaussian-blur",
+       "sharpen",
+       "sharpen-more",
+       "sharpen-edges",
+       "unsharp-mask",
+       "noise",
+       "box-blur",
+       "motion-blur",
+       "radial-blur",
+       "average",
+       "median",
+       "mosaic",
+       "high-pass",
+       "ripple",
+       "twirl",
+       "spherize",
+       "wave",
+       "zigzag",
+       "polar-coordinates",
+       "crystallize",
+       "pointillize",
+       "facet",
+       "fragment",
+       "despeckle",
+       "dust-and-scratches",
+       "emboss",
+       "find-edges",
+       "solarize",
+       "trace-contour",
+       "wind",
+       "clouds",
+       "difference-clouds",
+       "lens-flare",
+       "fibers",
+       "maximum",
+       "minimum",
+       "offset",
+       "custom"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Type-specific filter params"
+     },
+     "filter": {
+      "type": "object",
+      "description": "Full filter object alternative to filter_type/params"
+     }
+    },
+    "required": [
+     "filter_type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.filter_remove",
+   "tool_name": "smart_filter_remove",
+   "description": "Delete one smart filter from a smart object stack.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "filter_id": {
+      "type": "string",
+      "description": "Smart filter id"
+     }
+    },
+    "required": [
+     "filter_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.filter_reorder",
+   "tool_name": "smart_filter_reorder",
+   "description": "Move one smart filter to a new zero-based stack index.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "filter_id": {
+      "type": "string",
+      "description": "Smart filter id"
+     },
+     "to_index": {
+      "type": "number",
+      "description": "New zero-based index"
+     }
+    },
+    "required": [
+     "filter_id",
+     "to_index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.filter_set",
+   "tool_name": "smart_filter_set",
+   "description": "Replace one smart filter parameters object while preserving its stack position and enabled state.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "filter_id": {
+      "type": "string",
+      "description": "Smart filter id"
+     },
+     "filter_type": {
+      "type": "string",
+      "description": "Which filter",
+      "enum": [
+       "gaussian-blur",
+       "sharpen",
+       "sharpen-more",
+       "sharpen-edges",
+       "unsharp-mask",
+       "noise",
+       "box-blur",
+       "motion-blur",
+       "radial-blur",
+       "average",
+       "median",
+       "mosaic",
+       "high-pass",
+       "ripple",
+       "twirl",
+       "spherize",
+       "wave",
+       "zigzag",
+       "polar-coordinates",
+       "crystallize",
+       "pointillize",
+       "facet",
+       "fragment",
+       "despeckle",
+       "dust-and-scratches",
+       "emboss",
+       "find-edges",
+       "solarize",
+       "trace-contour",
+       "wind",
+       "clouds",
+       "difference-clouds",
+       "lens-flare",
+       "fibers",
+       "maximum",
+       "minimum",
+       "offset",
+       "custom"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Type-specific filter params"
+     },
+     "filter": {
+      "type": "object",
+      "description": "Full filter object alternative to filter_type/params"
+     }
+    },
+    "required": [
+     "filter_id",
+     "filter_type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.filter_toggle",
+   "tool_name": "smart_filter_toggle",
+   "description": "Enable or disable one smart filter. enabled omitted toggles the current state.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "filter_id": {
+      "type": "string",
+      "description": "Smart filter id"
+     },
+     "enabled": {
+      "type": "boolean",
+      "description": "Desired enabled state; omitted toggles."
+     }
+    },
+    "required": [
+     "filter_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.rasterize",
+   "tool_name": "smart_rasterize",
+   "description": "Rasterize the active smart object layer into a normal pixel layer. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.replace",
+   "tool_name": "smart_replace",
+   "description": "Replace an embedded smart object source from raw RGBA image data while preserving layer transforms and smart filters.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "source": {
+      "type": "object",
+      "description": "{ name, width, height, data } RGBA bytes"
+     }
+    },
+    "required": [
+     "source"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "smart.set_transform",
+   "tool_name": "smart_set_transform",
+   "description": "Set or compose the transform for a smart object. matrix=[a,b,c,d,e,f] sets the absolute affine matrix; otherwise scale/rotate/translate are composed about current bounds.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Smart object layer id; defaults to active node."
+     },
+     "matrix": {
+      "type": "array",
+      "description": "Absolute affine matrix [a,b,c,d,e,f]."
+     },
+     "scale_x": {
+      "type": "number",
+      "description": "Horizontal scale factor for composed transform (default 1)."
+     },
+     "scale_y": {
+      "type": "number",
+      "description": "Vertical scale factor for composed transform (default 1)."
+     },
+     "rotate_deg": {
+      "type": "number",
+      "description": "Clockwise rotation for composed transform (default 0)."
+     },
+     "dx": {
+      "type": "number",
+      "description": "Translate x for composed transform (default 0)."
+     },
+     "dy": {
+      "type": "number",
+      "description": "Translate y for composed transform (default 0)."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -1,0 +1,881 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "text.add",
+   "tool_name": "text_add",
+   "description": "Add an editable text layer at (x, y) with the given text. Move it via layer.translate; edit via text.set.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "Text content (\n for lines)"
+     },
+     "x": {
+      "type": "number",
+      "description": "Left edge doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge doc y"
+     },
+     "font": {
+      "type": "string",
+      "description": "Font family (default Arial)"
+     },
+     "size": {
+      "type": "number",
+      "description": "Font size px (default 48)"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "orientation": {
+      "type": "string",
+      "description": "Type orientation",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     },
+     "width": {
+      "type": "number",
+      "description": "Paragraph box width px — text wraps to it (omit for point text)"
+     },
+     "align": {
+      "type": "string",
+      "description": "Paragraph alignment; for vertical type use top/center/bottom",
+      "enum": [
+       "left",
+       "center",
+       "right",
+       "top",
+       "bottom",
+       "justify",
+       "justify-center",
+       "justify-right",
+       "justify-all"
+      ]
+     },
+     "bold": {
+      "type": "boolean",
+      "description": "Bold"
+     },
+     "italic": {
+      "type": "boolean",
+      "description": "Italic"
+     },
+     "underline": {
+      "type": "boolean",
+      "description": "Underline"
+     },
+     "strikethrough": {
+      "type": "boolean",
+      "description": "Strikethrough"
+     },
+     "all_caps": {
+      "type": "boolean",
+      "description": "All caps"
+     },
+     "anti_alias": {
+      "type": "string",
+      "description": "Text anti-alias mode",
+      "enum": [
+       "none",
+       "sharp",
+       "crisp",
+       "strong",
+       "smooth"
+      ]
+     },
+     "letter_spacing": {
+      "type": "number",
+      "description": "Tracking px between characters"
+     },
+     "line_height": {
+      "type": "number",
+      "description": "Legacy: leading as a multiple of size"
+     },
+     "small_caps": {
+      "type": "boolean",
+      "description": "Small caps"
+     },
+     "superscript": {
+      "type": "boolean",
+      "description": "Superscript (clears subscript)"
+     },
+     "subscript": {
+      "type": "boolean",
+      "description": "Subscript (clears superscript)"
+     },
+     "leading": {
+      "type": "number",
+      "description": "Leading px; 0 = Auto (125% of size)"
+     },
+     "kerning": {
+      "type": "string",
+      "description": "Kerning",
+      "enum": [
+       "metrics",
+       "none"
+      ]
+     },
+     "vertical_scale": {
+      "type": "number",
+      "description": "Vertical scale % (100 normal)"
+     },
+     "horizontal_scale": {
+      "type": "number",
+      "description": "Horizontal scale % (100 normal)"
+     },
+     "baseline_shift": {
+      "type": "number",
+      "description": "Baseline shift px (+ up)"
+     },
+     "indent_left": {
+      "type": "number",
+      "description": "Left indent px"
+     },
+     "indent_right": {
+      "type": "number",
+      "description": "Right indent px"
+     },
+     "indent_first": {
+      "type": "number",
+      "description": "First-line indent px"
+     },
+     "space_before": {
+      "type": "number",
+      "description": "Space before paragraph px"
+     },
+     "space_after": {
+      "type": "number",
+      "description": "Space after paragraph px"
+     },
+     "warp_style": {
+      "type": "string",
+      "description": "Editable Warp Text style, or none to clear",
+      "enum": [
+       "none",
+       "arc",
+       "arc-lower",
+       "arc-upper",
+       "arch",
+       "bulge",
+       "shell-lower",
+       "shell-upper",
+       "flag",
+       "wave",
+       "fish",
+       "rise",
+       "fisheye",
+       "inflate",
+       "squeeze",
+       "twist"
+      ]
+     },
+     "bend": {
+      "type": "number",
+      "description": "Warp Bend slider -100..100"
+     },
+     "h_distort": {
+      "type": "number",
+      "description": "Warp Horizontal Distortion slider -100..100"
+     },
+     "v_distort": {
+      "type": "number",
+      "description": "Warp Vertical Distortion slider -100..100"
+     },
+     "warp_orientation": {
+      "type": "string",
+      "description": "Warp dialog orientation toggle",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     }
+    },
+    "required": [
+     "text",
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.convert_to_shape",
+   "tool_name": "text_convert_to_shape",
+   "description": "Convert the active text layer into a shape layer by raster-tracing the text alpha mask. Browser font outlines are unavailable without a font parser, so this is a high-resolution trace fallback.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.find_replace",
+   "tool_name": "text_find_replace",
+   "description": "Find text across all editable text layers. With replace omitted, returns matches only; with replace provided, replaces all matches through one undoable command.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "search": {
+      "type": "string",
+      "description": "Text to find"
+     },
+     "replace": {
+      "type": "string",
+      "description": "Replacement text; omit for find-only"
+     },
+     "match_case": {
+      "type": "boolean",
+      "description": "Case-sensitive search"
+     }
+    },
+    "required": [
+     "search"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.insert_glyph",
+   "tool_name": "text_insert_glyph",
+   "description": "Insert one glyph into the active text layer at index, or append when index is omitted. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "glyph": {
+      "type": "string",
+      "description": "Glyph/string to insert"
+     },
+     "index": {
+      "type": "number",
+      "description": "UTF-16 insertion index; defaults to append"
+     }
+    },
+    "required": [
+     "glyph"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.mask",
+   "tool_name": "text_mask",
+   "description": "Create a type-mask selection from rasterized text at (x, y), then discard the temporary text node. Selection changes are not undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "Text content (\n for lines)"
+     },
+     "x": {
+      "type": "number",
+      "description": "Left edge doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge doc y"
+     },
+     "font": {
+      "type": "string",
+      "description": "Font family (default Arial)"
+     },
+     "size": {
+      "type": "number",
+      "description": "Font size px (default 48)"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "orientation": {
+      "type": "string",
+      "description": "Type orientation",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     },
+     "width": {
+      "type": "number",
+      "description": "Paragraph box width px — text wraps to it (omit for point text)"
+     },
+     "align": {
+      "type": "string",
+      "description": "Paragraph alignment; for vertical type use top/center/bottom",
+      "enum": [
+       "left",
+       "center",
+       "right",
+       "top",
+       "bottom",
+       "justify",
+       "justify-center",
+       "justify-right",
+       "justify-all"
+      ]
+     },
+     "bold": {
+      "type": "boolean",
+      "description": "Bold"
+     },
+     "italic": {
+      "type": "boolean",
+      "description": "Italic"
+     },
+     "underline": {
+      "type": "boolean",
+      "description": "Underline"
+     },
+     "strikethrough": {
+      "type": "boolean",
+      "description": "Strikethrough"
+     },
+     "all_caps": {
+      "type": "boolean",
+      "description": "All caps"
+     },
+     "anti_alias": {
+      "type": "string",
+      "description": "Text anti-alias mode",
+      "enum": [
+       "none",
+       "sharp",
+       "crisp",
+       "strong",
+       "smooth"
+      ]
+     },
+     "letter_spacing": {
+      "type": "number",
+      "description": "Tracking px between characters"
+     },
+     "line_height": {
+      "type": "number",
+      "description": "Legacy: leading as a multiple of size"
+     },
+     "small_caps": {
+      "type": "boolean",
+      "description": "Small caps"
+     },
+     "superscript": {
+      "type": "boolean",
+      "description": "Superscript (clears subscript)"
+     },
+     "subscript": {
+      "type": "boolean",
+      "description": "Subscript (clears superscript)"
+     },
+     "leading": {
+      "type": "number",
+      "description": "Leading px; 0 = Auto (125% of size)"
+     },
+     "kerning": {
+      "type": "string",
+      "description": "Kerning",
+      "enum": [
+       "metrics",
+       "none"
+      ]
+     },
+     "vertical_scale": {
+      "type": "number",
+      "description": "Vertical scale % (100 normal)"
+     },
+     "horizontal_scale": {
+      "type": "number",
+      "description": "Horizontal scale % (100 normal)"
+     },
+     "baseline_shift": {
+      "type": "number",
+      "description": "Baseline shift px (+ up)"
+     },
+     "indent_left": {
+      "type": "number",
+      "description": "Left indent px"
+     },
+     "indent_right": {
+      "type": "number",
+      "description": "Right indent px"
+     },
+     "indent_first": {
+      "type": "number",
+      "description": "First-line indent px"
+     },
+     "space_before": {
+      "type": "number",
+      "description": "Space before paragraph px"
+     },
+     "space_after": {
+      "type": "number",
+      "description": "Space after paragraph px"
+     },
+     "warp_style": {
+      "type": "string",
+      "description": "Editable Warp Text style, or none to clear",
+      "enum": [
+       "none",
+       "arc",
+       "arc-lower",
+       "arc-upper",
+       "arch",
+       "bulge",
+       "shell-lower",
+       "shell-upper",
+       "flag",
+       "wave",
+       "fish",
+       "rise",
+       "fisheye",
+       "inflate",
+       "squeeze",
+       "twist"
+      ]
+     },
+     "bend": {
+      "type": "number",
+      "description": "Warp Bend slider -100..100"
+     },
+     "h_distort": {
+      "type": "number",
+      "description": "Warp Horizontal Distortion slider -100..100"
+     },
+     "v_distort": {
+      "type": "number",
+      "description": "Warp Vertical Distortion slider -100..100"
+     },
+     "warp_orientation": {
+      "type": "string",
+      "description": "Warp dialog orientation toggle",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     }
+    },
+    "required": [
+     "text",
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.set",
+   "tool_name": "text_set",
+   "description": "Edit the active text layer: content, font, size, color, position, character styles (bold/italic/underline/strikethrough/all_caps/letter_spacing/line_height) and paragraph settings (align, width). Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "New content"
+     },
+     "font": {
+      "type": "string",
+      "description": "Font family"
+     },
+     "size": {
+      "type": "number",
+      "description": "Font size px"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b]"
+     },
+     "x": {
+      "type": "number",
+      "description": "Left edge"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge"
+     },
+     "orientation": {
+      "type": "string",
+      "description": "Type orientation",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     },
+     "width": {
+      "type": "number",
+      "description": "Paragraph box width px; 0 clears to point text"
+     },
+     "align": {
+      "type": "string",
+      "description": "Paragraph alignment; for vertical type use top/center/bottom",
+      "enum": [
+       "left",
+       "center",
+       "right",
+       "top",
+       "bottom",
+       "justify",
+       "justify-center",
+       "justify-right",
+       "justify-all"
+      ]
+     },
+     "bold": {
+      "type": "boolean",
+      "description": "Bold"
+     },
+     "italic": {
+      "type": "boolean",
+      "description": "Italic"
+     },
+     "underline": {
+      "type": "boolean",
+      "description": "Underline"
+     },
+     "strikethrough": {
+      "type": "boolean",
+      "description": "Strikethrough"
+     },
+     "all_caps": {
+      "type": "boolean",
+      "description": "All caps"
+     },
+     "anti_alias": {
+      "type": "string",
+      "description": "Text anti-alias mode",
+      "enum": [
+       "none",
+       "sharp",
+       "crisp",
+       "strong",
+       "smooth"
+      ]
+     },
+     "letter_spacing": {
+      "type": "number",
+      "description": "Tracking px"
+     },
+     "line_height": {
+      "type": "number",
+      "description": "Legacy: leading multiple"
+     },
+     "small_caps": {
+      "type": "boolean",
+      "description": "Small caps"
+     },
+     "superscript": {
+      "type": "boolean",
+      "description": "Superscript (clears subscript)"
+     },
+     "subscript": {
+      "type": "boolean",
+      "description": "Subscript (clears superscript)"
+     },
+     "leading": {
+      "type": "number",
+      "description": "Leading px; 0 = Auto (125% of size)"
+     },
+     "kerning": {
+      "type": "string",
+      "description": "Kerning",
+      "enum": [
+       "metrics",
+       "none"
+      ]
+     },
+     "vertical_scale": {
+      "type": "number",
+      "description": "Vertical scale % (100 normal)"
+     },
+     "horizontal_scale": {
+      "type": "number",
+      "description": "Horizontal scale % (100 normal)"
+     },
+     "baseline_shift": {
+      "type": "number",
+      "description": "Baseline shift px (+ up)"
+     },
+     "indent_left": {
+      "type": "number",
+      "description": "Left indent px"
+     },
+     "indent_right": {
+      "type": "number",
+      "description": "Right indent px"
+     },
+     "indent_first": {
+      "type": "number",
+      "description": "First-line indent px"
+     },
+     "space_before": {
+      "type": "number",
+      "description": "Space before paragraph px"
+     },
+     "space_after": {
+      "type": "number",
+      "description": "Space after paragraph px"
+     },
+     "warp_style": {
+      "type": "string",
+      "description": "Editable Warp Text style, or none to clear",
+      "enum": [
+       "none",
+       "arc",
+       "arc-lower",
+       "arc-upper",
+       "arch",
+       "bulge",
+       "shell-lower",
+       "shell-upper",
+       "flag",
+       "wave",
+       "fish",
+       "rise",
+       "fisheye",
+       "inflate",
+       "squeeze",
+       "twist"
+      ]
+     },
+     "bend": {
+      "type": "number",
+      "description": "Warp Bend slider -100..100"
+     },
+     "h_distort": {
+      "type": "number",
+      "description": "Warp Horizontal Distortion slider -100..100"
+     },
+     "v_distort": {
+      "type": "number",
+      "description": "Warp Vertical Distortion slider -100..100"
+     },
+     "warp_orientation": {
+      "type": "string",
+      "description": "Warp dialog orientation toggle",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.set_range",
+   "tool_name": "text_set_range",
+   "description": "Apply character style overrides to a UTF-16 character range on the active text layer. Use text.set for whole-layer edits.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "start": {
+      "type": "number",
+      "description": "Inclusive UTF-16 character start index"
+     },
+     "end": {
+      "type": "number",
+      "description": "Exclusive UTF-16 character end index"
+     },
+     "font": {
+      "type": "string",
+      "description": "Font family (default Arial)"
+     },
+     "size": {
+      "type": "number",
+      "description": "Font size px (default 48)"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "bold": {
+      "type": "boolean",
+      "description": "Bold"
+     },
+     "italic": {
+      "type": "boolean",
+      "description": "Italic"
+     },
+     "underline": {
+      "type": "boolean",
+      "description": "Underline"
+     },
+     "strikethrough": {
+      "type": "boolean",
+      "description": "Strikethrough"
+     },
+     "all_caps": {
+      "type": "boolean",
+      "description": "All caps"
+     },
+     "small_caps": {
+      "type": "boolean",
+      "description": "Small caps"
+     },
+     "superscript": {
+      "type": "boolean",
+      "description": "Superscript (clears subscript)"
+     },
+     "subscript": {
+      "type": "boolean",
+      "description": "Subscript (clears superscript)"
+     },
+     "letter_spacing": {
+      "type": "number",
+      "description": "Tracking px between characters"
+     },
+     "line_height": {
+      "type": "number",
+      "description": "Legacy: leading as a multiple of size"
+     },
+     "leading": {
+      "type": "number",
+      "description": "Leading px; 0 = Auto (125% of size)"
+     },
+     "kerning": {
+      "type": "string",
+      "description": "Kerning",
+      "enum": [
+       "metrics",
+       "none"
+      ]
+     },
+     "vertical_scale": {
+      "type": "number",
+      "description": "Vertical scale % (100 normal)"
+     },
+     "horizontal_scale": {
+      "type": "number",
+      "description": "Horizontal scale % (100 normal)"
+     },
+     "baseline_shift": {
+      "type": "number",
+      "description": "Baseline shift px (+ up)"
+     }
+    },
+    "required": [
+     "start",
+     "end"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "text.warp",
+   "tool_name": "text_warp",
+   "description": "Set editable Type > Warp Text state on the active text layer. style may be one of the 15 Photoshop warp styles, or \"none\" to clear.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "style": {
+      "type": "string",
+      "description": "Warp style, or none to clear",
+      "enum": [
+       "none",
+       "arc",
+       "arc-lower",
+       "arc-upper",
+       "arch",
+       "bulge",
+       "shell-lower",
+       "shell-upper",
+       "flag",
+       "wave",
+       "fish",
+       "rise",
+       "fisheye",
+       "inflate",
+       "squeeze",
+       "twist"
+      ]
+     },
+     "bend": {
+      "type": "number",
+      "description": "Bend slider -100..100"
+     },
+     "h_distort": {
+      "type": "number",
+      "description": "Horizontal Distortion slider -100..100"
+     },
+     "v_distort": {
+      "type": "number",
+      "description": "Vertical Distortion slider -100..100"
+     },
+     "warp_orientation": {
+      "type": "string",
+      "description": "Warp dialog orientation toggle",
+      "enum": [
+       "horizontal",
+       "vertical"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

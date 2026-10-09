@@ -1,0 +1,65 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "pattern.fill",
+   "tool_name": "pattern_fill",
+   "description": "Fill the active selection, or the whole active raster layer when there is no selection, with the active or named pattern. This is a raster pattern fill; it does not create a Photoshop Pattern Fill smart object/layer.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id; defaults to the active pattern"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 opacity (default 1)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

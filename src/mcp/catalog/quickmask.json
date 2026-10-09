@@ -1,0 +1,28 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "quickmask.toggle",
+   "tool_name": "quickmask_toggle",
+   "description": "Toggle Quick Mask mode, or set enabled explicitly. Entering converts selection to a paintable grayscale mask; exiting converts the mask back to selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "enabled": {
+      "type": "boolean",
+      "description": "Optional: true enters Quick Mask, false exits it"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

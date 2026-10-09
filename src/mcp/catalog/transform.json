@@ -1,0 +1,111 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "transform.apply",
+   "tool_name": "transform_apply",
+   "description": "Free-transform the active layer: scale about the center of its pixel content bounds (as reported by doc.get_state), rotate, and/or translate, then commit. One undoable step.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "scale_x": {
+      "type": "number",
+      "description": "Horizontal scale factor (default 1)"
+     },
+     "scale_y": {
+      "type": "number",
+      "description": "Vertical scale factor (default 1)"
+     },
+     "rotate_deg": {
+      "type": "number",
+      "description": "Rotation in degrees clockwise (default 0)"
+     },
+     "dx": {
+      "type": "number",
+      "description": "Translate x in px (default 0)"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Translate y in px (default 0)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "transform.perspective_warp",
+   "tool_name": "transform_perspective_warp",
+   "description": "Perspective Warp the active raster layer. corners are destination quad corners in top-left, top-right, bottom-right, bottom-left order. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "corners": {
+      "type": "array",
+      "description": "Destination quad as flat [x1,y1,...] or four {x,y} points"
+     },
+     "source_quad": {
+      "type": "array",
+      "description": "Optional source quad; defaults to active layer content bounds"
+     }
+    },
+    "required": [
+     "corners"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "transform.puppet_warp",
+   "tool_name": "transform_puppet_warp",
+   "description": "Puppet Warp the active raster layer with doc-space pins. Each pin is {x,y,target_x,target_y,rotate_deg?,rotation_locked?}. Commit is one undoable command.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pins": {
+      "type": "array",
+      "description": "Pin objects with original x/y and optional target_x/target_y"
+     },
+     "density": {
+      "type": "string",
+      "description": "Mesh density",
+      "enum": [
+       "fewer",
+       "normal",
+       "more"
+      ]
+     },
+     "rotation_locked": {
+      "type": "boolean",
+      "description": "Ignore pin rotate_deg values when true (default true)"
+     }
+    },
+    "required": [
+     "pins"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

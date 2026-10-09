@@ -1,0 +1,426 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "image.apply_image",
+   "tool_name": "image_apply_image",
+   "description": "Image > Apply Image: blend a source composite/component/alpha channel into the active layer or a target alpha channel. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "source_layer_id": {
+      "type": "string",
+      "description": "Optional raster layer id; omitted uses merged visible document"
+     },
+     "source_channel": {
+      "type": "string",
+      "description": "rgb/red/green/blue/quickmask or alpha:<name> (default rgb)"
+     },
+     "target_channel": {
+      "type": "string",
+      "description": "Optional alpha channel id/name; omitted targets the active layer"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "Opacity 0..1 (default 1)"
+     },
+     "invert": {
+      "type": "boolean",
+      "description": "Invert source RGB/channel before applying"
+     },
+     "mask_channel": {
+      "type": "string",
+      "description": "Optional channel used as a mask for the application"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.auto",
+   "tool_name": "image_auto",
+   "description": "Apply Auto Tone, Auto Contrast, or Auto Color destructively to the active layer (selection restricts it).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Auto adjustment mode",
+      "enum": [
+       "tone",
+       "contrast",
+       "color"
+      ]
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.calculations",
+   "tool_name": "image_calculations",
+   "description": "Image > Calculations: blend two source channels and output to a new alpha channel, the selection, or a grayscale document.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "source1_channel": {
+      "type": "string",
+      "description": "First source channel"
+     },
+     "source1_layer_id": {
+      "type": "string",
+      "description": "Optional first raster layer id"
+     },
+     "source1_invert": {
+      "type": "boolean",
+      "description": "Invert first source"
+     },
+     "source2_channel": {
+      "type": "string",
+      "description": "Second source channel"
+     },
+     "source2_layer_id": {
+      "type": "string",
+      "description": "Optional second raster layer id"
+     },
+     "source2_invert": {
+      "type": "boolean",
+      "description": "Invert second source"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "Opacity 0..1 (default 1)"
+     },
+     "result": {
+      "type": "string",
+      "description": "alpha, selection, or document",
+      "enum": [
+       "alpha",
+       "selection",
+       "document"
+      ]
+     },
+     "name": {
+      "type": "string",
+      "description": "Output alpha/document name"
+     }
+    },
+    "required": [
+     "source1_channel",
+     "source2_channel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.content_aware_scale",
+   "tool_name": "image_content_aware_scale",
+   "description": "Content-Aware Scale the active raster layer to width/height. protect_selection=true uses the current selection as the manual Protect channel. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "width": {
+      "type": "number",
+      "description": "Target active-layer content width px"
+     },
+     "height": {
+      "type": "number",
+      "description": "Target active-layer content height px"
+     },
+     "protect_selection": {
+      "type": "boolean",
+      "description": "Use the current selection as protected content"
+     }
+    },
+    "required": [
+     "width",
+     "height"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.desaturate",
+   "tool_name": "image_desaturate",
+   "description": "Apply Image > Adjustments > Desaturate destructively to the active layer. Selection restricts it. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.equalize",
+   "tool_name": "image_equalize",
+   "description": "Apply Image > Adjustments > Equalize destructively to the active layer using per-channel histogram equalization. Selection restricts the result. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.flip",
+   "tool_name": "image_flip",
+   "description": "Flip the whole canvas horizontally or vertically. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "axis": {
+      "type": "string",
+      "description": "h = horizontal, v = vertical",
+      "enum": [
+       "h",
+       "v"
+      ]
+     }
+    },
+    "required": [
+     "axis"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.mode",
+   "tool_name": "image_mode",
+   "description": "Set the document mode. mode=grayscale asks the same core command used by Image > Mode > Grayscale: desaturates all raster layers, keeps RGBA tile storage, and sets the mode flag. mode=rgb sets the flag only. Undoable when it changes anything.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "rgb or grayscale",
+      "enum": [
+       "rgb",
+       "grayscale"
+      ]
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.resize",
+   "tool_name": "image_resize",
+   "description": "Resample the whole document to new pixel dimensions (bilinear). Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "width": {
+      "type": "number",
+      "description": "New width px"
+     },
+     "height": {
+      "type": "number",
+      "description": "New height px"
+     }
+    },
+    "required": [
+     "width",
+     "height"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.reveal_all",
+   "tool_name": "image_reveal_all",
+   "description": "Grow the canvas to include all raster content bounds and available text synthetic bounds. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.rotate",
+   "tool_name": "image_rotate",
+   "description": "Rotate the whole canvas by quarter turns: 1 = 90° clockwise, 2 = 180°, 3 = 90° counter-clockwise. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "turns": {
+      "type": "number",
+      "description": "1, 2, or 3 quarter turns"
+     }
+    },
+    "required": [
+     "turns"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "image.trim",
+   "tool_name": "image_trim",
+   "description": "Trim the canvas to the union of raster content bounds and available text synthetic bounds. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

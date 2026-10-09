@@ -1,0 +1,127 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "view.get",
+   "tool_name": "view_get",
+   "description": "Get viewport pan/zoom, screen mode, Extras/Show toggles, Snap To toggles, view rotation/flip, and the visible document rectangle. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "view.set",
+   "tool_name": "view_set",
+   "description": "Set viewport pan/zoom and pure view state such as screen mode, Extras/Show toggles, Snap To toggles, view rotation, and view-only horizontal flip. Browser UI only; returns the resulting view state.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pan_x": {
+      "type": "number",
+      "description": "CSS-px document-origin x offset"
+     },
+     "pan_y": {
+      "type": "number",
+      "description": "CSS-px document-origin y offset"
+     },
+     "zoom": {
+      "type": "number",
+      "description": "Document zoom scale, e.g. 1 = 100%"
+     },
+     "rotation_deg": {
+      "type": "number",
+      "description": "View rotation in degrees; pure view transform"
+     },
+     "flip_x": {
+      "type": "boolean",
+      "description": "View-only horizontal mirror of the canvas"
+     },
+     "screen_mode": {
+      "type": "string",
+      "description": "Screen mode chrome visibility",
+      "enum": [
+       "standard",
+       "fullscreen-menubar",
+       "fullscreen"
+      ]
+     },
+     "extras": {
+      "type": "boolean",
+      "description": "Master Extras visibility toggle"
+     },
+     "show_rulers": {
+      "type": "boolean",
+      "description": "Show rulers"
+     },
+     "show_layer_edges": {
+      "type": "boolean",
+      "description": "Show active layer bounds overlay"
+     },
+     "show_selection_edges": {
+      "type": "boolean",
+      "description": "Show selection marching ants"
+     },
+     "show_grid": {
+      "type": "boolean",
+      "description": "Show document grid overlay"
+     },
+     "show_guides": {
+      "type": "boolean",
+      "description": "Show guides"
+     },
+     "show_smart_guides": {
+      "type": "boolean",
+      "description": "Show smart guide hints while moving"
+     },
+     "show_pixel_grid": {
+      "type": "boolean",
+      "description": "Show pixel grid when zoomed beyond 500%"
+     },
+     "snap": {
+      "type": "boolean",
+      "description": "Master snapping toggle"
+     },
+     "snap_guides": {
+      "type": "boolean",
+      "description": "Snap to guides"
+     },
+     "snap_grid": {
+      "type": "boolean",
+      "description": "Snap to grid"
+     },
+     "snap_layers": {
+      "type": "boolean",
+      "description": "Snap to layer edges and centers"
+     },
+     "snap_document_bounds": {
+      "type": "boolean",
+      "description": "Snap to document edges and center"
+     },
+     "lock_guides": {
+      "type": "boolean",
+      "description": "Lock guide dragging/deletion"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

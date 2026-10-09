@@ -1,0 +1,115 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "shape.create",
+   "tool_name": "shape_create",
+   "description": "Create a shape layer or Work Path shape. kind: rectangle, rounded-rectangle, ellipse, polygon, line, custom. Pass params {x,y,w,h} or for line {from_x,from_y,to_x,to_y}; custom can use preset_id from preset.list(kind=shape). Fill/stroke are objects using fill-layer content and stroke color/width/alignment/dash.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "Shape kind",
+      "enum": [
+       "rectangle",
+       "rounded-rectangle",
+       "ellipse",
+       "polygon",
+       "line",
+       "custom"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Shape geometry params"
+     },
+     "fill": {
+      "type": "object",
+      "description": "Fill object {type,...}; omit = foreground solid"
+     },
+     "stroke": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "Stroke object {color,width,opacity,alignment,dash}; null/width 0 = none"
+     },
+     "preset_id": {
+      "type": "string",
+      "description": "Shape preset id for kind=custom; defaults to params.custom or star"
+     },
+     "mode": {
+      "type": "string",
+      "description": "shape creates a layer; path and pixels draw to the active raster layer",
+      "enum": [
+       "shape",
+       "path",
+       "pixels"
+      ]
+     }
+    },
+    "required": [
+     "kind"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "shape.set_props",
+   "tool_name": "shape_set_props",
+   "description": "Edit a shape layer path/fill/stroke. Target id defaults to active shape. fill accepts the same object as shape.create; stroke accepts {color,width,opacity,alignment,dash}; path accepts Path JSON. For rectangle/rounded-rectangle shape layers, radius (uniform) or corner_radii {tl,tr,br,bl} adjusts the corner rounding parametrically (same control as the on-canvas radius handles).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Shape layer id; default active"
+     },
+     "path": {
+      "type": "object",
+      "description": "Path JSON {subpaths:[...]}"
+     },
+     "fill": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "Fill object or null"
+     },
+     "stroke": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "Stroke object or null"
+     },
+     "radius": {
+      "type": "number",
+      "description": "Uniform corner radius in px (rectangle/rounded-rectangle shape layers only)"
+     },
+     "corner_radii": {
+      "type": "object",
+      "description": "Per-corner radii {tl,tr,br,bl} in px (rectangle/rounded-rectangle shape layers only)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

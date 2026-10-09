@@ -1,0 +1,141 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "preset.define_pattern",
+   "tool_name": "preset_define_pattern",
+   "description": "Capture the active selection from the active raster layer, or the layer content bounds when there is no selection, and save it as a named pattern preset.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Pattern preset name"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "preset.delete",
+   "tool_name": "preset_delete",
+   "description": "Delete a user-defined pattern, gradient, or brush preset. Built-in presets are protected.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "Preset collection",
+      "enum": [
+       "pattern",
+       "gradient",
+       "brush",
+       "style",
+       "shape"
+      ]
+     },
+     "id": {
+      "type": "string",
+      "description": "Preset id from preset.list"
+     }
+    },
+    "required": [
+     "kind",
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "preset.list",
+   "tool_name": "preset_list",
+   "description": "List presets by kind: pattern (tile-backed RGBA images), gradient, brush, style, or shape. Returns ids, names, built-in flag, and kind-specific metadata.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "Preset collection",
+      "enum": [
+       "pattern",
+       "gradient",
+       "brush",
+       "style",
+       "shape"
+      ]
+     }
+    },
+    "required": [
+     "kind"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "preset.rename",
+   "tool_name": "preset_rename",
+   "description": "Rename a user-defined pattern, gradient, or brush preset. Built-in presets are protected.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "Preset collection",
+      "enum": [
+       "pattern",
+       "gradient",
+       "brush",
+       "style",
+       "shape"
+      ]
+     },
+     "id": {
+      "type": "string",
+      "description": "Preset id from preset.list"
+     },
+     "name": {
+      "type": "string",
+      "description": "New preset name"
+     }
+    },
+    "required": [
+     "kind",
+     "id",
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "PhotoFresco",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "category": "Design / image editing",
+  "directoryCategories": {
+    "punkpeye/awesome-mcp-servers": "Multimedia Process",
+    "mcpservers.org": "Design"
+  },
+  "homepage": "https://photofresco.com/",
+  "repository": "https://github.com/photofresco/photofresco-agent",
+  "license": "MIT",
+  "logo": "assets/logo.png",
+  "demo": ["assets/demo.gif"]
+}

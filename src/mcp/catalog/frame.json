@@ -1,0 +1,90 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "frame.create",
+   "tool_name": "frame_create",
+   "description": "Create a Photoshop-style Frame Group: a smart-object placeholder clipped by a rectangle or ellipse vector mask. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "rectangle or ellipse",
+      "enum": [
+       "rectangle",
+       "ellipse"
+      ]
+     },
+     "x": {
+      "type": "number",
+      "description": "Frame x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Frame y"
+     },
+     "w": {
+      "type": "number",
+      "description": "Frame width"
+     },
+     "h": {
+      "type": "number",
+      "description": "Frame height"
+     },
+     "stroke": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "Optional frame stroke {color,width,opacity,alignment,dash}; null/width 0 = none"
+     }
+    },
+    "required": [
+     "kind",
+     "x",
+     "y",
+     "w",
+     "h"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "frame.replace_contents",
+   "tool_name": "frame_replace_contents",
+   "description": "Replace the active frame smart object contents from raw RGBA image data; contents cover-fit into the frame vector mask. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Frame node id; defaults to active node"
+     },
+     "source": {
+      "type": "object",
+      "description": "{name,width,height,data RGBA bytes}"
+     }
+    },
+    "required": [
+     "source"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

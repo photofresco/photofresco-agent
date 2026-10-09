@@ -1,0 +1,195 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "workflow.export",
+   "tool_name": "workflow_export",
+   "description": "Export a saved action as a portable, versioned workflow document (operation requirements, inputs, outputs, barriers).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action_id": {
+      "type": "string",
+      "description": "Action id from action.list; defaults to active action"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "workflow.import",
+   "tool_name": "workflow_import",
+   "description": "Import a workflow document as a new saved action (it then plays from the Actions panel or action.play).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "workflow": {
+      "type": "object",
+      "description": "Portable workflow document { format: \"photofresco.workflow\", version: 1, name, inputs?, source?, requires, steps } (workflow.export produces one)"
+     },
+     "set_id": {
+      "type": "string",
+      "description": "Action set id from action.list; defaults to the active set"
+     }
+    },
+    "required": [
+     "workflow"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "workflow.rollback",
+   "tool_name": "workflow_rollback",
+   "description": "Roll back the most recent run's own edits since its last checkpoint (start or last completed barrier), restoring the history and redo state from before them. Refuses without undoing anything when other edits were made, undone or redone since, and never reverses exports, uploads, paid calls or document lifecycle steps.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "run_id": {
+      "type": "string",
+      "description": "Run id from workflow.run / workflow.runs"
+     }
+    },
+    "required": [
+     "run_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "workflow.run",
+   "tool_name": "workflow_run",
+   "description": "Run a workflow (or a saved action) on the active document. Every step is preflighted first and an unsupported required step refuses the whole run before any edit. A failed step stops the run deterministically and keeps the partial result; inspect it with workflow.runs and roll back its edits with workflow.rollback. Irreversible steps need consent by step ID.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "workflow": {
+      "type": "object",
+      "description": "Portable workflow document { format: \"photofresco.workflow\", version: 1, name, inputs?, source?, requires, steps } (workflow.export produces one)"
+     },
+     "action_id": {
+      "type": "string",
+      "description": "Saved action id from action.list instead of a workflow document"
+     },
+     "inputs": {
+      "type": "object",
+      "description": "Values for the workflow's declared inputs, by name (layer inputs take a layer ID from this document)"
+     },
+     "consent": {
+      "type": "array",
+      "description": "Advance consent: IDs of the irreversible barrier steps (export, external write, paid AI, document lifecycle) this run may perform; nested steps are \"outer/inner\". workflow.validate lists them",
+      "items": {
+       "type": "string",
+       "description": "Barrier step ID",
+       "maxLength": 512
+      },
+      "maxItems": 500
+     },
+     "on_failure": {
+      "type": "string",
+      "description": "stop (default): keep the partial result as an inspectable checkpoint. rollback: roll back the run-owned edits since the last checkpoint when safe; canceled runs always stop",
+      "enum": [
+       "stop",
+       "rollback"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "workflow.runs",
+   "tool_name": "workflow_runs",
+   "description": "Inspect retained workflow runs (most recent last): per-step status, failure, outputs, run-owned edit count, interleaved edits, checkpoint and rollback availability.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "run_id": {
+      "type": "string",
+      "description": "One run; omit for all retained runs"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "workflow.validate",
+   "tool_name": "workflow_validate",
+   "description": "Preflight a workflow (or a saved action) against this document without running anything: inputs, operation versions, host support, parameters, permissions, layer bindings, irreversible barriers and consent. Returns { ok, steps, problems, warnings, barriers }.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "workflow": {
+      "type": "object",
+      "description": "Portable workflow document { format: \"photofresco.workflow\", version: 1, name, inputs?, source?, requires, steps } (workflow.export produces one)"
+     },
+     "action_id": {
+      "type": "string",
+      "description": "Saved action id from action.list instead of a workflow document"
+     },
+     "inputs": {
+      "type": "object",
+      "description": "Values for the workflow's declared inputs, by name (layer inputs take a layer ID from this document)"
+     },
+     "consent": {
+      "type": "array",
+      "description": "Advance consent: IDs of the irreversible barrier steps (export, external write, paid AI, document lifecycle) this run may perform; nested steps are \"outer/inner\". workflow.validate lists them",
+      "items": {
+       "type": "string",
+       "description": "Barrier step ID",
+       "maxLength": 512
+      },
+      "maxItems": 500
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

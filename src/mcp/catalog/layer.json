@@ -1,0 +1,774 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "layer.add",
+   "tool_name": "layer_add",
+   "description": "Add a new empty layer above the active node and make it active.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Layer name (default \"Layer N\")"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.add_group",
+   "tool_name": "layer_add_group",
+   "description": "Add a new empty group above the active node and make it active.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Group name"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.align",
+   "tool_name": "layer_align",
+   "description": "Align the active layer/node to the current selection bounds, or the canvas when no selection exists. Modes: left, hcenter, right, top, vcenter, bottom.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Alignment mode",
+      "enum": [
+       "left",
+       "hcenter",
+       "right",
+       "top",
+       "vcenter",
+       "bottom"
+      ]
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.arrange",
+   "tool_name": "layer_arrange",
+   "description": "Arrange the active node or selected sibling nodes: front, forward, backward, back, or reverse.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Arrange mode",
+      "enum": [
+       "front",
+       "forward",
+       "backward",
+       "back",
+       "reverse"
+      ]
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.defringe",
+   "tool_name": "layer_defringe",
+   "description": "Layer > Matting > Defringe on the active raster layer. Replaces semi-transparent edge pixel RGB with nearby fully opaque colors; alpha is preserved.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "width": {
+      "type": "number",
+      "description": "Search width in pixels; default 1"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.delete",
+   "tool_name": "layer_delete",
+   "description": "Delete the active node. Refused if it would leave no layers.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.distribute",
+   "tool_name": "layer_distribute",
+   "description": "Distribute three or more selected layer/tree nodes by left, horizontal centers, right, top, vertical centers, or bottom.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Distribution mode",
+      "enum": [
+       "left",
+       "hcenter",
+       "right",
+       "top",
+       "vcenter",
+       "bottom"
+      ]
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.duplicate",
+   "tool_name": "layer_duplicate",
+   "description": "Duplicate the active node (deep for groups); the copy becomes active.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.flatten",
+   "tool_name": "layer_flatten",
+   "description": "Flatten the whole document into a single Background layer (hidden layers drop).",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.get_selected",
+   "tool_name": "layer_get_selected",
+   "description": "Return the current Layers panel selection and primary active node.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.group_active",
+   "tool_name": "layer_group_active",
+   "description": "Wrap the active node in a new group (like ⌘G). The group becomes active.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.link",
+   "tool_name": "layer_link",
+   "description": "Link or unlink the currently selected layer/tree nodes. action=link requires at least two selected nodes.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action": {
+      "type": "string",
+      "description": "Link or unlink selected layer nodes",
+      "enum": [
+       "link",
+       "unlink"
+      ]
+     }
+    },
+    "required": [
+     "action"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.merge_down",
+   "tool_name": "layer_merge_down",
+   "description": "Merge the active layer into the layer directly below it (both must be visible, unlocked raster layers).",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.merge_visible",
+   "tool_name": "layer_merge_visible",
+   "description": "Merge all visible top-level content into one raster layer, preserving hidden top-level nodes. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.new_fill",
+   "tool_name": "layer_new_fill",
+   "description": "Add a procedural fill layer above the active node. fill_type is solid, gradient, or pattern. Solid accepts color/alpha; gradient accepts from/to or stops plus shape/angle/scale; pattern accepts pattern_id or active pattern.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "fill_type": {
+      "type": "string",
+      "description": "solid, gradient, or pattern",
+      "enum": [
+       "solid",
+       "gradient",
+       "pattern"
+      ]
+     },
+     "color": {
+      "type": "array",
+      "description": "Solid [r,g,b]"
+     },
+     "alpha": {
+      "type": "number",
+      "description": "Solid alpha 0..1"
+     },
+     "from": {
+      "type": "array",
+      "description": "Gradient start [r,g,b]"
+     },
+     "to": {
+      "type": "array",
+      "description": "Gradient end [r,g,b]"
+     },
+     "stops": {
+      "type": "array",
+      "description": "Gradient stops: [{pos,color:[r,g,b],alpha?}, ...]"
+     },
+     "shape": {
+      "type": "string",
+      "description": "Gradient shape",
+      "enum": [
+       "linear",
+       "radial"
+      ]
+     },
+     "angle": {
+      "type": "number",
+      "description": "Gradient angle degrees"
+     },
+     "scale": {
+      "type": "number",
+      "description": "Gradient/pattern scale percent"
+     },
+     "reverse": {
+      "type": "boolean",
+      "description": "Reverse gradient"
+     },
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id"
+     },
+     "origin_x": {
+      "type": "number",
+      "description": "Pattern origin x"
+     },
+     "origin_y": {
+      "type": "number",
+      "description": "Pattern origin y"
+     },
+     "offset_x": {
+      "type": "number",
+      "description": "Gradient center offset x"
+     },
+     "offset_y": {
+      "type": "number",
+      "description": "Gradient center offset y"
+     }
+    },
+    "required": [
+     "fill_type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.rasterize",
+   "tool_name": "layer_rasterize",
+   "description": "Rasterize the active type, fill, or shape layer. kind defaults from the active layer.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "type, fill, or shape",
+      "enum": [
+       "type",
+       "fill",
+       "shape"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.reorder",
+   "tool_name": "layer_reorder",
+   "description": "Move the active node to a new position: parent_id (a group id, or null for the root) and index (0 = bottom of that list).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "parent_id": {
+      "type": "string",
+      "description": "Target group id; omit for the document root"
+     },
+     "index": {
+      "type": "number",
+      "description": "Position in the target list (0 = bottom)"
+     }
+    },
+    "required": [
+     "index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.select",
+   "tool_name": "layer_select",
+   "description": "Select layer/tree nodes in the Layers panel. ids replaces the layer selection by default; add=true adds ids; toggle=true toggles ids. The last id becomes the primary active node.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ids": {
+      "type": "array",
+      "description": "Node ids from doc.get_state"
+     },
+     "add": {
+      "type": "boolean",
+      "description": "Add ids to the existing layer selection"
+     },
+     "toggle": {
+      "type": "boolean",
+      "description": "Toggle ids in the existing layer selection"
+     }
+    },
+    "required": [
+     "ids"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.set_active",
+   "tool_name": "layer_set_active",
+   "description": "Set the active node (layers paint/transform; groups move as a unit).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Node id from doc.get_state"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.set_fill_opacity",
+   "tool_name": "layer_set_fill_opacity",
+   "description": "Set the active raster layer Fill opacity (0..1). Fill opacity dims layer pixels but leaves layer-style effects at their own opacity.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Target raster layer id (default: active)"
+     },
+     "fill_opacity": {
+      "type": "number",
+      "description": "Fill opacity, 0..1"
+     }
+    },
+    "required": [
+     "fill_opacity"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.set_props",
+   "tool_name": "layer_set_props",
+   "description": "Set properties on a node (default: the active one). Only provided fields change. blend_mode \"pass-through\" is groups-only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Target node id (default: active)"
+     },
+     "name": {
+      "type": "string",
+      "description": "Rename"
+     },
+     "visible": {
+      "type": "boolean",
+      "description": "Show/hide"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity",
+       "pass-through"
+      ]
+     },
+     "locked": {
+      "type": "boolean",
+      "description": "Lock/unlock"
+     },
+     "lock_pixels": {
+      "type": "boolean",
+      "description": "Raster layer pixel lock"
+     },
+     "lock_position": {
+      "type": "boolean",
+      "description": "Raster layer position lock"
+     },
+     "lock_transparency": {
+      "type": "boolean",
+      "description": "Raster layer transparency lock"
+     },
+     "clipped": {
+      "type": "boolean",
+      "description": "Clipping mask: confine rendering to the alpha of the layer below (⌥⌘G)"
+     },
+     "blend_if": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "Raster layer Blend If {channel,thisLayer:[b0,b1,w1,w0],underlying:[...]}; null clears it"
+     },
+     "channel_mask": {
+      "type": "object",
+      "description": "Raster layer RGB write mask {r:boolean,g:boolean,b:boolean}"
+     },
+     "knockout": {
+      "type": "string",
+      "description": "Knockout depth",
+      "enum": [
+       "none",
+       "shallow",
+       "deep"
+      ]
+     },
+     "blend_interior_as_group": {
+      "type": "boolean",
+      "description": "Blend fill and interior effects as one source"
+     },
+     "blend_clipped_as_group": {
+      "type": "boolean",
+      "description": "Apply the clipping base blend/opacity to the whole clip unit"
+     },
+     "transparency_shapes_layer": {
+      "type": "boolean",
+      "description": "Use source transparency to shape fill and interior effects"
+     },
+     "mask_hides_effects": {
+      "type": "boolean",
+      "description": "Apply the raster layer mask to generated effect output"
+     },
+     "vector_mask_hides_effects": {
+      "type": "boolean",
+      "description": "Apply the vector mask to generated effect output"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.translate",
+   "tool_name": "layer_translate",
+   "description": "Move the active node by (dx, dy) doc pixels (groups move all their layers).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "dx": {
+      "type": "number",
+      "description": "Horizontal shift in px"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Vertical shift in px"
+     }
+    },
+    "required": [
+     "dx",
+     "dy"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.ungroup",
+   "tool_name": "layer_ungroup",
+   "description": "Ungroup the active group, moving its children into the parent list at the group position. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "layer.vector_mask",
+   "tool_name": "layer_vector_mask",
+   "description": "Create, delete, or enable/disable a vector mask on a mask-owning layer. action: reveal_all, current_path, delete, enable, disable. Current Path uses the active path as the mask.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Target layer id; default active"
+     },
+     "action": {
+      "type": "string",
+      "description": "Vector mask action",
+      "enum": [
+       "reveal_all",
+       "current_path",
+       "delete",
+       "enable",
+       "disable"
+      ]
+     }
+    },
+    "required": [
+     "action"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

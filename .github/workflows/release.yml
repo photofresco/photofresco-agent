@@ -1,0 +1,158 @@
+# Release the `photofresco` npm package and its Official MCP Registry entry (pf-agent-platform-nkwn.34;
+# run by pf-agent-platform-nkwn.39 only after the owner's publication approval is recorded there).
+#
+# Manual trigger only, from the default branch, through the protected `release` environment (add the
+# owner as required reviewer). Two separate runs, as in the canary plan:
+#   1. target=npm, npm_tag=next: npm publish with provenance (trusted publishing over GitHub OIDC; the
+#      optional NPM_TOKEN secret exists only for the very first publish, before a trusted publisher can
+#      be configured on npmjs.com). Test `npx -y photofresco@next mcp` in real clients, then promote:
+#      `npm dist-tag add photofresco@<version> latest` (owner, 2FA).
+#   2. target=registry: publishes server.json with mcp-publisher once npm `latest` is that version.
+#      Registry versions are immutable. The server name `io.github.photofresco/photofresco` is the
+#      photofresco GitHub org's namespace: `mcp-publisher login github-oidc` with this job's OIDC
+#      token (the run must come from a photofresco org repository); no DNS record or key.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to publish
+        type: choice
+        options: [npm, registry]
+        default: npm
+      version:
+        description: Version to publish (must equal package.json and server.json)
+        type: string
+        required: true
+      npm_tag:
+        description: npm dist-tag for target=npm (canary first, then promote)
+        type: choice
+        options: [next, latest]
+        default: next
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 24.21.0 # LTS; bundles npm 11.19.0 (trusted publishing needs npm >= 11.5.1, Node >= 22.14)
+  MCP_PUBLISHER_VERSION: v1.8.0
+  MCP_PUBLISHER_SHA256: 1370446bbe74d562608e8005a6ccce02d146a661fbd78674e11cc70b9618d6cf # mcp-publisher_linux_amd64.tar.gz in registry_1.8.0_checksums.txt
+
+jobs:
+  verify:
+    name: Verify the release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+      - name: Check inputs, branch and metadata
+        env:
+          VERSION: ${{ inputs.version }}
+          REF_NAME: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          # shellcheck disable=SC2016 # a Node script, not shell expansions
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs"
+            const pkg = JSON.parse(readFileSync("package.json", "utf8"))
+            const server = JSON.parse(readFileSync("server.json", "utf8"))
+            const listing = JSON.parse(readFileSync("assets/listing.json", "utf8"))
+            const { VERSION, REF_NAME, DEFAULT_BRANCH } = process.env
+            const fail = (message) => { console.error(`::error::${message}`); process.exitCode = 1 }
+            if (REF_NAME !== DEFAULT_BRANCH) fail(`Run from ${DEFAULT_BRANCH}, not ${REF_NAME}`)
+            if (pkg.private) fail("package.json is still private: removing it is the approved publication change (pf-agent-platform-nkwn.39)")
+            for (const [what, value] of [["package.json", pkg.version], ["server.json", server.version], ["server.json packages[0]", server.packages[0].version]]) {
+              if (value !== VERSION) fail(`${what} version is ${value}, not ${VERSION}`)
+            }
+            if (server.name !== pkg.mcpName) fail(`server.json name ${server.name} differs from package.json mcpName ${pkg.mcpName}`)
+            if (server.packages[0].identifier !== pkg.name) fail(`server.json package ${server.packages[0].identifier} differs from ${pkg.name}`)
+            for (const [what, value] of [["package.json", pkg.description], ["server.json", server.description]]) {
+              if (value !== listing.description) fail(`${what} description differs from assets/listing.json`)
+            }
+          '
+      # The public repo ships no lockfile (pf-agent-platform-nkwn.37: Claude Code installs a plugin's
+      # lockfile, all 50 MB of these devDependencies, into every user's plugin cache). The package has
+      # no runtime dependencies (the MCP SDK is bundled in vendor/); devDependencies are exact-pinned.
+      - run: npm install --no-save
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm pack --dry-run
+
+  npm:
+    name: Publish to npm
+    needs: verify
+    if: inputs.target == 'npm'
+    runs-on: ubuntu-24.04
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # trusted publishing and the provenance attestation
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      # Publishing needs no install: nothing is built and the package has no runtime dependencies.
+      - name: npm publish (provenance)
+        env:
+          NPM_TAG: ${{ inputs.npm_tag }}
+          # Empty once a trusted publisher is configured (npm then authenticates with GitHub OIDC).
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public --tag "$NPM_TAG"
+
+  registry:
+    name: Publish to the MCP Registry
+    needs: verify
+    if: inputs.target == 'registry'
+    runs-on: ubuntu-24.04
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # mcp-publisher login github-oidc
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+      - name: The npm package is live as latest
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          latest="$(npm view "photofresco@latest" version)"
+          if [ "$latest" != "$VERSION" ]; then
+            echo "::error::npm latest is ${latest}, not ${VERSION}: publish and promote the npm canary first"
+            exit 1
+          fi
+      - name: Install mcp-publisher (checksum-verified)
+        run: |
+          curl -fsSLo mcp-publisher.tar.gz "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz"
+          echo "${MCP_PUBLISHER_SHA256}  mcp-publisher.tar.gz" | sha256sum --check --strict
+          tar -xzf mcp-publisher.tar.gz mcp-publisher
+          rm mcp-publisher.tar.gz
+      - name: Log in to the MCP Registry (GitHub OIDC)
+        run: |
+          name="$(node -p 'require("./server.json").name')"
+          case "$name" in
+            io.github.photofresco/*) ./mcp-publisher login github-oidc ;;
+            *) echo "::error::Unexpected server name ${name} (expected the io.github.photofresco namespace)"; exit 1 ;;
+          esac
+      - name: Publish server.json
+        run: ./mcp-publisher publish

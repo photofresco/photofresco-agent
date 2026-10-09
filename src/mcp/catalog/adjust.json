@@ -1,0 +1,3743 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "adjust.add",
+   "tool_name": "adjust_add",
+   "description": "Add a non-destructive adjustment layer above the active node. Types include brightness-contrast, levels, curves, exposure, hue-saturation, vibrance, color-balance, black-white, photo-filter, channel-mixer, gradient-map, selective-color, color-lookup, shadows-highlights, match-replace-color, invert, posterize, and threshold. Pass type-specific params in \"params\". Match color accepts source_layer_id/target_layer_id to sample RGB statistics. Set clipped=true (layer.set_props) to affect only the layer below.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "adjustment_type": {
+      "type": "string",
+      "description": "Which adjustment",
+      "enum": [
+       "brightness-contrast",
+       "levels",
+       "curves",
+       "exposure",
+       "hue-saturation",
+       "vibrance",
+       "color-balance",
+       "black-white",
+       "photo-filter",
+       "channel-mixer",
+       "gradient-map",
+       "selective-color",
+       "color-lookup",
+       "shadows-highlights",
+       "match-replace-color",
+       "invert",
+       "posterize",
+       "threshold"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Adjustment parameter patch. Choose the branch matching adjustment_type for adjust.add, or the existing adjustment type for adjust.set_params; type may be omitted. Only supplied top-level fields change. Nested objects and arrays replace the previous value, not deep-merge. Bounds describe supported UI controls and are enforced at admission: the op rejects fields, ranges, array lengths or a type outside the branch for the target adjustment.",
+      "anyOf": [
+       {
+        "type": "object",
+        "description": "brightness-contrast parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "brightness-contrast"
+          ]
+         },
+         "brightness": {
+          "type": "number",
+          "description": "Brightness",
+          "minimum": -150,
+          "maximum": 150
+         },
+         "contrast": {
+          "type": "number",
+          "description": "Contrast",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "levels parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "levels"
+          ]
+         },
+         "inBlack": {
+          "type": "number",
+          "description": "Input black point; keep below inWhite",
+          "minimum": 0,
+          "maximum": 253
+         },
+         "inWhite": {
+          "type": "number",
+          "description": "Input white point; keep above inBlack",
+          "minimum": 2,
+          "maximum": 255
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Midtone gamma",
+          "minimum": 0.1,
+          "maximum": 9.99
+         },
+         "outBlack": {
+          "type": "number",
+          "description": "Output black point",
+          "minimum": 0,
+          "maximum": 255
+         },
+         "outWhite": {
+          "type": "number",
+          "description": "Output white point",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "curves parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "curves"
+          ]
+         },
+         "points": {
+          "type": "array",
+          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "items": {
+           "type": "object",
+           "description": "Curve control point",
+           "properties": {
+            "x": {
+             "type": "number",
+             "description": "Input intensity",
+             "minimum": 0,
+             "maximum": 255
+            },
+            "y": {
+             "type": "number",
+             "description": "Output intensity",
+             "minimum": 0,
+             "maximum": 255
+            }
+           },
+           "required": [
+            "x",
+            "y"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "channels": {
+          "type": "object",
+          "description": "Per-channel curves, applied after the composite points curve. Replaces the channels object; omitted channels are identity curves.",
+          "properties": {
+           "red": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "green": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "blue": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "exposure parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "exposure"
+          ]
+         },
+         "exposure": {
+          "type": "number",
+          "description": "Exposure in stops",
+          "minimum": -20,
+          "maximum": 20
+         },
+         "offset": {
+          "type": "number",
+          "description": "Offset",
+          "minimum": -0.5,
+          "maximum": 0.5
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Gamma correction",
+          "minimum": 0.01,
+          "maximum": 9.99
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "hue-saturation parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "hue-saturation"
+          ]
+         },
+         "hue": {
+          "type": "number",
+          "description": "Hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "vibrance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "vibrance"
+          ]
+         },
+         "vibrance": {
+          "type": "number",
+          "description": "Vibrance (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-balance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-balance"
+          ]
+         },
+         "shadows": {
+          "type": "array",
+          "description": "Shadow color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "midtones": {
+          "type": "array",
+          "description": "Midtone color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "highlights": {
+          "type": "array",
+          "description": "Highlight color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "black-white parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "black-white"
+          ]
+         },
+         "reds": {
+          "type": "number",
+          "description": "Red contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "yellows": {
+          "type": "number",
+          "description": "Yellow contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "greens": {
+          "type": "number",
+          "description": "Green contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "cyans": {
+          "type": "number",
+          "description": "Cyan contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "blues": {
+          "type": "number",
+          "description": "Blue contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "magentas": {
+          "type": "number",
+          "description": "Magenta contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "photo-filter parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "photo-filter"
+          ]
+         },
+         "color": {
+          "type": "array",
+          "description": "Filter color, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "density": {
+          "type": "number",
+          "description": "Filter density (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "channel-mixer parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "channel-mixer"
+          ]
+         },
+         "red": {
+          "type": "array",
+          "description": "Red output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "green": {
+          "type": "array",
+          "description": "Green output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "blue": {
+          "type": "array",
+          "description": "Blue output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "gray": {
+          "type": "array",
+          "description": "Monochrome output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "monochrome": {
+          "type": "boolean",
+          "description": "Use the gray row for monochrome output"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "gradient-map parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "gradient-map"
+          ]
+         },
+         "stops": {
+          "type": "array",
+          "description": "Replacement gradient stops sorted by position. Empty array gives black-to-white; endpoint colors are extended to 0 and 1.",
+          "items": {
+           "type": "object",
+           "description": "Gradient stop",
+           "properties": {
+            "pos": {
+             "type": "number",
+             "description": "Position along luminance gradient",
+             "minimum": 0,
+             "maximum": 1
+            },
+            "color": {
+             "type": "array",
+             "description": "Stop color, in [red, green, blue] order (0–255).",
+             "items": {
+              "type": "number",
+              "description": "Component value",
+              "minimum": 0,
+              "maximum": 255
+             },
+             "minItems": 3,
+             "maxItems": 3
+            }
+           },
+           "required": [
+            "pos",
+            "color"
+           ],
+           "additionalProperties": false
+          }
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "selective-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "selective-color"
+          ]
+         },
+         "colors": {
+          "type": "object",
+          "description": "Replacement color-range map, not a deep merge. Omitted ranges have no correction.",
+          "properties": {
+           "reds": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "yellows": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "greens": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "cyans": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blues": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "magentas": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "whites": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "neutrals": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blacks": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         },
+         "method": {
+          "type": "string",
+          "description": "Relative or absolute CMYK correction",
+          "enum": [
+           "relative",
+           "absolute"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-lookup parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-lookup"
+          ]
+         },
+         "preset": {
+          "type": "string",
+          "description": "Built-in color lookup table",
+          "enum": [
+           "identity",
+           "warm",
+           "cool",
+           "cross-process",
+           "bw-contrast"
+          ]
+         },
+         "intensity": {
+          "type": "number",
+          "description": "Lookup intensity (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "shadows-highlights parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "shadows-highlights"
+          ]
+         },
+         "shadowsAmount": {
+          "type": "number",
+          "description": "Shadow brightening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsTone": {
+          "type": "number",
+          "description": "Shadow tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsRadius": {
+          "type": "number",
+          "description": "Shadow local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "highlightsAmount": {
+          "type": "number",
+          "description": "Highlight darkening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsTone": {
+          "type": "number",
+          "description": "Highlight tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsRadius": {
+          "type": "number",
+          "description": "Highlight local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "color": {
+          "type": "number",
+          "description": "Color correction (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "midtone": {
+          "type": "number",
+          "description": "Midtone contrast (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "match-replace-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "match-replace-color"
+          ]
+         },
+         "mode": {
+          "type": "string",
+          "description": "Match source statistics or replace a sampled color",
+          "enum": [
+           "match",
+           "replace"
+          ]
+         },
+         "sourceMean": {
+          "type": "array",
+          "description": "Source mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "sourceStdDev": {
+          "type": "array",
+          "description": "Source standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetMean": {
+          "type": "array",
+          "description": "Target mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetStdDev": {
+          "type": "array",
+          "description": "Target standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "source_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id for match mode; computes source statistics and overrides sourceMean/sourceStdDev."
+         },
+         "target_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id used with source_layer_id in match mode; computes target statistics, defaulting to the active pixel layer."
+         },
+         "luminance": {
+          "type": "number",
+          "description": "Match luminance (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "colorIntensity": {
+          "type": "number",
+          "description": "Match color intensity (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "fade": {
+          "type": "number",
+          "description": "Match fade (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "sample": {
+          "type": "array",
+          "description": "Color to replace in replace mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "fuzziness": {
+          "type": "number",
+          "description": "Replace color selection fuzziness",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "hue": {
+          "type": "number",
+          "description": "Replacement hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Replacement saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Replacement lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "invert parameters (no configurable fields)",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "invert"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "posterize parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "posterize"
+          ]
+         },
+         "levels": {
+          "type": "number",
+          "description": "Number of tonal levels (whole number)",
+          "minimum": 2,
+          "maximum": 32
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "threshold parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "threshold"
+          ]
+         },
+         "level": {
+          "type": "number",
+          "description": "Threshold intensity",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       }
+      ]
+     }
+    },
+    "required": [
+     "adjustment_type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "adjust.bake",
+   "tool_name": "adjust_bake",
+   "description": "Apply a destructive adjustment to the active layer (selection restricts it). Types and params match adjust.add.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "type": {
+      "type": "string",
+      "description": "Which adjustment",
+      "enum": [
+       "brightness-contrast",
+       "levels",
+       "curves",
+       "exposure",
+       "hue-saturation",
+       "vibrance",
+       "color-balance",
+       "black-white",
+       "photo-filter",
+       "channel-mixer",
+       "gradient-map",
+       "selective-color",
+       "color-lookup",
+       "shadows-highlights",
+       "match-replace-color",
+       "invert",
+       "posterize",
+       "threshold"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Adjustment parameter patch. Choose the branch matching adjustment_type for adjust.add, or the existing adjustment type for adjust.set_params; type may be omitted. Only supplied top-level fields change. Nested objects and arrays replace the previous value, not deep-merge. Bounds describe supported UI controls and are enforced at admission: the op rejects fields, ranges, array lengths or a type outside the branch for the target adjustment.",
+      "anyOf": [
+       {
+        "type": "object",
+        "description": "brightness-contrast parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "brightness-contrast"
+          ]
+         },
+         "brightness": {
+          "type": "number",
+          "description": "Brightness",
+          "minimum": -150,
+          "maximum": 150
+         },
+         "contrast": {
+          "type": "number",
+          "description": "Contrast",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "levels parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "levels"
+          ]
+         },
+         "inBlack": {
+          "type": "number",
+          "description": "Input black point; keep below inWhite",
+          "minimum": 0,
+          "maximum": 253
+         },
+         "inWhite": {
+          "type": "number",
+          "description": "Input white point; keep above inBlack",
+          "minimum": 2,
+          "maximum": 255
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Midtone gamma",
+          "minimum": 0.1,
+          "maximum": 9.99
+         },
+         "outBlack": {
+          "type": "number",
+          "description": "Output black point",
+          "minimum": 0,
+          "maximum": 255
+         },
+         "outWhite": {
+          "type": "number",
+          "description": "Output white point",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "curves parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "curves"
+          ]
+         },
+         "points": {
+          "type": "array",
+          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "items": {
+           "type": "object",
+           "description": "Curve control point",
+           "properties": {
+            "x": {
+             "type": "number",
+             "description": "Input intensity",
+             "minimum": 0,
+             "maximum": 255
+            },
+            "y": {
+             "type": "number",
+             "description": "Output intensity",
+             "minimum": 0,
+             "maximum": 255
+            }
+           },
+           "required": [
+            "x",
+            "y"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "channels": {
+          "type": "object",
+          "description": "Per-channel curves, applied after the composite points curve. Replaces the channels object; omitted channels are identity curves.",
+          "properties": {
+           "red": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "green": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "blue": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "exposure parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "exposure"
+          ]
+         },
+         "exposure": {
+          "type": "number",
+          "description": "Exposure in stops",
+          "minimum": -20,
+          "maximum": 20
+         },
+         "offset": {
+          "type": "number",
+          "description": "Offset",
+          "minimum": -0.5,
+          "maximum": 0.5
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Gamma correction",
+          "minimum": 0.01,
+          "maximum": 9.99
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "hue-saturation parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "hue-saturation"
+          ]
+         },
+         "hue": {
+          "type": "number",
+          "description": "Hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "vibrance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "vibrance"
+          ]
+         },
+         "vibrance": {
+          "type": "number",
+          "description": "Vibrance (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-balance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-balance"
+          ]
+         },
+         "shadows": {
+          "type": "array",
+          "description": "Shadow color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "midtones": {
+          "type": "array",
+          "description": "Midtone color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "highlights": {
+          "type": "array",
+          "description": "Highlight color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "black-white parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "black-white"
+          ]
+         },
+         "reds": {
+          "type": "number",
+          "description": "Red contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "yellows": {
+          "type": "number",
+          "description": "Yellow contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "greens": {
+          "type": "number",
+          "description": "Green contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "cyans": {
+          "type": "number",
+          "description": "Cyan contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "blues": {
+          "type": "number",
+          "description": "Blue contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "magentas": {
+          "type": "number",
+          "description": "Magenta contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "photo-filter parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "photo-filter"
+          ]
+         },
+         "color": {
+          "type": "array",
+          "description": "Filter color, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "density": {
+          "type": "number",
+          "description": "Filter density (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "channel-mixer parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "channel-mixer"
+          ]
+         },
+         "red": {
+          "type": "array",
+          "description": "Red output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "green": {
+          "type": "array",
+          "description": "Green output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "blue": {
+          "type": "array",
+          "description": "Blue output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "gray": {
+          "type": "array",
+          "description": "Monochrome output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "monochrome": {
+          "type": "boolean",
+          "description": "Use the gray row for monochrome output"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "gradient-map parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "gradient-map"
+          ]
+         },
+         "stops": {
+          "type": "array",
+          "description": "Replacement gradient stops sorted by position. Empty array gives black-to-white; endpoint colors are extended to 0 and 1.",
+          "items": {
+           "type": "object",
+           "description": "Gradient stop",
+           "properties": {
+            "pos": {
+             "type": "number",
+             "description": "Position along luminance gradient",
+             "minimum": 0,
+             "maximum": 1
+            },
+            "color": {
+             "type": "array",
+             "description": "Stop color, in [red, green, blue] order (0–255).",
+             "items": {
+              "type": "number",
+              "description": "Component value",
+              "minimum": 0,
+              "maximum": 255
+             },
+             "minItems": 3,
+             "maxItems": 3
+            }
+           },
+           "required": [
+            "pos",
+            "color"
+           ],
+           "additionalProperties": false
+          }
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "selective-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "selective-color"
+          ]
+         },
+         "colors": {
+          "type": "object",
+          "description": "Replacement color-range map, not a deep merge. Omitted ranges have no correction.",
+          "properties": {
+           "reds": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "yellows": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "greens": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "cyans": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blues": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "magentas": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "whites": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "neutrals": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blacks": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         },
+         "method": {
+          "type": "string",
+          "description": "Relative or absolute CMYK correction",
+          "enum": [
+           "relative",
+           "absolute"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-lookup parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-lookup"
+          ]
+         },
+         "preset": {
+          "type": "string",
+          "description": "Built-in color lookup table",
+          "enum": [
+           "identity",
+           "warm",
+           "cool",
+           "cross-process",
+           "bw-contrast"
+          ]
+         },
+         "intensity": {
+          "type": "number",
+          "description": "Lookup intensity (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "shadows-highlights parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "shadows-highlights"
+          ]
+         },
+         "shadowsAmount": {
+          "type": "number",
+          "description": "Shadow brightening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsTone": {
+          "type": "number",
+          "description": "Shadow tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsRadius": {
+          "type": "number",
+          "description": "Shadow local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "highlightsAmount": {
+          "type": "number",
+          "description": "Highlight darkening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsTone": {
+          "type": "number",
+          "description": "Highlight tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsRadius": {
+          "type": "number",
+          "description": "Highlight local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "color": {
+          "type": "number",
+          "description": "Color correction (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "midtone": {
+          "type": "number",
+          "description": "Midtone contrast (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "match-replace-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "match-replace-color"
+          ]
+         },
+         "mode": {
+          "type": "string",
+          "description": "Match source statistics or replace a sampled color",
+          "enum": [
+           "match",
+           "replace"
+          ]
+         },
+         "sourceMean": {
+          "type": "array",
+          "description": "Source mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "sourceStdDev": {
+          "type": "array",
+          "description": "Source standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetMean": {
+          "type": "array",
+          "description": "Target mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetStdDev": {
+          "type": "array",
+          "description": "Target standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "source_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id for match mode; computes source statistics and overrides sourceMean/sourceStdDev."
+         },
+         "target_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id used with source_layer_id in match mode; computes target statistics, defaulting to the active pixel layer."
+         },
+         "luminance": {
+          "type": "number",
+          "description": "Match luminance (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "colorIntensity": {
+          "type": "number",
+          "description": "Match color intensity (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "fade": {
+          "type": "number",
+          "description": "Match fade (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "sample": {
+          "type": "array",
+          "description": "Color to replace in replace mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "fuzziness": {
+          "type": "number",
+          "description": "Replace color selection fuzziness",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "hue": {
+          "type": "number",
+          "description": "Replacement hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Replacement saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Replacement lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "invert parameters (no configurable fields)",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "invert"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "posterize parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "posterize"
+          ]
+         },
+         "levels": {
+          "type": "number",
+          "description": "Number of tonal levels (whole number)",
+          "minimum": 2,
+          "maximum": 32
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "threshold parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "threshold"
+          ]
+         },
+         "level": {
+          "type": "number",
+          "description": "Threshold intensity",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       }
+      ]
+     }
+    },
+    "required": [
+     "type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "adjust.set_params",
+   "tool_name": "adjust_set_params",
+   "description": "Update the active adjustment layer’s parameters (same shapes as adjust.add). Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "params": {
+      "type": "object",
+      "description": "Adjustment parameter patch. Choose the branch matching adjustment_type for adjust.add, or the existing adjustment type for adjust.set_params; type may be omitted. Only supplied top-level fields change. Nested objects and arrays replace the previous value, not deep-merge. Bounds describe supported UI controls and are enforced at admission: the op rejects fields, ranges, array lengths or a type outside the branch for the target adjustment.",
+      "anyOf": [
+       {
+        "type": "object",
+        "description": "brightness-contrast parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "brightness-contrast"
+          ]
+         },
+         "brightness": {
+          "type": "number",
+          "description": "Brightness",
+          "minimum": -150,
+          "maximum": 150
+         },
+         "contrast": {
+          "type": "number",
+          "description": "Contrast",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "levels parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "levels"
+          ]
+         },
+         "inBlack": {
+          "type": "number",
+          "description": "Input black point; keep below inWhite",
+          "minimum": 0,
+          "maximum": 253
+         },
+         "inWhite": {
+          "type": "number",
+          "description": "Input white point; keep above inBlack",
+          "minimum": 2,
+          "maximum": 255
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Midtone gamma",
+          "minimum": 0.1,
+          "maximum": 9.99
+         },
+         "outBlack": {
+          "type": "number",
+          "description": "Output black point",
+          "minimum": 0,
+          "maximum": 255
+         },
+         "outWhite": {
+          "type": "number",
+          "description": "Output white point",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "curves parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "curves"
+          ]
+         },
+         "points": {
+          "type": "array",
+          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "items": {
+           "type": "object",
+           "description": "Curve control point",
+           "properties": {
+            "x": {
+             "type": "number",
+             "description": "Input intensity",
+             "minimum": 0,
+             "maximum": 255
+            },
+            "y": {
+             "type": "number",
+             "description": "Output intensity",
+             "minimum": 0,
+             "maximum": 255
+            }
+           },
+           "required": [
+            "x",
+            "y"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "channels": {
+          "type": "object",
+          "description": "Per-channel curves, applied after the composite points curve. Replaces the channels object; omitted channels are identity curves.",
+          "properties": {
+           "red": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "green": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           },
+           "blue": {
+            "type": "array",
+            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "items": {
+             "type": "object",
+             "description": "Curve control point",
+             "properties": {
+              "x": {
+               "type": "number",
+               "description": "Input intensity",
+               "minimum": 0,
+               "maximum": 255
+              },
+              "y": {
+               "type": "number",
+               "description": "Output intensity",
+               "minimum": 0,
+               "maximum": 255
+              }
+             },
+             "required": [
+              "x",
+              "y"
+             ],
+             "additionalProperties": false
+            }
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "exposure parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "exposure"
+          ]
+         },
+         "exposure": {
+          "type": "number",
+          "description": "Exposure in stops",
+          "minimum": -20,
+          "maximum": 20
+         },
+         "offset": {
+          "type": "number",
+          "description": "Offset",
+          "minimum": -0.5,
+          "maximum": 0.5
+         },
+         "gamma": {
+          "type": "number",
+          "description": "Gamma correction",
+          "minimum": 0.01,
+          "maximum": 9.99
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "hue-saturation parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "hue-saturation"
+          ]
+         },
+         "hue": {
+          "type": "number",
+          "description": "Hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "vibrance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "vibrance"
+          ]
+         },
+         "vibrance": {
+          "type": "number",
+          "description": "Vibrance (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-balance parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-balance"
+          ]
+         },
+         "shadows": {
+          "type": "array",
+          "description": "Shadow color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "midtones": {
+          "type": "array",
+          "description": "Midtone color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "highlights": {
+          "type": "array",
+          "description": "Highlight color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -100,
+           "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "black-white parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "black-white"
+          ]
+         },
+         "reds": {
+          "type": "number",
+          "description": "Red contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "yellows": {
+          "type": "number",
+          "description": "Yellow contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "greens": {
+          "type": "number",
+          "description": "Green contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "cyans": {
+          "type": "number",
+          "description": "Cyan contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "blues": {
+          "type": "number",
+          "description": "Blue contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         },
+         "magentas": {
+          "type": "number",
+          "description": "Magenta contribution (%)",
+          "minimum": -200,
+          "maximum": 300
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "photo-filter parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "photo-filter"
+          ]
+         },
+         "color": {
+          "type": "array",
+          "description": "Filter color, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "density": {
+          "type": "number",
+          "description": "Filter density (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         },
+         "preserveLuminosity": {
+          "type": "boolean",
+          "description": "Preserve original luminosity"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "channel-mixer parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "channel-mixer"
+          ]
+         },
+         "red": {
+          "type": "array",
+          "description": "Red output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "green": {
+          "type": "array",
+          "description": "Green output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "blue": {
+          "type": "array",
+          "description": "Blue output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "gray": {
+          "type": "array",
+          "description": "Monochrome output: [red %, green %, blue %, constant %].",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": -200,
+           "maximum": 200
+          },
+          "minItems": 4,
+          "maxItems": 4
+         },
+         "monochrome": {
+          "type": "boolean",
+          "description": "Use the gray row for monochrome output"
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "gradient-map parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "gradient-map"
+          ]
+         },
+         "stops": {
+          "type": "array",
+          "description": "Replacement gradient stops sorted by position. Empty array gives black-to-white; endpoint colors are extended to 0 and 1.",
+          "items": {
+           "type": "object",
+           "description": "Gradient stop",
+           "properties": {
+            "pos": {
+             "type": "number",
+             "description": "Position along luminance gradient",
+             "minimum": 0,
+             "maximum": 1
+            },
+            "color": {
+             "type": "array",
+             "description": "Stop color, in [red, green, blue] order (0–255).",
+             "items": {
+              "type": "number",
+              "description": "Component value",
+              "minimum": 0,
+              "maximum": 255
+             },
+             "minItems": 3,
+             "maxItems": 3
+            }
+           },
+           "required": [
+            "pos",
+            "color"
+           ],
+           "additionalProperties": false
+          }
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "selective-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "selective-color"
+          ]
+         },
+         "colors": {
+          "type": "object",
+          "description": "Replacement color-range map, not a deep merge. Omitted ranges have no correction.",
+          "properties": {
+           "reds": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "yellows": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "greens": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "cyans": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blues": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "magentas": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "whites": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "neutrals": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           },
+           "blacks": {
+            "type": "object",
+            "description": "CMYK corrections for this color range; supply all four components.",
+            "properties": {
+             "cyan": {
+              "type": "number",
+              "description": "Cyan correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "magenta": {
+              "type": "number",
+              "description": "Magenta correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "yellow": {
+              "type": "number",
+              "description": "Yellow correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             },
+             "black": {
+              "type": "number",
+              "description": "Black correction (%)",
+              "minimum": -100,
+              "maximum": 100
+             }
+            },
+            "required": [
+             "cyan",
+             "magenta",
+             "yellow",
+             "black"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "required": [],
+          "additionalProperties": false
+         },
+         "method": {
+          "type": "string",
+          "description": "Relative or absolute CMYK correction",
+          "enum": [
+           "relative",
+           "absolute"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "color-lookup parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "color-lookup"
+          ]
+         },
+         "preset": {
+          "type": "string",
+          "description": "Built-in color lookup table",
+          "enum": [
+           "identity",
+           "warm",
+           "cool",
+           "cross-process",
+           "bw-contrast"
+          ]
+         },
+         "intensity": {
+          "type": "number",
+          "description": "Lookup intensity (0 = none, 1 = full)",
+          "minimum": 0,
+          "maximum": 1
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "shadows-highlights parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "shadows-highlights"
+          ]
+         },
+         "shadowsAmount": {
+          "type": "number",
+          "description": "Shadow brightening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsTone": {
+          "type": "number",
+          "description": "Shadow tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "shadowsRadius": {
+          "type": "number",
+          "description": "Shadow local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "highlightsAmount": {
+          "type": "number",
+          "description": "Highlight darkening amount (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsTone": {
+          "type": "number",
+          "description": "Highlight tonal width (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "highlightsRadius": {
+          "type": "number",
+          "description": "Highlight local adaptation radius in pixels",
+          "minimum": 0,
+          "maximum": 250
+         },
+         "color": {
+          "type": "number",
+          "description": "Color correction (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "midtone": {
+          "type": "number",
+          "description": "Midtone contrast (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "match-replace-color parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "match-replace-color"
+          ]
+         },
+         "mode": {
+          "type": "string",
+          "description": "Match source statistics or replace a sampled color",
+          "enum": [
+           "match",
+           "replace"
+          ]
+         },
+         "sourceMean": {
+          "type": "array",
+          "description": "Source mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "sourceStdDev": {
+          "type": "array",
+          "description": "Source standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetMean": {
+          "type": "array",
+          "description": "Target mean for match mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "targetStdDev": {
+          "type": "array",
+          "description": "Target standard deviations in [red, green, blue] order for match mode",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 1,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "source_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id for match mode; computes source statistics and overrides sourceMean/sourceStdDev."
+         },
+         "target_layer_id": {
+          "type": "string",
+          "description": "Pixel-layer id used with source_layer_id in match mode; computes target statistics, defaulting to the active pixel layer."
+         },
+         "luminance": {
+          "type": "number",
+          "description": "Match luminance (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "colorIntensity": {
+          "type": "number",
+          "description": "Match color intensity (%)",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "fade": {
+          "type": "number",
+          "description": "Match fade (%)",
+          "minimum": 0,
+          "maximum": 100
+         },
+         "sample": {
+          "type": "array",
+          "description": "Color to replace in replace mode, in [red, green, blue] order (0–255).",
+          "items": {
+           "type": "number",
+           "description": "Component value",
+           "minimum": 0,
+           "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+         },
+         "fuzziness": {
+          "type": "number",
+          "description": "Replace color selection fuzziness",
+          "minimum": 0,
+          "maximum": 200
+         },
+         "hue": {
+          "type": "number",
+          "description": "Replacement hue shift in degrees",
+          "minimum": -180,
+          "maximum": 180
+         },
+         "saturation": {
+          "type": "number",
+          "description": "Replacement saturation (%)",
+          "minimum": -100,
+          "maximum": 100
+         },
+         "lightness": {
+          "type": "number",
+          "description": "Replacement lightness (%)",
+          "minimum": -100,
+          "maximum": 100
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "invert parameters (no configurable fields)",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "invert"
+          ]
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "posterize parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "posterize"
+          ]
+         },
+         "levels": {
+          "type": "number",
+          "description": "Number of tonal levels (whole number)",
+          "minimum": 2,
+          "maximum": 32
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "description": "threshold parameters",
+        "properties": {
+         "type": {
+          "type": "string",
+          "description": "Optional; must equal the adjustment type when supplied",
+          "enum": [
+           "threshold"
+          ]
+         },
+         "level": {
+          "type": "number",
+          "description": "Threshold intensity",
+          "minimum": 0,
+          "maximum": 255
+         }
+        },
+        "required": [],
+        "additionalProperties": false
+       }
+      ]
+     }
+    },
+    "required": [
+     "params"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

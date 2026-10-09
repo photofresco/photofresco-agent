@@ -1,0 +1,49 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "photofresco",
+  "version": "0.1.0",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "author": {
+    "name": "PhotoFresco / Josh Wardini",
+    "email": "hello@photofresco.com",
+    "url": "https://photofresco.com/"
+  },
+  "homepage": "https://photofresco.com/",
+  "repository": "https://github.com/photofresco/photofresco-agent",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "image-editor",
+    "photo-editor",
+    "photoshop-alternative",
+    "ai-agents",
+    "agent-skills",
+    "cli"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "PhotoFresco",
+        "shortDescription": "Edit images you can watch",
+        "longDescription": "PhotoFresco lets your agent edit images in a PhotoFresco editor window on your computer: layers, masks, selections, adjustment layers, crop and resize, previews, undo and export. You approve the connection and each permission in the window and watch every edit. It needs Node.js 22+ and Chrome, Edge or Chromium 120+. The server runs locally over stdio. Plugin installs grant no folders on disk: open images in the window yourself, or configure the server with --read/--write folders to let the agent open and save files.",
+        "developerName": "PhotoFresco",
+        "category": "Design",
+        "capabilities": [
+          "Edit images with layers and masks",
+          "Preview edits",
+          "Export PNG and PSD"
+        ],
+        "websiteURL": "https://photofresco.com/",
+        "supportURL": "https://github.com/photofresco/photofresco-agent/issues",
+        "defaultPrompt": [
+          "Connect to PhotoFresco and warm up the highlights of the open image with a curves layer, then preview it.",
+          "In PhotoFresco, crop the open photo to 4:5, show me a preview, then undo if I don't like it."
+        ],
+        "composerIcon": "./assets/logo.png",
+        "logo": "./assets/logo.png"
+      }
+    }
+  }
+}

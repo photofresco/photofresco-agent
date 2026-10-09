@@ -1,0 +1,114 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "erase.background",
+   "tool_name": "erase_background",
+   "description": "Paint with the Background Eraser on the active layer through points. Each stamp samples the color under the brush center and softly erases only similar pixels inside the brush. points is a flat [x1,y1,x2,y2,...] array in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 color tolerance (default: the tool's own tolerance, 30% ≈ 76)"
+     },
+     "sampling": {
+      "type": "string",
+      "description": "continuous, once, or background-swatch",
+      "enum": [
+       "continuous",
+       "once",
+       "background-swatch"
+      ]
+     },
+     "limits": {
+      "type": "string",
+      "description": "contiguous, discontiguous, or find-edges",
+      "enum": [
+       "contiguous",
+       "discontiguous",
+       "find-edges"
+      ]
+     },
+     "protect_foreground": {
+      "type": "boolean",
+      "description": "Do not erase pixels matching the current foreground color"
+     },
+     "contiguous": {
+      "type": "boolean",
+      "description": "Legacy alias for limits=contiguous/discontiguous"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "erase.magic",
+   "tool_name": "erase_magic",
+   "description": "Magic Eraser: clear pixels on the active layer that match the selected color at (x, y). Respects the current selection, layer locks, tolerance, sample source, contiguous mode, and anti-aliasing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Seed x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Seed y"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 color distance (default 32)"
+     },
+     "contiguous": {
+      "type": "boolean",
+      "description": "Connected region only (default true)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "Magic Eraser opacity in 0..1 (default 1)"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample merged composite colors instead of just active layer pixels"
+     },
+     "anti_alias": {
+      "type": "boolean",
+      "description": "Soften edge pixels after flood selection"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

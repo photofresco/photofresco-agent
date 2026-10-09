@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://photofresco.com/schemas/photofresco-cli-result-1.json",
+  "title": "photofresco <command> --json result (pf-agent-platform-nkwn.16)",
+  "description": "Every command prints exactly one of these objects on stdout with --json, on success and on failure. Fields beyond the ones listed may be added in later versions; image data is omitted unless --include-data.",
+  "type": "object",
+  "required": ["ok", "command", "exit_code"],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "command": { "type": "string" },
+    "exit_code": { "type": "integer", "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8, 75, 130] },
+    "error": { "$ref": "#/definitions/error" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "ok": { "const": false } } },
+      "then": { "required": ["error"], "properties": { "exit_code": { "not": { "const": 0 } } } },
+      "else": { "properties": { "exit_code": { "const": 0 } }, "not": { "required": ["error"] } }
+    },
+    { "if": { "$ref": "#/definitions/success/status" }, "then": { "required": ["running", "state", "data_dir"], "properties": { "running": { "type": "boolean" }, "state": { "enum": ["stopped", "idle", "starting", "ready", "pairing", "connected"] }, "data_dir": { "type": "string" }, "session": { "type": ["object", "null"] }, "roots": { "$ref": "#/definitions/roots" } } } },
+    { "if": { "$ref": "#/definitions/success/connect" }, "then": { "required": ["state", "session", "roots", "editor"], "properties": { "state": { "const": "connected" }, "code": { "$ref": "#/definitions/code" }, "session": { "$ref": "#/definitions/session" }, "roots": { "$ref": "#/definitions/roots" }, "editor": { "type": "object", "required": ["url", "origin"] } } } },
+    { "if": { "$ref": "#/definitions/success/request-access" }, "then": { "required": ["session"], "properties": { "session": { "$ref": "#/definitions/session" } } } },
+    { "if": { "$ref": "#/definitions/success/attach" }, "then": { "required": ["session"], "properties": { "session": { "$ref": "#/definitions/session" } } } },
+    { "if": { "$ref": "#/definitions/success/documents" }, "then": { "required": ["documents"], "properties": { "documents": { "type": "array", "items": { "type": "object", "required": ["document_id", "revision"] } } } } },
+    { "if": { "$ref": "#/definitions/success/open" }, "then": { "$ref": "#/definitions/opened" } },
+    {
+      "if": { "$ref": "#/definitions/success/run" },
+      "then": {
+        "required": ["workflow", "inputs", "run", "request_id", "document_id", "revision"],
+        "properties": {
+          "workflow": { "$ref": "#/definitions/workflow" },
+          "inputs": { "type": "object" },
+          "opened": { "$ref": "#/definitions/opened" },
+          "run": { "$ref": "#/definitions/run" },
+          "request_id": { "type": "string" },
+          "document_id": { "type": ["string", "null"] },
+          "revision": { "type": ["integer", "null"] },
+          "exported": { "$ref": "#/definitions/file" }
+        }
+      }
+    },
+    { "if": { "$ref": "#/definitions/success/export" }, "then": { "required": ["file"], "properties": { "file": { "$ref": "#/definitions/file" } } } },
+    {
+      "if": { "$ref": "#/definitions/success/exec" },
+      "then": {
+        "required": ["op", "request_id", "status", "document_id", "revision", "result"],
+        "properties": { "op": { "type": "string" }, "request_id": { "type": "string" }, "status": { "const": "succeeded" }, "document_id": { "type": ["string", "null"] }, "revision": { "type": ["integer", "null"] } }
+      }
+    },
+    { "if": { "$ref": "#/definitions/success/outcome" }, "then": { "required": ["request_id", "response"] } },
+    {
+      "if": { "$ref": "#/definitions/success/ops" },
+      "then": {
+        "required": ["source", "count", "operations"],
+        "properties": {
+          "source": { "enum": ["session", "catalog"] },
+          "count": { "type": "integer", "minimum": 0 },
+          "operations": { "type": "array", "items": { "$ref": "#/definitions/operation" } }
+        }
+      }
+    },
+    { "if": { "$ref": "#/definitions/success/describe" }, "then": { "required": ["source", "operation"], "properties": { "source": { "enum": ["session", "catalog"] }, "operation": { "allOf": [{ "$ref": "#/definitions/operation" }, { "required": ["input_schema"] }] } } } },
+    { "if": { "$ref": "#/definitions/success/disconnect" }, "then": { "required": ["disconnected", "state"], "properties": { "disconnected": { "type": "boolean" } } } },
+    { "if": { "$ref": "#/definitions/success/stop" }, "then": { "required": ["stopped", "running"], "properties": { "stopped": { "type": "boolean" }, "running": { "const": false } } } }
+  ],
+  "definitions": {
+    "success": {
+      "status": { "properties": { "ok": { "const": true }, "command": { "const": "status" } } },
+      "connect": { "properties": { "ok": { "const": true }, "command": { "const": "connect" } } },
+      "request-access": { "properties": { "ok": { "const": true }, "command": { "const": "request-access" } } },
+      "attach": { "properties": { "ok": { "const": true }, "command": { "const": "attach" } } },
+      "documents": { "properties": { "ok": { "const": true }, "command": { "const": "documents" } } },
+      "open": { "properties": { "ok": { "const": true }, "command": { "const": "open" } } },
+      "run": { "properties": { "ok": { "const": true }, "command": { "const": "run" } } },
+      "export": { "properties": { "ok": { "const": true }, "command": { "const": "export" } } },
+      "exec": { "properties": { "ok": { "const": true }, "command": { "const": "exec" } } },
+      "outcome": { "properties": { "ok": { "const": true }, "command": { "const": "outcome" } } },
+      "ops": { "properties": { "ok": { "const": true }, "command": { "const": "ops" } } },
+      "describe": { "properties": { "ok": { "const": true }, "command": { "const": "describe" } } },
+      "disconnect": { "properties": { "ok": { "const": true }, "command": { "const": "disconnect" } } },
+      "stop": { "properties": { "ok": { "const": true }, "command": { "const": "stop" } } }
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "hint"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "message": { "type": "string" },
+        "hint": { "type": "string" },
+        "stage": { "enum": ["path", "operation", "retrieval", "write"] },
+        "status": { "type": "string" },
+        "details": { "type": "object" }
+      }
+    },
+    "code": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{4}$" },
+    "session": { "type": "object", "required": ["session_id", "grants"], "properties": { "session_id": { "type": "string" }, "grants": { "type": "array", "items": { "type": "string" } } } },
+    "roots": { "type": "array", "items": { "type": "object", "required": ["path", "read", "write", "overwrite"] } },
+    "opened": {
+      "type": "object",
+      "required": ["file", "request_id", "document_id", "revision"],
+      "properties": {
+        "file": { "type": "object", "required": ["path", "bytes"], "properties": { "path": { "type": "string" }, "bytes": { "type": "integer" } } },
+        "request_id": { "type": "string" },
+        "document_id": { "type": ["string", "null"] },
+        "revision": { "type": ["integer", "null"] }
+      }
+    },
+    "file": {
+      "type": "object",
+      "required": ["path", "bytes", "sha256", "format"],
+      "properties": {
+        "path": { "type": "string" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "format": { "enum": ["png", "psd", "pfd"] },
+        "replaced": { "type": "boolean" }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "source": { "enum": ["file", "action"] },
+        "path": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "format": { "const": "photofresco.workflow" },
+        "version": { "const": 1 },
+        "action_id": { "type": "string" }
+      }
+    },
+    "run": {
+      "type": "object",
+      "required": ["run_id", "state", "steps"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "state": { "type": "string" },
+        "steps": { "type": "array", "items": { "type": "object", "required": ["step_id", "op", "status"] } }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "required": ["name", "tool_name", "capabilities", "effects", "description"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$" },
+        "tool_name": { "type": "string" },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "effects": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

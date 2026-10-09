@@ -1,0 +1,148 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "action.delete",
+   "tool_name": "action_delete",
+   "description": "Delete an action, or delete one step from an action when step_id is provided.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action_id": {
+      "type": "string",
+      "description": "Action id from action.list; defaults to active action"
+     },
+     "step_id": {
+      "type": "string",
+      "description": "Optional step id to delete inside the action instead of deleting the action"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "action.list",
+   "tool_name": "action_list",
+   "description": "List saved action sets, actions, steps, and recorder/playback status.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "action.play",
+   "tool_name": "action_play",
+   "description": "Play a saved action through the workflow engine (same path as workflow.run). Disabled steps are skipped and reported; an enabled step that cannot replay refuses the run before anything changes; a failing step stops it and keeps the partial result.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action_id": {
+      "type": "string",
+      "description": "Action id from action.list; defaults to active action"
+     },
+     "inputs": {
+      "type": "object",
+      "description": "Values for the workflow's declared inputs, by name (layer inputs take a layer ID from this document)"
+     },
+     "consent": {
+      "type": "array",
+      "description": "Advance consent: IDs of the irreversible barrier steps (export, external write, paid AI, document lifecycle) this run may perform; nested steps are \"outer/inner\". workflow.validate lists them",
+      "items": {
+       "type": "string",
+       "description": "Barrier step ID",
+       "maxLength": 512
+      },
+      "maxItems": 500
+     },
+     "on_failure": {
+      "type": "string",
+      "description": "stop (default): keep the partial result as an inspectable checkpoint. rollback: roll back the run-owned edits since the last checkpoint when safe; canceled runs always stop",
+      "enum": [
+       "stop",
+       "rollback"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "action.record_start",
+   "tool_name": "action_record_start",
+   "description": "Start recording into an action: recordable op calls AND real UI edits (tool strokes, menus, dialogs — captured at the shared Command layer; edits with no op equivalent record as unreplayable steps). Provide action_id to append to an existing action, or set_id/name to create a new action in a set. clear=true empties the target action first.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "set_id": {
+      "type": "string",
+      "description": "Action set id from action.list; used when creating by name"
+     },
+     "action_id": {
+      "type": "string",
+      "description": "Existing action id from action.list"
+     },
+     "name": {
+      "type": "string",
+      "description": "New action name when action_id is omitted"
+     },
+     "clear": {
+      "type": "boolean",
+      "description": "Clear existing steps before recording"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "action.record_stop",
+   "tool_name": "action_record_stop",
+   "description": "Stop recording the current action.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

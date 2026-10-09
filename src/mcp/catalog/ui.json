@@ -1,0 +1,137 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "ui.mobile_view",
+   "tool_name": "ui_mobile_view",
+   "description": "Navigate mobile panels, AI or modifier keys through the same URL action as the UI.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Panel id"
+     },
+     "ai": {
+      "type": "boolean",
+      "description": "Open AI Generate"
+     },
+     "keys": {
+      "type": "boolean",
+      "description": "Open modifier keys"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "ui.open_checkout",
+   "tool_name": "ui_open_checkout",
+   "description": "Open checkout for a signed-in user; does not purchase anything.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "focus": {
+      "type": "string",
+      "description": "Section to focus",
+      "enum": [
+       "passes",
+       "credits"
+      ]
+     }
+    },
+    "required": [
+     "focus"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "ui.show_ad_free_explainer",
+   "tool_name": "ui_show_ad_free_explainer",
+   "description": "Open the ad-free subscription explainer. Fails for accounts that are already ad-free (premium).",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "ui.show_business_model",
+   "tool_name": "ui_show_business_model",
+   "description": "Open the PhotoFresco business model explainer.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "ui.show_credits_explainer",
+   "tool_name": "ui_show_credits_explainer",
+   "description": "Open the AI credits explainer.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "ui.show_start_screen",
+   "tool_name": "ui_show_start_screen",
+   "description": "Refresh and focus the PhotoFresco start screen when no document tabs are open.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "file.save_psd",
+   "tool_name": "file_save_psd",
+   "description": "Save the current document as a PSD through the same File ▸ Save action as the UI. In browsers with the File System Access API, a stored PSD handle is overwritten in place; first save picks a PSD destination, while unsupported/headless environments use the existing download fallback.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "external-write"
+   ],
+   "capabilities": [
+    "export"
+   ],
+   "completion": "async"
+  }
+ ]
+}

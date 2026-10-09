@@ -1,0 +1,394 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "dock.close_group",
+   "tool_name": "dock_close_group",
+   "description": "Close every panel in the right-dock tab group that currently holds the given panel (PS \"Close Tab Group\"). Reopen panels individually with dock.open_panel. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Any dock panel id in the target group"
+     }
+    },
+    "required": [
+     "panel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.close_panel",
+   "tool_name": "dock_close_panel",
+   "description": "Close a right-dock panel by id: it leaves the dock and the workspace layout but keeps its state; bring it back with dock.open_panel. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Dock panel id, such as history, color, or navigator"
+     }
+    },
+    "required": [
+     "panel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.dock_panel",
+   "tool_name": "dock_dock_panel",
+   "description": "Dock a floating panel back into the right-dock. Optionally target a column/group/edge for drop parity with drag behavior.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Dock panel id, such as history, color, or navigator"
+     },
+     "column": {
+      "type": "number",
+      "description": "Optional zero-based target column index"
+     },
+     "group": {
+      "type": "number",
+      "description": "Optional zero-based group index in the target column"
+     },
+     "index": {
+      "type": "number",
+      "description": "Optional tab index inside the target group"
+     },
+     "new_group": {
+      "type": "boolean",
+      "description": "True to create a new group at the insertion point"
+     },
+     "new_column": {
+      "type": "boolean",
+      "description": "True to create a brand-new column at the target index and place this panel/group there"
+     },
+     "side": {
+      "type": "string",
+      "description": "For new_column only: \"left\" or \"right\"",
+      "enum": [
+       "left",
+       "right"
+      ]
+     }
+    },
+    "required": [
+     "panel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.float_panel",
+   "tool_name": "dock_float_panel",
+   "description": "Float a right-dock panel into a free window. Optionally pass x/y for the popup position and whole=true to move the whole tab group.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Dock panel id, such as history, color, or navigator"
+     },
+     "x": {
+      "type": "number",
+      "description": "Optional screen-space X for the floating panel top-left"
+     },
+     "y": {
+      "type": "number",
+      "description": "Optional screen-space Y for the floating panel top-left"
+     },
+     "whole": {
+      "type": "boolean",
+      "description": "Optional true to float the entire tab group that contains this panel"
+     }
+    },
+    "required": [
+     "panel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.get",
+   "tool_name": "dock_get",
+   "description": "Get the browser right-dock workspace layout: column collapsed state, each group active panel, collapsed state, and split size, plus the ids of closed panels.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.list_panels",
+   "tool_name": "dock_list_panels",
+   "description": "List every right-dock panel with id, title, and open state. Closed panels can be reopened with dock.open_panel. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.move_panel",
+   "tool_name": "dock_move_panel",
+   "description": "Move a dock panel tab to another column/group/index. Set new_group to stack a new group at the insertion point, or new_column to create a whole new dock column (side \"left\" docks it left of the canvas, like Photoshop). Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Dock panel id to move, such as layers, actions, color, or properties"
+     },
+     "to_column": {
+      "type": "number",
+      "description": "Zero-based target dock column index, or the flat insertion index when new_column is true"
+     },
+     "to_group": {
+      "type": "number",
+      "description": "Zero-based target group index, or group insertion index when new_group is true"
+     },
+     "index": {
+      "type": "number",
+      "description": "Zero-based tab index inside the target group"
+     },
+     "new_group": {
+      "type": "boolean",
+      "description": "True to create a new group at to_group instead of joining an existing tab bar"
+     },
+     "new_column": {
+      "type": "boolean",
+      "description": "True to create a brand-new dock column at to_column holding just this panel"
+     },
+     "side": {
+      "type": "string",
+      "description": "For new_column: \"left\" or \"right\" (default \"right\")",
+      "enum": [
+       "left",
+       "right"
+      ]
+     }
+    },
+    "required": [
+     "panel",
+     "to_column",
+     "to_group",
+     "index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.open_panel",
+   "tool_name": "dock_open_panel",
+   "description": "Open a right-dock panel by id. A closed panel returns to its home group by default, or to an explicit column/group; an already-open panel is activated. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel": {
+      "type": "string",
+      "description": "Dock panel id, such as history, color, or navigator"
+     },
+     "column": {
+      "type": "number",
+      "description": "Optional zero-based target dock column index; omit to reopen at the panel home group"
+     },
+     "group": {
+      "type": "number",
+      "description": "Optional zero-based group index in the target column; omitted or out of range appends a new group"
+     }
+    },
+    "required": [
+     "panel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.reveal_panel",
+   "tool_name": "dock_reveal_panel",
+   "description": "Reveal a right-dock panel by id. This expands its column, uncollapses its group, activates the tab, and returns the resulting dock layout. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "panel_id": {
+      "type": "string",
+      "description": "Dock panel id, such as layers, actions, color, or properties"
+     }
+    },
+    "required": [
+     "panel_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.set_column",
+   "tool_name": "dock_set_column",
+   "description": "Set whether a right-dock column is collapsed to its icon strip. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "column_index": {
+      "type": "number",
+      "description": "Zero-based dock column index"
+     },
+     "collapsed": {
+      "type": "boolean",
+      "description": "True to collapse the column to icons; false to expand it"
+     }
+    },
+    "required": [
+     "column_index",
+     "collapsed"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.set_group",
+   "tool_name": "dock_set_group",
+   "description": "Set a right-dock group active panel, collapsed state, or split size. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "column_index": {
+      "type": "number",
+      "description": "Zero-based dock column index"
+     },
+     "group_index": {
+      "type": "number",
+      "description": "Zero-based group index within the column"
+     },
+     "active": {
+      "type": "string",
+      "description": "Optional panel id to activate in the group"
+     },
+     "collapsed": {
+      "type": "boolean",
+      "description": "Optional group collapsed state"
+     },
+     "size": {
+      "type": "number",
+      "description": "Optional positive split weight for this group"
+     }
+    },
+    "required": [
+     "column_index",
+     "group_index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "dock.set_pref",
+   "tool_name": "dock_set_pref",
+   "description": "Set right-dock workspace prefs: auto_collapse_icons (fly-outs close on outside click) and auto_show_hidden (persisted; hover-reveal not implemented yet). Persisted with the workspace. Browser UI only.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "auto_collapse_icons": {
+      "type": "boolean",
+      "description": "Auto-close icon-strip fly-outs when clicking elsewhere"
+     },
+     "auto_show_hidden": {
+      "type": "boolean",
+      "description": "Auto-show hidden panels on edge hover (stored pref; no behavior yet)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

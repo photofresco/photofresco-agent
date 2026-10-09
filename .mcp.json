@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "photofresco": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/bin/photofresco.js",
+        "mcp"
+      ]
+    }
+  }
+}

@@ -1,0 +1,331 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "edit.clear",
+   "tool_name": "edit_clear",
+   "description": "Erase the selected region of the active layer to transparent.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.cut",
+   "tool_name": "edit_cut",
+   "description": "Cut selected pixels from the active raster layer. Browser UI also writes the merged selection to the system clipboard; headless ops clear the pixels undoably.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.fade",
+   "tool_name": "edit_fade",
+   "description": "Fade the last pixel edit by blending its pre-edit and post-edit states with opacity and blend mode. Must be called immediately after a fadeable pixel edit.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "opacity": {
+      "type": "number",
+      "description": "0..1 opacity (default 1)"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.fill",
+   "tool_name": "edit_fill",
+   "description": "Fill the selection (or the whole canvas if none) on the active layer. Default contents=color uses color [r,g,b] or the current foreground; contents=pattern uses the active pattern or pattern_id.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "contents": {
+      "type": "string",
+      "description": "color (default) or pattern",
+      "enum": [
+       "color",
+       "pattern"
+      ]
+     },
+     "color": {
+      "type": "array",
+      "description": "[r, g, b] each 0-255"
+     },
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id; defaults to the active pattern when contents=pattern"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Pattern blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "Pattern opacity 0..1 (default 1)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.fill_special",
+   "tool_name": "edit_fill_special",
+   "description": "Photoshop-style Fill on the active layer: contents is foreground, background, black, white, or gray50; blend_mode defaults to normal; opacity is 0..1 and defaults to 1. Respects the current selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "contents": {
+      "type": "string",
+      "description": "Fill source",
+      "enum": [
+       "foreground",
+       "background",
+       "black",
+       "white",
+       "gray50",
+       "pattern"
+      ]
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default 1)"
+     },
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id when contents=pattern; defaults to active pattern"
+     }
+    },
+    "required": [
+     "contents"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.purge",
+   "tool_name": "edit_purge",
+   "description": "Purge undo history, clipboard, or both. target is undo_history, clipboard, or all.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "target": {
+      "type": "string",
+      "description": "undo_history, clipboard, or all",
+      "enum": [
+       "undo_history",
+       "clipboard",
+       "all"
+      ]
+     }
+    },
+    "required": [
+     "target"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document",
+    "external-write"
+   ],
+   "capabilities": [
+    "edit",
+    "export"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "edit.stroke",
+   "tool_name": "edit_stroke",
+   "description": "Stroke the current selection edge on the active layer. width is pixels; color is [r,g,b] and defaults to foreground; position defaults to inside.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "width": {
+      "type": "number",
+      "description": "Stroke width in px"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r, g, b] each 0-255 (default foreground)"
+     },
+     "position": {
+      "type": "string",
+      "description": "inside, center, or outside (default inside)",
+      "enum": [
+       "inside",
+       "center",
+       "outside"
+      ]
+     }
+    },
+    "required": [
+     "width"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "edit.transform_again",
+   "tool_name": "edit_transform_again",
+   "description": "Re-apply the last committed layer transform to the active raster or shape layer.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

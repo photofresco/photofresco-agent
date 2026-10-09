@@ -1,0 +1,151 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "drive.delete",
+   "tool_name": "drive_delete",
+   "description": "Delete a saved document from My Documents by id.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Document id"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "drive.list",
+   "tool_name": "drive_list",
+   "description": "List saved documents in My Documents (the local drive), newest first. Cloud-synced docs carry a `cloud` link.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "drive.open",
+   "tool_name": "drive_open",
+   "description": "Open a saved document by id (from drive.list) into a new tab.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Document id"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "drive.pull",
+   "tool_name": "drive_pull",
+   "description": "Download a cloud drive document into the local drive and return its local metadata. Works read-only after a pass lapses.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Cloud document id"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read",
+    "local-storage"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "drive.save",
+   "tool_name": "drive_save",
+   "description": "Save the current document to My Documents in the native format (overwrites the same entry on re-save; also refreshes the cloud copy for pass holders). Optional name defaults to the current document name.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Name to save as (default: current document name)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage",
+    "external-write"
+   ],
+   "capabilities": [
+    "export",
+    "external-write"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "drive.sync",
+   "tool_name": "drive_sync",
+   "description": "Push a local drive document to the cloud drive (requires an active pass; errors carry the gateway quota/entitlement detail).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Local drive document id"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage",
+    "external-write"
+   ],
+   "capabilities": [
+    "export",
+    "external-write"
+   ],
+   "completion": "async"
+  }
+ ]
+}

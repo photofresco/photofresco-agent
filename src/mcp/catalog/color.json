@@ -1,0 +1,98 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "color.reset_default",
+   "tool_name": "color_reset_default",
+   "description": "Reset foreground/background to black/white, matching the D shortcut and toolbar switcher.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "color.sample",
+   "tool_name": "color_sample",
+   "description": "Eyedropper: sample the composite at (x, y) into the foreground color.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Doc y"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "color.set",
+   "tool_name": "color_set",
+   "description": "Set the foreground and/or background colors ([r,g,b] 0-255).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "foreground": {
+      "type": "array",
+      "description": "[r,g,b]"
+     },
+     "background": {
+      "type": "array",
+      "description": "[r,g,b]"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "color.swap",
+   "tool_name": "color_swap",
+   "description": "Switch the foreground and background colors, matching the X shortcut and toolbar switcher.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

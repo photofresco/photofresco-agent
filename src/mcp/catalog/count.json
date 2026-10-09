@@ -1,0 +1,88 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "count.add",
+   "tool_name": "count_add",
+   "description": "Count Tool: add a numbered count marker at doc coordinate x,y. Omit group_id to use the active count group; group_name/color can create or update the group.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Doc y"
+     },
+     "group_id": {
+      "type": "string",
+      "description": "Count group id; defaults to active group"
+     },
+     "group_name": {
+      "type": "string",
+      "description": "Group name when creating/updating a group"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] group color"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "count.clear",
+   "tool_name": "count_clear",
+   "description": "Count Tool: clear all count markers, or only one group when group_id is provided.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "group_id": {
+      "type": "string",
+      "description": "Count group id to clear; omit to clear every count marker"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "count.list",
+   "tool_name": "count_list",
+   "description": "Count Tool: list count groups and numbered count markers.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

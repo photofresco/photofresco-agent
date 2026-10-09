@@ -1,0 +1,49 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "ruler.measure",
+   "tool_name": "ruler_measure",
+   "description": "Set the Ruler measurement from (x0,y0) to (x1,y1). Returns length, angle, dx, dy; straighten=true rotates the active raster layer by the inverse measured angle.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x0": {
+      "type": "number",
+      "description": "Start x"
+     },
+     "y0": {
+      "type": "number",
+      "description": "Start y"
+     },
+     "x1": {
+      "type": "number",
+      "description": "End x"
+     },
+     "y1": {
+      "type": "number",
+      "description": "End y"
+     },
+     "straighten": {
+      "type": "boolean",
+      "description": "Apply inverse angle to active raster layer"
+     }
+    },
+    "required": [
+     "x0",
+     "y0",
+     "x1",
+     "y1"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

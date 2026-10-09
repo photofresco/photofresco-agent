@@ -1,0 +1,33 @@
+{
+  "name": "photofresco",
+  "version": "0.1.0",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "author": {
+    "name": "PhotoFresco / Josh Wardini",
+    "email": "hello@photofresco.com"
+  },
+  "homepage": "https://photofresco.com/",
+  "repository": "https://github.com/photofresco/photofresco-agent",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "image-editor",
+    "photo-editor",
+    "photoshop-alternative",
+    "ai-agents",
+    "agent-skills",
+    "cli"
+  ],
+  "logo": "assets/logo.png",
+  "mcpServers": {
+    "photofresco": {
+      "command": "node",
+      "args": [
+        "${CURSOR_PLUGIN_ROOT}/bin/photofresco.js",
+        "mcp"
+      ]
+    }
+  }
+}

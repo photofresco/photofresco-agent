@@ -1,0 +1,736 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "path.add_anchor",
+   "tool_name": "path_add_anchor",
+   "description": "Insert an anchor on a path segment. subpath_index and anchor_index identify the segment starting anchor; x/y are the click point in document coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "subpath_index": {
+      "type": "number",
+      "description": "Zero-based subpath index"
+     },
+     "anchor_index": {
+      "type": "number",
+      "description": "Zero-based segment starting anchor index"
+     },
+     "x": {
+      "type": "number",
+      "description": "Document x coordinate for insertion"
+     },
+     "y": {
+      "type": "number",
+      "description": "Document y coordinate for insertion"
+     }
+    },
+    "required": [
+     "subpath_index",
+     "anchor_index",
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.bend_segment",
+   "tool_name": "path_bend_segment",
+   "description": "Bend a path segment by moving its two neighboring handles. Endpoints stay fixed; t is the segment parameter and is clamped away from endpoints.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "subpath_index": {
+      "type": "number",
+      "description": "Zero-based subpath index"
+     },
+     "anchor_index": {
+      "type": "number",
+      "description": "Zero-based segment starting anchor index"
+     },
+     "t": {
+      "type": "number",
+      "description": "Closest-point segment parameter, 0..1"
+     },
+     "dx": {
+      "type": "number",
+      "description": "Document-space x delta for the grabbed curve point"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Document-space y delta for the grabbed curve point"
+     }
+    },
+    "required": [
+     "subpath_index",
+     "anchor_index",
+     "t",
+     "dx",
+     "dy"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.combine",
+   "tool_name": "path_combine",
+   "description": "Combine components of a path or active shape path: unite, subtract front, intersect, or exclude. Curves are flattened then raster-traced back to paths at document resolution.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; defaults to active path or active shape path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "operation": {
+      "type": "string",
+      "description": "Combine operation",
+      "enum": [
+       "unite",
+       "subtract",
+       "intersect",
+       "exclude"
+      ]
+     }
+    },
+    "required": [
+     "operation"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.connect_subpaths",
+   "tool_name": "path_connect_subpaths",
+   "description": "Connect two open subpaths. The from subpath continues from its last anchor; the target subpath is reversed first when to_endpoint is \"last\".",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "from_subpath_index": {
+      "type": "number",
+      "description": "Open subpath to append to"
+     },
+     "to_subpath_index": {
+      "type": "number",
+      "description": "Different open subpath to connect"
+     },
+     "to_endpoint": {
+      "type": "string",
+      "description": "Endpoint clicked on the target subpath",
+      "enum": [
+       "first",
+       "last"
+      ]
+     }
+    },
+    "required": [
+     "from_subpath_index",
+     "to_subpath_index",
+     "to_endpoint"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.convert_anchor",
+   "tool_name": "path_convert_anchor",
+   "description": "Convert an anchor between corner and smooth. Optional handle_x/handle_y converts to a smooth anchor with handles through that document point.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "subpath_index": {
+      "type": "number",
+      "description": "Zero-based subpath index"
+     },
+     "anchor_index": {
+      "type": "number",
+      "description": "Zero-based anchor index"
+     },
+     "handle_x": {
+      "type": "number",
+      "description": "Optional document x coordinate for smooth handle drag"
+     },
+     "handle_y": {
+      "type": "number",
+      "description": "Optional document y coordinate for smooth handle drag"
+     }
+    },
+    "required": [
+     "subpath_index",
+     "anchor_index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.create",
+   "tool_name": "path_create",
+   "description": "Create a new named path, or set the Work Path when work=true. data is {subpaths:[{closed,anchors:[{x,y,kind,in,out}]}]}; handles are absolute doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Named path label; ignored for work=true"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Create/replace the Work Path instead of a named path"
+     },
+     "data": {
+      "type": "object",
+      "description": "Optional path data"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.delete",
+   "tool_name": "path_delete",
+   "description": "Delete a named path or clear the Work Path. Defaults to the active path.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Delete Work Path"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.delete_anchor",
+   "tool_name": "path_delete_anchor",
+   "description": "Delete an anchor from a path by zero-based subpath_index and anchor_index.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "subpath_index": {
+      "type": "number",
+      "description": "Zero-based subpath index"
+     },
+     "anchor_index": {
+      "type": "number",
+      "description": "Zero-based anchor index"
+     }
+    },
+    "required": [
+     "subpath_index",
+     "anchor_index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.duplicate",
+   "tool_name": "path_duplicate",
+   "description": "Duplicate a named path or Work Path as a named path. The copy becomes active.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named source path label instead of path_id"
+     },
+     "new_name": {
+      "type": "string",
+      "description": "Optional copy name"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Duplicate Work Path"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.fill",
+   "tool_name": "path_fill",
+   "description": "Fill a closed path on the active raster layer with color [r,g,b] or foreground. Respects the current selection by intersecting the path mask with it.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; defaults to active path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default 1)"
+     },
+     "feather": {
+      "type": "number",
+      "description": "Path edge feather px"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "Bezier flattening tolerance px (default 0.5)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.from_selection",
+   "tool_name": "path_from_selection",
+   "description": "Trace the current selection contours into the Work Path, or into a named path when name is provided. tolerance simplifies contour vertices in px.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Optional named path destination; omitted writes Work Path"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "Polyline simplification tolerance px (default 2)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.list",
+   "tool_name": "path_list",
+   "description": "List Work Path and named paths. Set include_data=true to return declarative subpath/anchor data.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "include_data": {
+      "type": "boolean",
+      "description": "Include full path data"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.nudge_anchors",
+   "tool_name": "path_nudge_anchors",
+   "description": "Move one or more anchors on a path by dx/dy document pixels as one undoable edit. anchors is an array of {subpath_index, anchor_index}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "anchors": {
+      "type": "array",
+      "description": "Anchor refs: [{subpath_index, anchor_index}]"
+     },
+     "dx": {
+      "type": "number",
+      "description": "Document-space x delta in pixels"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Document-space y delta in pixels"
+     }
+    },
+    "required": [
+     "anchors",
+     "dx",
+     "dy"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.rename",
+   "tool_name": "path_rename",
+   "description": "Rename a named path. Work Path cannot be renamed; use path.duplicate or the Paths panel Save Work Path flow.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; defaults to active path"
+     },
+     "name": {
+      "type": "string",
+      "description": "New path name"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.reverse_subpath",
+   "tool_name": "path_reverse_subpath",
+   "description": "Reverse one subpath, swapping in/out handles so the same geometry can be continued from its former first anchor.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "subpath_index": {
+      "type": "number",
+      "description": "Zero-based subpath index"
+     }
+    },
+    "required": [
+     "subpath_index"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.set_data",
+   "tool_name": "path_set_data",
+   "description": "Replace a path with declarative data. Defaults to the active path, or Work Path when no active path exists. data is {subpaths:[{closed,anchors:[{x,y,kind,in,out}]}]}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; \"work\" targets Work Path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "work": {
+      "type": "boolean",
+      "description": "Target Work Path"
+     },
+     "data": {
+      "type": "object",
+      "description": "Path data"
+     }
+    },
+    "required": [
+     "data"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.stroke",
+   "tool_name": "path_stroke",
+   "description": "Stroke a path on the active raster layer using current brush defaults unless size/color/opacity/hardness are provided. Open and closed subpaths are stroked.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; defaults to active path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "size": {
+      "type": "number",
+      "description": "Stroke width / brush diameter px (default current brush size)"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default current brush opacity)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default current brush hardness)"
+     },
+     "pencil": {
+      "type": "boolean",
+      "description": "Use hard binary edge like Pencil"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "Bezier flattening tolerance px (default 0.5)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "path.to_selection",
+   "tool_name": "path_to_selection",
+   "description": "Convert a path to the current selection. Closed subpaths fill by even-odd rule. mode is replace/add/subtract/intersect; feather is px; anti_alias defaults true.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "path_id": {
+      "type": "string",
+      "description": "Path id from path.list; defaults to active path"
+     },
+     "name": {
+      "type": "string",
+      "description": "Named path label instead of path_id"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     },
+     "feather": {
+      "type": "number",
+      "description": "Feather radius px"
+     },
+     "anti_alias": {
+      "type": "boolean",
+      "description": "Anti-alias path edge (default true)"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "Bezier flattening tolerance px (default 0.5)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

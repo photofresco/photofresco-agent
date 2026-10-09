@@ -1,0 +1,61 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "canvas.crop_to_selection",
+   "tool_name": "canvas_crop_to_selection",
+   "description": "Crop the canvas to the current selection bounds. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "canvas.resize",
+   "tool_name": "canvas_resize",
+   "description": "Change canvas size without resampling; content shifts by (dx, dy) px (e.g. dx=(newW−oldW)/2 to center). Clears the selection. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "width": {
+      "type": "number",
+      "description": "New width px"
+     },
+     "height": {
+      "type": "number",
+      "description": "New height px"
+     },
+     "dx": {
+      "type": "number",
+      "description": "Content shift x (default 0)"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Content shift y (default 0)"
+     }
+    },
+    "required": [
+     "width",
+     "height"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

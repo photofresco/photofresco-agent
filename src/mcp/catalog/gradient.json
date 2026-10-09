@@ -1,0 +1,117 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "gradient.fill",
+   "tool_name": "gradient_fill",
+   "description": "Paint a gradient from (x0,y0) to (x1,y1) across the selection or canvas on the active layer. Uses preset_id or the active gradient preset when available; colors resolve foreground/background stops.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x0": {
+      "type": "number",
+      "description": "Start x"
+     },
+     "y0": {
+      "type": "number",
+      "description": "Start y"
+     },
+     "x1": {
+      "type": "number",
+      "description": "End x"
+     },
+     "y1": {
+      "type": "number",
+      "description": "End y"
+     },
+     "shape": {
+      "type": "string",
+      "description": "linear, radial, angle, reflected, or diamond",
+      "enum": [
+       "linear",
+       "radial",
+       "angle",
+       "reflected",
+       "diamond"
+      ]
+     },
+     "from": {
+      "type": "array",
+      "description": "[r,g,b] (default foreground)"
+     },
+     "to": {
+      "type": "array",
+      "description": "[r,g,b] (default background)"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Blend mode (default normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 opacity (default 1)"
+     },
+     "reverse": {
+      "type": "boolean",
+      "description": "Reverse gradient ramp"
+     },
+     "dither": {
+      "type": "boolean",
+      "description": "Apply deterministic dither to reduce banding"
+     },
+     "transparency": {
+      "type": "boolean",
+      "description": "Use gradient stop alpha (default true)"
+     },
+     "preset_id": {
+      "type": "string",
+      "description": "Gradient preset id; defaults to active preset when host has presets"
+     }
+    },
+    "required": [
+     "x0",
+     "y0",
+     "x1",
+     "y1"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

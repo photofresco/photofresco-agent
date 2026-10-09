@@ -1,0 +1,97 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "slice.create",
+   "tool_name": "slice_create",
+   "description": "Create a rectangular user slice in document coordinates. Undoable. Web/export slicing is not performed by this op.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Left edge in document px"
+     },
+     "y": {
+      "type": "number",
+      "description": "Top edge in document px"
+     },
+     "w": {
+      "type": "number",
+      "description": "Width in px"
+     },
+     "h": {
+      "type": "number",
+      "description": "Height in px"
+     },
+     "name": {
+      "type": "string",
+      "description": "Optional slice name"
+     }
+    },
+    "required": [
+     "x",
+     "y",
+     "w",
+     "h"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "slice.delete",
+   "tool_name": "slice_delete",
+   "description": "Delete a user slice by id. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Slice id to delete"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "slice.list",
+   "tool_name": "slice_list",
+   "description": "List document slices with Photoshop-style numbering. Set include_auto to include derived auto-slices that fill gaps.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "include_auto": {
+      "type": "boolean",
+      "description": "Include derived auto-slices in gaps (default true)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

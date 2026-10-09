@@ -1,0 +1,65 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "export.artifact",
+   "tool_name": "export_artifact",
+   "description": "Export the active document and keep the file in the editor as a retrievable artifact instead of starting a browser download. format \"png\" is the flattened visible composite (or, with layer_id, that layer's own pixels at its content bounds); \"psd\" is the layered Photoshop interchange file from File > Save; \"pfd\" is PhotoFresco's native editable document from Save to My Documents. Returns { artifact_id, format, mime_type, filename, byte_length, sha256, document_id, revision, width, height, layer_id, fidelity, loss, created_at, expires_at }; read the bytes with artifact.read. Artifacts are bound to this caller and document, kept 10 minutes, at most 256.0 MiB each and 16 per caller (the oldest is evicted). Errors: export_failed, export_timeout (120 s), artifact_too_large, artifact_limit, stale_revision (the document changed during the export). Nothing is written to disk.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "format": {
+      "type": "string",
+      "description": "png (flattened or one layer), psd (layered interchange) or pfd (native, full fidelity)",
+      "enum": [
+       "png",
+       "psd",
+       "pfd"
+      ]
+     },
+     "layer_id": {
+      "type": "string",
+      "description": "PNG only: export this layer's own pixels instead of the composite",
+      "minLength": 1,
+      "maxLength": 128
+     }
+    },
+    "required": [
+     "format"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read",
+    "export"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "export.quick_png",
+   "tool_name": "export_quick_png",
+   "description": "Quick Export as PNG with no dialog (browser download). Without layer_id exports the flattened document; with layer_id exports that raster layer. The result only confirms that a download was started, not that a file was saved; to receive the bytes use export.artifact and artifact.read.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "layer_id": {
+      "type": "string",
+      "description": "Optional raster layer id; default exports the flattened document"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "external-write"
+   ],
+   "capabilities": [
+    "export"
+   ],
+   "completion": "async"
+  }
+ ]
+}

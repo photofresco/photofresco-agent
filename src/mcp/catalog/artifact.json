@@ -1,0 +1,92 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "artifact.list",
+   "tool_name": "artifact_list",
+   "description": "List the export artifacts you created that are still retained (any document), newest last, with their metadata and expiry, plus the retention limits. Artifacts of other callers are never listed.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read",
+    "export"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "artifact.read",
+   "tool_name": "artifact_read",
+   "description": "Read bytes of an export artifact you created (export.artifact) as base64, at most 4.0 MiB per call: pass offset (default 0) and length, and repeat until eof. Returns { artifact_id, format, mime_type, filename, offset, length, byte_length, eof, sha256, data_base64 }; verify sha256 over the assembled bytes before writing a file. Only the creating caller can read it, only while its document is the current target, and (for agent sessions) only with the Read and Export permissions. Errors: artifact_unknown, artifact_expired, artifact_evicted, artifact_released (session stop, permission revoked, document closed or artifact.release), artifact_document_mismatch, invalid_range.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "artifact_id": {
+      "type": "string",
+      "description": "artifact_id from export.artifact",
+      "minLength": 1,
+      "maxLength": 64
+     },
+     "offset": {
+      "type": "number",
+      "description": "First byte to read (whole number, default 0)",
+      "minimum": 0,
+      "maximum": 268435456
+     },
+     "length": {
+      "type": "number",
+      "description": "Bytes to read (whole number, default and maximum 4194304)",
+      "minimum": 1,
+      "maximum": 4194304
+     }
+    },
+    "required": [
+     "artifact_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read",
+    "export"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "artifact.release",
+   "tool_name": "artifact_release",
+   "description": "Discard one of your export artifacts now to free memory (it is otherwise released on expiry). Returns { released } — false when it was not retained. Later reads report artifact_released.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "artifact_id": {
+      "type": "string",
+      "description": "artifact_id from export.artifact",
+      "minLength": 1,
+      "maxLength": 64
+     }
+    },
+    "required": [
+     "artifact_id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read",
+    "export"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

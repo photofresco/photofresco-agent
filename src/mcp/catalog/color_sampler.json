@@ -1,0 +1,62 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "color_sampler.clear",
+   "tool_name": "color_sampler_clear",
+   "description": "Clear one Color Sampler point by index, or all sampler points when index is omitted.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "index": {
+      "type": "number",
+      "description": "Sampler index 1-10; omit to clear all"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "color_sampler.set",
+   "tool_name": "color_sampler_set",
+   "description": "Set a persistent numbered Color Sampler point at doc coordinate x,y. index is 1-10; omitted uses the next available slot.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Doc y"
+     },
+     "index": {
+      "type": "number",
+      "description": "Sampler index 1-10"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

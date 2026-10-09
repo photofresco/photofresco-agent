@@ -1,0 +1,170 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "filter.apply",
+   "tool_name": "filter_apply",
+   "description": "Apply a destructive filter to the active layer (selection restricts it). Types: gaussian-blur {radius px}, sharpen {amount 0..3, radius px}, sharpen-more, sharpen-edges, unsharp-mask {amount percent 1..500, radius px, threshold 0..255}, noise {amount 0..1}, box-blur {radius px}, motion-blur {angle deg, distance px}, radial-blur {amount 1..100, method spin|zoom}, average, median {radius 1..8}, mosaic {cellSize px}, high-pass {radius px}, ripple {amount px, wavelength px}, twirl {angle deg}, spherize {amount -100..100}, wave {amplitude px, wavelength px}, zigzag {amount px, ridges}, polar-coordinates {mode rect-to-polar|polar-to-rect}, crystallize {cellSize px}, pointillize {cellSize px}, facet, fragment, despeckle, dust-and-scratches {radius px, threshold 0..255}, emboss {angle deg, height px, amount 0..5}, find-edges, solarize, trace-contour {level 0..255, edge lower|upper}, wind {method wind|blast|stagger, direction left|right}, clouds, difference-clouds, lens-flare {brightness percent 10..300, centerX 0..1, centerY 0..1}, fibers {variance 1..64, strength 1..64}, maximum {radius px}, minimum {radius px}, offset {dx px, dy px}, custom {kernel 25 numbers, scale, offset}. Pass params in \"params\".",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "filter_type": {
+      "type": "string",
+      "description": "Which filter",
+      "enum": [
+       "gaussian-blur",
+       "sharpen",
+       "sharpen-more",
+       "sharpen-edges",
+       "unsharp-mask",
+       "noise",
+       "box-blur",
+       "motion-blur",
+       "radial-blur",
+       "average",
+       "median",
+       "mosaic",
+       "high-pass",
+       "ripple",
+       "twirl",
+       "spherize",
+       "wave",
+       "zigzag",
+       "polar-coordinates",
+       "crystallize",
+       "pointillize",
+       "facet",
+       "fragment",
+       "despeckle",
+       "dust-and-scratches",
+       "emboss",
+       "find-edges",
+       "solarize",
+       "trace-contour",
+       "wind",
+       "clouds",
+       "difference-clouds",
+       "lens-flare",
+       "fibers",
+       "maximum",
+       "minimum",
+       "offset",
+       "custom"
+      ]
+     },
+     "params": {
+      "type": "object",
+      "description": "Type-specific parameters"
+     }
+    },
+    "required": [
+     "filter_type"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "filter.blur_gallery",
+   "tool_name": "filter_blur_gallery",
+   "description": "Apply Blur Gallery to the active raster layer as one command. kind field uses pins [{x,y,radius}], iris uses ellipse handles, tilt-shift uses center/angle/sharp_width/feather/blur. Coordinates are document pixels.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "kind": {
+      "type": "string",
+      "description": "field, iris, or tilt-shift",
+      "enum": [
+       "field",
+       "iris",
+       "tilt-shift"
+      ]
+     },
+     "pins": {
+      "type": "array",
+      "description": "Field Blur pins [{x,y,radius}]"
+     },
+     "handles": {
+      "type": "object",
+      "description": "Iris/Tilt handle parameters"
+     },
+     "params": {
+      "type": "object",
+      "description": "Additional blur-gallery parameters"
+     }
+    },
+    "required": [
+     "kind"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "filter.displace",
+   "tool_name": "filter_displace",
+   "description": "Apply Distort > Displace to the active raster layer. params: scale_x/scale_y, placement stretch|tile, undefined_areas wrap|repeat-edge. map_source is {width,height,data}; data may be grayscale or RGBA bytes, using R for horizontal and G for vertical displacement.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "params": {
+      "type": "object",
+      "description": "Displace parameters"
+     },
+     "map_source": {
+      "type": "object",
+      "description": "Displacement map source {width,height,data}"
+     }
+    },
+    "required": [
+     "map_source"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "filter.gallery_apply",
+   "tool_name": "filter_gallery_apply",
+   "description": "Apply a Filter Gallery stack in order as one undoable command. stack is [{type, params}] using existing gallery-capable filters; smart objects receive one appended smart-filter stack command.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "stack": {
+      "type": "array",
+      "description": "Array of filter entries: { type, params }"
+     }
+    },
+    "required": [
+     "stack"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

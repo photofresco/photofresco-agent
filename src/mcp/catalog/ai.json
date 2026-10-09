@@ -1,0 +1,129 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "ai.generate",
+   "tool_name": "ai_generate",
+   "description": "Generate image(s) from a text prompt via the server-AI gateway; each result is added as a new layer (undoable). Requires a signed-in session — server AI is the only login-gated feature. Pass 2–4 model ids for compare mode (one image per model); with 0–1 models, count (1–4) images are generated.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "prompt": {
+      "type": "string",
+      "description": "Text prompt to generate from"
+     },
+     "models": {
+      "type": "array",
+      "description": "Model ids (max 4). Empty = gateway default model. More than one = compare mode."
+     },
+     "count": {
+      "type": "number",
+      "description": "Images to generate in single-model mode, 1–4 (default 1)"
+     },
+     "aspectRatio": {
+      "type": "string",
+      "description": "Aspect-ratio token for generation.",
+      "enum": [
+       "1:1",
+       "6:4",
+       "16:10",
+       "4:6",
+       "10:16"
+      ]
+     },
+     "referenceImages": {
+      "type": "array",
+      "description": "Hosted reference image URLs for img2img-capable models."
+     },
+     "negativePrompt": {
+      "type": "string",
+      "description": "Things to avoid in the output (max 1000 chars). Sent natively where the model supports it; folded into the prompt for prompt-emulating models."
+     },
+     "seed": {
+      "type": "number",
+      "description": "Deterministic sampling seed, integer 0–2147483647. Omit for provider-random."
+     },
+     "steps": {
+      "type": "number",
+      "description": "Diffusion steps, integer 1–150 (models that support it)."
+     },
+     "guidance": {
+      "type": "number",
+      "description": "Guidance / CFG scale, 0–30 (models that support it)."
+     },
+     "strength": {
+      "type": "number",
+      "description": "img2img init-image influence, 0–1 (models that support it; needs referenceImages)."
+     }
+    },
+    "required": [
+     "prompt"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document",
+    "external-write",
+    "paid"
+   ],
+   "capabilities": [
+    "read",
+    "edit",
+    "spend",
+    "external-write"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "ai.remove_background",
+   "tool_name": "ai_remove_background",
+   "description": "Remove the background from the active raster layer through the credit-metered server matte. Multiplies existing per-pixel alpha and records one undoable AI Remove Background command in the originating document. Switching documents during the run is fine: the result still applies to the captured document (result.background=true, result.docName names it, a toast offers to jump there) — only deleting the layer, changing its pixels, or closing the document voids it. A dropped connection mid-request persists the pending job and recovers the finished (already-paid-for) result by polling instead of failing; a reload before that finishes offers to apply it on next boot (once the start screen closes) if the source layer is unchanged.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document",
+    "external-write",
+    "paid"
+   ],
+   "capabilities": [
+    "read",
+    "edit",
+    "spend",
+    "external-write"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "ai.split_layers",
+   "tool_name": "ai_split_layers",
+   "description": "Decompose the active raster layer into multiple RGBA layers (Qwen-Image-Layered via the credit-metered gateway; deterministic banded mock offline). Inserts an AI Layer Split group above the source that reproduces its composite (carries blend mode, opacity×fill, and bakes any layer mask), hides the source, one undoable command. Needs at least 64×64 px of content; refuses layers inside or at the base of a clipping mask. Unavailable (clear error, menu entry disabled) when the gateway reports only the offline mock provider in a credits-enforced deployment — mock output never charges credits. Switching documents during the 60-100s run is fine: the result still applies to the captured document (result.background=true, result.docName names it, a toast offers to jump there) — only deleting the layer, changing its pixels, or closing the document voids it. A reload during the run persists the pending job; on next boot a recovery toast (shown once the start screen closes) offers to apply the finished result if the source layer is unchanged. Params: layers (2-10, default 4).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "layers": {
+      "type": "number",
+      "description": "Decomposition depth 2-10 (default 4)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document",
+    "external-write",
+    "paid"
+   ],
+   "capabilities": [
+    "read",
+    "edit",
+    "spend",
+    "external-write"
+   ],
+   "completion": "async"
+  }
+ ]
+}

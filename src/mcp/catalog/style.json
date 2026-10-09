@@ -1,0 +1,169 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "style.apply_preset",
+   "tool_name": "style_apply_preset",
+   "description": "Apply a layer-style preset (normalized v2 style; replaces the whole layer style, one undo step) to the active raster or text layer. Uses preset_id from preset.list(kind=style), or the active style preset.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "preset_id": {
+      "type": "string",
+      "description": "Style preset id; defaults to active style preset"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.clear",
+   "tool_name": "style_clear",
+   "description": "Layer > Layer Style > Clear Layer Style: remove every effect from the active layer as one undoable command. No-op (changed: false) when the layer has no style.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.get",
+   "tool_name": "style_get",
+   "description": "Read the layer style of the active raster or text layer (or layer_id) in the normalized v2 read-back shape: multi-instance arrays + single effects, WITHOUT the legacy singular mirror fields or the internal version marker — edit the result and pass it straight back to style.set. Also returns the document global light and whether any instance follows it.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "layer_id": {
+      "type": "string",
+      "description": "Target layer id — raster or text layer (default: active layer)"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.save_preset",
+   "tool_name": "style_save_preset",
+   "description": "Save the active layer's current layer style as a named style preset (same flow as the dialog's New Style…). The preset stores the normalized v2 style and becomes the active style preset. Errors when the layer has no style.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Preset name"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "local-storage"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.scale",
+   "tool_name": "style_scale",
+   "description": "Layer > Layer Style > Scale Effects: scale the active layer's style parameters (shadow/glow distances and sizes, stroke width, overlay scales) by a percentage. Colors, opacities, angles and spread/choke fractions are unchanged. One undo step.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "percent": {
+      "type": "number",
+      "description": "Scale factor in percent (100 = unchanged), 1..1000"
+     }
+    },
+    "required": [
+     "percent"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.set",
+   "tool_name": "style_set",
+   "description": "Replace the ENTIRE layer style of the active raster or text layer (validated; empty/omitted clears — prefer style.clear for that). Round-trip: style.get -> edit -> style.set. v2 shape: multi-instance ARRAYS (index 0 = topmost of its kind) dropShadows, innerShadows, strokes, colorOverlays, gradientOverlays; single-instance outerGlow, innerGlow, bevelEmboss, satin, patternOverlay. v1 single-object fields (dropShadow, stroke, ...) are still accepted and migrate to arrays-of-one; when a plural array and its singular are both present the ARRAY wins. Every instance: enabled? bool, blendMode? (any layer blend mode; per-kind default), opacity 0..1. Shared shapes: color=[r,g,b 0..255]; contour={preset: linear|cone|coneInverted|coveDeep|coveShallow|gaussian|halfRound|ring|ringDouble|rollingSlope|sawtooth|custom, points? [{x,y} 0..1] (required for custom), antiAlias?}; stops=[{pos 0..1, color, alpha? 0..1}]; pattern payload={name, width, height, data flat RGBA bytes (width*height*4), patternId?}. Per kind: dropShadow{color, angle deg, useGlobalLight?, distance px, spread? 0..1, size px, contour?, antiAliased?, noise? 0..1, layerKnocksOut? default true}; innerShadow{color, angle, useGlobalLight?, distance, choke? 0..1, size, contour?, antiAliased?, noise?}; outerGlow{color, gradient? stops (replaces color as the source), size, technique? softer|precise, spread?, contour?, antiAliased?, noise?, range? 0..1, jitter? 0..1}; innerGlow{same + source? edge|center, choke? instead of spread}; bevelEmboss{style? outerBevel|innerBevel|emboss|pillowEmboss|strokeEmboss, technique? smooth|chiselHard|chiselSoft, depth? 0..10, direction? up|down, size, soften?, angle, useGlobalLight?, altitude? 0..90, glossContour?, glossAntiAliased?, highlightMode?/highlightColor?/highlightOpacity?, shadowMode?/shadowColor?/shadowOpacity?, contour? {enabled, curve?, antiAliased?, range? 0..1} (profile sub-effect), texture? {enabled, pattern?, scale? 1..1000, depth? -10..10, invert?, linkWithLayer?, origin? {x,y}}}; satin{color, angle, distance, size, contour?, antiAliased?, invert?}; stroke{color, size, position? outside|inside|center, fillType? color|gradient|pattern, gradient? {stops, angle, scale 1..1000, shape?, reverse?, offset?, method?, dither?}, pattern? {pattern payload, scale?, origin?}, overprint?}; colorOverlay{color}; gradientOverlay{stops, angle deg, scale 1..1000, shape? linear|radial|angle|reflected|diamond, reverse?, offset? {x,y percent}, dither?, alignWithLayer? default true, method? classic|linear|perceptual (smooth = classic)}; patternOverlay{name, width, height, data, scale 1..1000, origin {x,y}, angle?, linkWithLayer? default true}. Effects with useGlobalLight take the document light (style.set_global_light). Blend If / advanced blending are LAYER props (layer.set_props), not style fields. Malformed payloads are rejected with the offending field path.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "effects": {
+      "type": "object",
+      "description": "Layer style object (v2 arrays or v1 singles), or omit/{} to clear"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "style.set_global_light",
+   "tool_name": "style_set_global_light",
+   "description": "Layer > Layer Style > Global Light: set the document-wide light {angle deg, altitude 0..90 deg} and update every effect instance with useGlobalLight (drop/inner shadows, bevel) across all layers. One undo step.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "angle": {
+      "type": "number",
+      "description": "Light direction in degrees (PS default 120)"
+     },
+     "altitude": {
+      "type": "number",
+      "description": "Light altitude 0..90 degrees (PS default 30); affects bevel only"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

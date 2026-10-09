@@ -1,0 +1,215 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "channel.create",
+   "tool_name": "channel_create",
+   "description": "Create a new empty saved alpha channel. Saved alpha channels are the same storage used by Save/Load Selection.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Optional alpha channel name"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.delete",
+   "tool_name": "channel_delete",
+   "description": "Delete a saved alpha channel by id/name.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Alpha channel id/name"
+     }
+    },
+    "required": [
+     "channel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.duplicate",
+   "tool_name": "channel_duplicate",
+   "description": "Duplicate a component, Quick Mask, or alpha channel into a saved alpha channel.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Source channel id/name"
+     },
+     "name": {
+      "type": "string",
+      "description": "Optional new alpha channel name"
+     }
+    },
+    "required": [
+     "channel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.from_selection",
+   "tool_name": "channel_from_selection",
+   "description": "Save the current selection as a new alpha channel.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Optional alpha channel name"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.list",
+   "tool_name": "channel_list",
+   "description": "List RGB component channels, saved alpha channels, and Quick Mask when active. Includes current channel preview visibility.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.rename",
+   "tool_name": "channel_rename",
+   "description": "Rename a saved alpha channel; the Save/Load Selection name changes with it.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Alpha channel id/name"
+     },
+     "name": {
+      "type": "string",
+      "description": "New name"
+     }
+    },
+    "required": [
+     "channel",
+     "name"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.to_selection",
+   "tool_name": "channel_to_selection",
+   "description": "Load a channel into the pixel selection. mode defaults to replace and supports add/subtract/intersect.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Channel id/name; defaults to active channel"
+     },
+     "mode": {
+      "type": "string",
+      "description": "How to combine with the existing selection",
+      "enum": [
+       "replace",
+       "add",
+       "subtract",
+       "intersect"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "channel.view",
+   "tool_name": "channel_view",
+   "description": "Set the view-only channel preview. channel is rgb/red/green/blue/quickmask or alpha:<name>; add=true shift-clicks into the visible set.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "channel": {
+      "type": "string",
+      "description": "Channel id or alpha channel name"
+     },
+     "add": {
+      "type": "boolean",
+      "description": "Add/toggle this channel in the visible set instead of replacing"
+     }
+    },
+    "required": [
+     "channel"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

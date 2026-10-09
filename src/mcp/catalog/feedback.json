@@ -1,0 +1,70 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "feedback.list",
+   "tool_name": "feedback_list",
+   "description": "List the public feedback board (feature requests / bug reports with status and team responses). Sort: newest (default) or top (most responses).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "sort": {
+      "type": "string",
+      "description": "Board order",
+      "enum": [
+       "newest",
+       "top"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "feedback.submit",
+   "tool_name": "feedback_submit",
+   "description": "Submit a feedback item (bug report / feature request) to the board as the signed-in user. Requires a signed-in session.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string",
+      "description": "Short summary of the feedback"
+     },
+     "body": {
+      "type": "string",
+      "description": "Details — steps to reproduce, context, expected behavior"
+     },
+     "kind": {
+      "type": "string",
+      "description": "Feedback kind (default: other)",
+      "enum": [
+       "bug",
+       "request",
+       "other"
+      ]
+     }
+    },
+    "required": [
+     "title"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "external-write"
+   ],
+   "capabilities": [
+    "external-write"
+   ],
+   "completion": "async"
+  }
+ ]
+}

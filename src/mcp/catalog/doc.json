@@ -1,0 +1,269 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "doc.close",
+   "tool_name": "doc_close",
+   "description": "Close the active document tab, or all tabs when all=true. Uses the same unsaved-changes confirmation as the UI.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "all": {
+      "type": "boolean",
+      "description": "Close all document tabs"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.duplicate",
+   "tool_name": "doc_duplicate",
+   "description": "Duplicate the whole document into a new tab named \"<current> copy\". The clone has independent tile storage.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.get_state",
+   "tool_name": "doc_get_state",
+   "description": "Get the full document state: document_id and content revision (agent sessions), dimensions, color mode, the layer tree (ids, names, kinds, blend modes, opacity, visibility, locks, pixel bounds), the active node id, and the current selection bounds. Call this first to orient yourself.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.histogram",
+   "tool_name": "doc_histogram",
+   "description": "Return 256-bin histogram counts for the flattened visible document, restricted to the active selection when one exists. mode defaults to luminosity; rgb returns composite plus red/green/blue counts.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "rgb, red, green, blue, or luminosity",
+      "enum": [
+       "rgb",
+       "red",
+       "green",
+       "blue",
+       "luminosity"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.new",
+   "tool_name": "doc_new",
+   "description": "Create a new document tab. Width/height use unit (px, in, cm, mm) and resolution; background is white, transparent, or color.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Document name (default Untitled)"
+     },
+     "width": {
+      "type": "number",
+      "description": "Width in the selected unit"
+     },
+     "height": {
+      "type": "number",
+      "description": "Height in the selected unit"
+     },
+     "unit": {
+      "type": "string",
+      "description": "Measurement unit",
+      "enum": [
+       "px",
+       "in",
+       "cm",
+       "mm"
+      ]
+     },
+     "resolution": {
+      "type": "number",
+      "description": "Pixels per inch for physical units"
+     },
+     "background": {
+      "type": "string",
+      "description": "Background contents",
+      "enum": [
+       "white",
+       "transparent",
+       "color"
+      ]
+     },
+     "background_color": {
+      "type": "array",
+      "description": "[r,g,b] when background=color"
+     },
+     "preset": {
+      "type": "string",
+      "description": "Preset id for UI bookkeeping"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.open",
+   "tool_name": "doc_open",
+   "description": "Open original file bytes in a new document tab through the same bounded decoder as File > Open; existing documents are preserved and the start screen is dismissed after success. Browser only. Supports PNG, JPEG, WebP, GIF, BMP and AVIF images, Photoshop PSD, and PhotoFresco .pfd documents; anything else fails with an unsupported-format error. Supply standard padded base64, not raw RGBA pixels or a data URL; at most 32 MiB of original bytes. Decoded images are limited to 30000 px per side and 67.1 MP (8192×8192), 2000 layers and 1 GiB of decoded pixels; decoding is stopped after 60 s. Does not fetch URLs or read filesystem paths. Use await executeAsync; success returns {name, width, height} and refused or undecodable files return ok:false with the reason and create no tab or history.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Original filename including extension, e.g. photo.png or design.psd",
+      "minLength": 1,
+      "maxLength": 255
+     },
+     "mime_type": {
+      "type": "string",
+      "description": "Optional file MIME type, e.g. image/png; PSD and native files are also detected from bytes",
+      "minLength": 1,
+      "maxLength": 255
+     },
+     "data_base64": {
+      "type": "string",
+      "description": "Standard padded base64 encoding of the original file bytes, at most 32 MiB decoded; no data URL prefix",
+      "minLength": 4,
+      "maxLength": 44739244
+     }
+    },
+    "required": [
+     "name",
+     "data_base64"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "async"
+  },
+  {
+   "name": "doc.place",
+   "tool_name": "doc_place",
+   "description": "Place raw RGBA image data as a centered new raster layer. source must be {name,width,height,data}; data may be a Uint8ClampedArray or flat RGBA number array.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "source": {
+      "type": "object",
+      "description": "{ name, width, height, data }"
+     }
+    },
+    "required": [
+     "source"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.revert",
+   "tool_name": "doc_revert",
+   "description": "Revert the active document to the last opened/saved snapshot. The revert itself is one undoable history command.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "lifecycle"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "doc.sample_color",
+   "tool_name": "doc_sample_color",
+   "description": "Read the flattened composite color at document coordinate (x, y). Returns RGB, RGBA, and HSB; does not change the foreground color.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Doc y"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

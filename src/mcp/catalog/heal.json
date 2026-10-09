@@ -1,0 +1,290 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "heal.brush_stroke",
+   "tool_name": "heal_brush_stroke",
+   "description": "Healing Brush: alt-source clone that transplants source texture while matching destination luminosity/color. source_x/source_y set the source; points is flat [x1,y1,...] doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], >=1 point"
+     },
+     "source_x": {
+      "type": "number",
+      "description": "Sampled source doc x; required when source=sampled"
+     },
+     "source_y": {
+      "type": "number",
+      "description": "Sampled source doc y; required when source=sampled"
+     },
+     "source": {
+      "type": "string",
+      "description": "sampled or pattern (default current option or sampled)",
+      "enum": [
+       "sampled",
+       "pattern"
+      ]
+     },
+     "sample": {
+      "type": "string",
+      "description": "Source sampling scope",
+      "enum": [
+       "current-layer",
+       "all-layers"
+      ]
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Healing blend mode (default current healing-brush mode or normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "pattern_id": {
+      "type": "string",
+      "description": "Pattern preset id when source=pattern; defaults to active pattern"
+     },
+     "aligned": {
+      "type": "boolean",
+      "description": "Keep the source offset aligned across strokes (default current option or true)"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "heal.patch",
+   "tool_name": "heal_patch",
+   "description": "Patch tool: fill a selected region from an offset source with edge color/luminosity matching. Uses the current selection, or a polygon in points; dx/dy are the drag offset.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "dx": {
+      "type": "number",
+      "description": "Drag offset x in doc px"
+     },
+     "dy": {
+      "type": "number",
+      "description": "Drag offset y in doc px"
+     },
+     "mode": {
+      "type": "string",
+      "description": "source repairs the selected destination from offset source; destination copies selected source to offset destination",
+      "enum": [
+       "source",
+       "destination"
+      ]
+     },
+     "patch": {
+      "type": "string",
+      "description": "normal copy or content-aware texture/color match",
+      "enum": [
+       "normal",
+       "content-aware"
+      ]
+     },
+     "transparent": {
+      "type": "boolean",
+      "description": "Preserve transparent source pixels"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample the flattened composite instead of only the active layer"
+     },
+     "points": {
+      "type": "array",
+      "description": "Optional flat polygon [x1,y1,x2,y2,...] used instead of current selection"
+     }
+    },
+    "required": [
+     "dx",
+     "dy"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "heal.red_eye",
+   "tool_name": "heal_red_eye",
+   "description": "Red Eye tool: detect a red-dominant elliptical pupil region around (x,y), then desaturate and darken it. Respects the current selection when present.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Click doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Click doc y"
+     },
+     "pupil_size": {
+      "type": "number",
+      "description": "Approximate maximum pupil diameter in px (default current option or 28)"
+     },
+     "darken": {
+      "type": "number",
+      "description": "0..1 darken amount (default current option or 0.7)"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "heal.spot_stroke",
+   "tool_name": "heal_spot_stroke",
+   "description": "Spot Healing Brush: repair blemishes through points by sampling texture from a ring around each stamp and matching surrounding low-frequency color. points is flat [x1,y1,...] in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], >=1 point"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Healing blend mode (default current spot-heal mode or normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "type": {
+      "type": "string",
+      "description": "Spot healing type",
+      "enum": [
+       "content-aware",
+       "create-texture",
+       "proximity-match"
+      ]
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample the flattened composite instead of only the active layer"
+     },
+     "angle": {
+      "type": "number",
+      "description": "Brush/sample angle in degrees"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

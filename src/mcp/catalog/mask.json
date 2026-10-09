@@ -1,0 +1,112 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "mask.add",
+   "tool_name": "mask_add",
+   "description": "Add a raster mask to the active layer. mode \"selection\" rasterizes the current selection (selected = visible); default is \"selection\" when one exists, else \"reveal\".",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Mask contents",
+      "enum": [
+       "reveal",
+       "hide",
+       "selection"
+      ]
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "mask.apply",
+   "tool_name": "mask_apply",
+   "description": "Apply the active raster layer mask into pixel alpha, then remove the mask. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "mask.from_transparency",
+   "tool_name": "mask_from_transparency",
+   "description": "Create a layer mask from the active raster layer alpha and make nontransparent source pixels opaque. Undoable.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "mask.remove",
+   "tool_name": "mask_remove",
+   "description": "Delete the active layer’s mask (the layer becomes fully visible again).",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "mask.set_target",
+   "tool_name": "mask_set_target",
+   "description": "Choose what paint.stroke edits on the active layer: its pixels (edit_mask=false) or its mask (edit_mask=true; paint black to hide, white to reveal).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "edit_mask": {
+      "type": "boolean",
+      "description": "true = paint the mask"
+     }
+    },
+    "required": [
+     "edit_mask"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

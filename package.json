@@ -1,0 +1,60 @@
+{
+  "name": "photofresco",
+  "version": "0.1.0",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "image-editor",
+    "photo-editor",
+    "photoshop-alternative",
+    "ai-agents",
+    "agent-skills",
+    "cli"
+  ],
+  "homepage": "https://photofresco.com/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/photofresco/photofresco-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/photofresco/photofresco-agent/issues",
+    "email": "hello@photofresco.com"
+  },
+  "license": "MIT",
+  "author": "PhotoFresco / Josh Wardini <hello@photofresco.com> (https://photofresco.com/)",
+  "mcpName": "io.github.photofresco/photofresco",
+  "type": "module",
+  "bin": {
+    "photofresco": "bin/photofresco.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./mcp": "./src/mcp/server.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "vendor",
+    "skills",
+    "server.json",
+    "CONNECTOR.md",
+    "DISCLOSURE.md",
+    "MCP.md",
+    "CLI.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.2.0",
+    "@modelcontextprotocol/server": "2.2.0",
+    "@types/node": "22.20.5",
+    "typescript": "6.0.3"
+  }
+}

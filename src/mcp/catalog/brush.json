@@ -1,0 +1,597 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "brush.art_history_stroke",
+   "tool_name": "brush_art_history_stroke",
+   "description": "Paint with the Art History Brush from the stored snapshot through stylized daubs. style controls short/long/loose/curl daubs; area controls the daub field; tolerance gates painting by current-vs-source color difference.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Art History blend mode (default current brush or normal)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "style": {
+      "type": "string",
+      "description": "Art History style",
+      "enum": [
+       "tight-short",
+       "tight-medium",
+       "tight-long",
+       "loose-medium",
+       "loose-long",
+       "dab",
+       "tight-curl",
+       "loose-curl",
+       "tight-curl-long",
+       "loose-curl-long"
+      ]
+     },
+     "area": {
+      "type": "number",
+      "description": "Stylized daub area in px (default: current art-history area or brush size)"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0..255; 0 paints anywhere, larger values require more source/current difference"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.color_replace",
+   "tool_name": "brush_color_replace",
+   "description": "Paint with the Color Replacement tool: replaces hue/saturation with the foreground (or color) while preserving luminosity. tolerance is 0-255; sampling is continuous or once.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], >=1 point"
+     },
+     "color": {
+      "type": "array",
+      "description": "[r,g,b] replacement color (default foreground)"
+     },
+     "tolerance": {
+      "type": "number",
+      "description": "0-255 color tolerance (default current option or 32)"
+     },
+     "sampling": {
+      "type": "string",
+      "description": "continuous or once",
+      "enum": [
+       "continuous",
+       "once"
+      ]
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default current)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default current)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.history",
+   "tool_name": "brush_history",
+   "description": "Paint with the History Brush from the stored snapshot through points. points is a flat [x1,y1,x2,y2,...] array in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Per-stroke paint blend mode (default current)",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "flow": {
+      "type": "number",
+      "description": "Per-stamp build-up rate 0..1 (default current)"
+     },
+     "airbrush": {
+      "type": "boolean",
+      "description": "Continuously build while held (default current)"
+     },
+     "angle": {
+      "type": "number",
+      "description": "Brush tip angle in degrees (default current)"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.local_filter",
+   "tool_name": "brush_local_filter",
+   "description": "Apply a local filter brush on the active layer through points: blur, sharpen, or smudge. points is a flat [x1,y1,x2,y2,...] array in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Local filter mode",
+      "enum": [
+       "blur",
+       "sharpen",
+       "smudge"
+      ]
+     },
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "strength": {
+      "type": "number",
+      "description": "Effect amount 0..1 (default: current local-filter strength or 0.5)"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Local filter blend mode",
+      "enum": [
+       "normal",
+       "darken",
+       "lighten",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample merged visible pixels instead of only the active layer"
+     },
+     "protect_detail": {
+      "type": "boolean",
+      "description": "Sharpen avoids tiny-luma contrast amplification"
+     },
+     "finger_painting": {
+      "type": "boolean",
+      "description": "Smudge starts with the foreground color instead of sampled pixels"
+     }
+    },
+    "required": [
+     "mode",
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.mixer",
+   "tool_name": "brush_mixer",
+   "description": "Legacy alias for brush.mixer_stroke.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "wet": {
+      "type": "number",
+      "description": "Canvas pickup amount 0..1"
+     },
+     "load": {
+      "type": "number",
+      "description": "Reservoir refill amount 0..1"
+     },
+     "mix": {
+      "type": "number",
+      "description": "Paint transfer amount 0..1"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.mixer_stroke",
+   "tool_name": "brush_mixer_stroke",
+   "description": "Paint with the Mixer Brush on the active layer through points. Wet picks up canvas color, Load refills the reservoir between stamps, Mix controls paint transfer; preset is dry/moist/wet/very-wet. points is a flat [x1,y1,x2,y2,...] array in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "opacity": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "hardness": {
+      "type": "number",
+      "description": "0..1 (default: current)"
+     },
+     "preset": {
+      "type": "string",
+      "description": "dry, moist, wet, or very-wet",
+      "enum": [
+       "dry",
+       "moist",
+       "wet",
+       "very-wet"
+      ]
+     },
+     "wet": {
+      "type": "number",
+      "description": "Canvas pickup amount 0..1 (default: current mixer wet or preset)"
+     },
+     "load": {
+      "type": "number",
+      "description": "Reservoir refill amount between stamps 0..1 (default: current mixer load or preset)"
+     },
+     "mix": {
+      "type": "number",
+      "description": "Paint transfer amount 0..1 (default: current mixer mix or preset)"
+     },
+     "sample_all_layers": {
+      "type": "boolean",
+      "description": "Sample the merged visible canvas for wet pickup"
+     },
+     "clean_after_stroke": {
+      "type": "boolean",
+      "description": "Clean the reservoir after the stroke finishes"
+     },
+     "load_color": {
+      "type": "array",
+      "description": "Loaded reservoir [r,g,b] or [r,g,b,a]; default foreground"
+     },
+     "sample_x": {
+      "type": "number",
+      "description": "Optional doc x to sample as the loaded reservoir color"
+     },
+     "sample_y": {
+      "type": "number",
+      "description": "Optional doc y to sample as the loaded reservoir color"
+     }
+    },
+    "required": [
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.set_dynamics",
+   "tool_name": "brush_set_dynamics",
+   "description": "Set brush-family options. spacing is fraction of diameter; smoothing 0..0.95; flow 0..1; angle is degrees; blend_mode controls paint compositing; eraser_mode is brush/pencil/block; clone_sample controls Clone Stamp sampling.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "spacing": {
+      "type": "number",
+      "description": "Stamp spacing as a fraction of diameter (0.25 = 25%)"
+     },
+     "smoothing": {
+      "type": "number",
+      "description": "Pointer smoothing, 0..0.95"
+     },
+     "flow": {
+      "type": "number",
+      "description": "Per-stamp build-up rate within a stroke, 0..1"
+     },
+     "airbrush": {
+      "type": "boolean",
+      "description": "Continuously build paint while the pointer is held"
+     },
+     "blend_mode": {
+      "type": "string",
+      "description": "Paint blend mode",
+      "enum": [
+       "normal",
+       "dissolve",
+       "darken",
+       "multiply",
+       "color-burn",
+       "linear-burn",
+       "lighten",
+       "screen",
+       "color-dodge",
+       "linear-dodge",
+       "overlay",
+       "soft-light",
+       "hard-light",
+       "vivid-light",
+       "linear-light",
+       "difference",
+       "exclusion",
+       "pin-light",
+       "hard-mix",
+       "subtract",
+       "divide",
+       "darker-color",
+       "lighter-color",
+       "hue",
+       "saturation",
+       "color",
+       "luminosity"
+      ]
+     },
+     "angle": {
+      "type": "number",
+      "description": "Brush tip angle in degrees"
+     },
+     "eraser_mode": {
+      "type": "string",
+      "description": "Eraser mode",
+      "enum": [
+       "brush",
+       "pencil",
+       "block"
+      ]
+     },
+     "erase_to_history": {
+      "type": "boolean",
+      "description": "Eraser restores the History Brush source at each stroke pixel"
+     },
+     "clone_sample": {
+      "type": "string",
+      "description": "Clone Stamp sample source",
+      "enum": [
+       "current-layer",
+       "current-below",
+       "all-layers"
+      ]
+     },
+     "size_jitter": {
+      "type": "number",
+      "description": "Per-stamp size jitter, 0..1"
+     },
+     "opacity_jitter": {
+      "type": "number",
+      "description": "Per-stamp opacity jitter, 0..1"
+     },
+     "scatter": {
+      "type": "number",
+      "description": "Per-stamp scatter as diameters, 0..4"
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "brush.tone",
+   "tool_name": "brush_tone",
+   "description": "Apply a local tone brush on the active layer through points: dodge, burn, sponge-sat, or sponge-desat. Dodge/Burn use range, exposure, angle, airbrush, and Protect Tones; Sponge uses mode, flow, airbrush, and Vibrance. points is a flat [x1,y1,x2,y2,...] array in doc coordinates.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "type": "string",
+      "description": "Tone brush mode",
+      "enum": [
+       "dodge",
+       "burn",
+       "sponge-sat",
+       "sponge-desat"
+      ]
+     },
+     "points": {
+      "type": "array",
+      "description": "Flat [x1,y1,x2,y2,...], ≥1 point"
+     },
+     "size": {
+      "type": "number",
+      "description": "Brush diameter px (default: current)"
+     },
+     "exposure": {
+      "type": "number",
+      "description": "Dodge/Burn exposure 0..1 (default: current tone exposure or 0.5)"
+     },
+     "range": {
+      "type": "string",
+      "description": "Dodge/Burn tonal range (default: current range or midtones)",
+      "enum": [
+       "shadows",
+       "midtones",
+       "highlights"
+      ]
+     },
+     "flow": {
+      "type": "number",
+      "description": "Sponge flow 0..1 (default: current sponge flow, exposure fallback, or 0.5)"
+     },
+     "airbrush": {
+      "type": "boolean",
+      "description": "Build tone with overlapping stamps inside the stroke"
+     },
+     "angle": {
+      "type": "number",
+      "description": "Tone brush tip angle in degrees"
+     },
+     "protect_tones": {
+      "type": "boolean",
+      "description": "Dodge/Burn: preserve hue/chroma while changing luminosity"
+     },
+     "vibrance": {
+      "type": "boolean",
+      "description": "Sponge: use vibrance-style saturation response"
+     }
+    },
+    "required": [
+     "mode",
+     "points"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

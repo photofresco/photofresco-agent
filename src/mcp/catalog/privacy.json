@@ -1,0 +1,46 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "privacy.get_policy",
+   "tool_name": "privacy_get_policy",
+   "description": "Read this page-wide disclosure policy and service destinations. A new page starts with only replay (session recording & diagnostics) allowed; a window the local connector opened starts with nothing allowed. Does not grant agent authority.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "privacy.open",
+   "tool_name": "privacy_open",
+   "description": "Open or close Data & privacy using the same addressable view as the UI.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "open": {
+      "type": "boolean",
+      "description": "Open the view (default true)."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

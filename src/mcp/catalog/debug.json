@@ -1,0 +1,23 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "debug.surface_dump",
+   "tool_name": "debug_surface_dump",
+   "description": "DEV-ONLY. Dump our full UI surface tree (menubar, tools/subtools, options-bar controls per tool, canvas/layer-row context menus, panel menus) in a manifest node schema (id/kind/label/shortcut/enabled/hidden/children), evaluated against the CURRENT staged document/tool state. Each section carries a `coverage` note describing how completely it was enumerated — some sections (panel menus, some context menus) are imperative and only partially reachable. Used by the parity-sweep loop; stage state via other ops first, then call this.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

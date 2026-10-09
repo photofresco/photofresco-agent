@@ -1,0 +1,112 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "note.add",
+   "tool_name": "note_add",
+   "description": "Note Tool: add a note marker at doc coordinate x,y with optional text.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number",
+      "description": "Doc x"
+     },
+     "y": {
+      "type": "number",
+      "description": "Doc y"
+     },
+     "text": {
+      "type": "string",
+      "description": "Note text"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "note.delete",
+   "tool_name": "note_delete",
+   "description": "Note Tool: delete a note marker by id.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Note id"
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "note.edit",
+   "tool_name": "note_edit",
+   "description": "Note Tool: replace the text for an existing note marker.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Note id"
+     },
+     "text": {
+      "type": "string",
+      "description": "Replacement text"
+     }
+    },
+    "required": [
+     "id",
+     "text"
+    ],
+    "additionalProperties": false
+   },
+   "effects": [
+    "document"
+   ],
+   "capabilities": [
+    "edit"
+   ],
+   "completion": "sync"
+  },
+  {
+   "name": "note.list",
+   "tool_name": "note_list",
+   "description": "Note Tool: list note markers and their text.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "read"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}
