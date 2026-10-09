@@ -76,6 +76,7 @@ describe('plugin bundle', () => {
     assert.doesNotMatch(CLAUDE.name, /claude|anthropic|official|mcp|plugin|test/)
     assert.equal(CLAUDE.documentationUrl, 'https://photofresco.com/docs/ai-agents/')
     assert.equal(CLAUDE.privacyPolicyUrl, 'https://photofresco.com/docs/privacy/')
+    assert.equal(CLAUDE.termsOfServiceUrl, 'https://photofresco.com/docs/terms/')
     assert.equal(CLAUDE.supportUrl, `${REPO}/issues`)
   })
 
