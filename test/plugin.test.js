@@ -43,11 +43,11 @@ const LAUNCHERS = [
   { client: 'Gemini CLI', file: 'gemini-extension.json', server: GEMINI.mcpServers.photofresco, root: '${extensionPath}${/}' },
 ]
 
-/** Every repository file (node_modules and .git excluded), as POSIX paths. @param {string} dir @returns {string[]} */
+/** Every repository file (node_modules, .git and the ignored build output dist/ excluded), as POSIX paths. @param {string} dir @returns {string[]} */
 function repoFiles(dir = ROOT) {
   return readdirSync(dir).sort().flatMap((name) => {
     const full = join(dir, name)
-    if (dir === ROOT && (name === 'node_modules' || name === '.git')) return []
+    if (dir === ROOT && (name === 'node_modules' || name === '.git' || name === 'dist')) return []
     return lstatSync(full).isDirectory() ? repoFiles(full) : [relative(ROOT, full).split(sep).join('/')]
   })
 }
@@ -152,7 +152,7 @@ describe('plugin bundle', () => {
       assert.ok(!lstatSync(full).isSymbolicLink(), `${file}: symlink`)
       assert.ok(statSync(full).size <= 256 * 1024, `${file}: ${statSync(full).size} bytes`)
       assert.ok(!/(^|\/)(\.DS_Store|\.npmrc|\.env[^/]*)$/.test(file), file)
-      assert.match(file, /(^|\/)(LICENSE|\.gitignore)$|\.(md|js|mjs|ts|json|ya?ml|txt|png|gif)$/, `${file}: only text and image files`)
+      assert.match(file, /(^|\/)(LICENSE|\.gitignore|\.dockerignore|Dockerfile)$|\.(md|js|mjs|ts|json|ya?ml|txt|png|gif)$/, `${file}: only text and image files`)
       if (/\.m?js$/.test(file)) {
         const text = readFileSync(full, 'utf8')
         assert.doesNotMatch(text, /^\s*\/\/[#@] sourceMappingURL=/m, `${file}: source map comment`)
@@ -168,7 +168,7 @@ describe('plugin bundle', () => {
 
   it('each launcher, run from a copy without node_modules, starts the server and lists its tools', async () => {
     const pluginRoot = join(work, 'installed plugin')
-    cpSync(ROOT, pluginRoot, { recursive: true, filter: (source) => !/[\\/](node_modules|\.git|test|package-lock\.json)$/.test(source) })
+    cpSync(ROOT, pluginRoot, { recursive: true, filter: (source) => !/[\\/](node_modules|\.git|dist|test|package-lock\.json)$/.test(source) })
     // The public repo has no lockfile and nothing installed (pf-agent-platform-nkwn.37).
     assert.ok(!existsSync(join(pluginRoot, 'node_modules')) && !existsSync(join(pluginRoot, 'package-lock.json')))
     for (const { client, server, root } of LAUNCHERS) {

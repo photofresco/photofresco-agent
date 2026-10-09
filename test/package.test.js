@@ -102,7 +102,7 @@ describe('public repository package', () => {
     const vscode = configs[1].servers.photofresco
     assert.deepEqual(vscode, { type: 'stdio', ...desktop })
     assert.deepEqual(desktop.args.slice(0, 3), ['-y', `photofresco@${PACKAGE.version}`, 'mcp'])
-    for (const [, version] of README.matchAll(/photofresco@([0-9][^\s"]*)/g)) assert.equal(version, PACKAGE.version)
+    for (const [, version] of README.matchAll(/photofresco@([0-9][^\s"`]*)/g)) assert.equal(version, PACKAGE.version)
   })
 
   it('README links resolve inside the repository', () => {

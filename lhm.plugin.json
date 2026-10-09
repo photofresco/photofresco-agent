@@ -1,0 +1,3808 @@
+{
+  "author": "PhotoFresco / Josh Wardini",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "homepage": "https://photofresco.com/?pf_ref=lobehub",
+  "identifier": "photofresco-photofresco-agent",
+  "name": "PhotoFresco",
+  "prompts": [],
+  "resources": [
+    {
+      "name": "artifact",
+      "title": "PhotoFresco export",
+      "uriTemplate": "photofresco://artifact/{artifact_id}",
+      "description": "Bytes of an export created with export_artifact (PNG, PSD or .pfd), verified against its SHA-256; needs Read + Export, readable for 10 minutes while the session targets its document"
+    }
+  ],
+  "tags": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "image-editor",
+    "photo-editor",
+    "photoshop-alternative",
+    "ai-agents",
+    "agent-skills",
+    "cli"
+  ],
+  "tools": [
+    {
+      "name": "photofresco_connect",
+      "title": "Connect to PhotoFresco",
+      "description": "Open PhotoFresco in its own browser window on this computer and ask the user to allow this agent. The window shows a connection code; tell the user the code returned here so they can check it before clicking Allow.\nInputs: access (optional) asks for permissions right away; document is \"active\" (default), \"none\" or a document_id; wait_seconds (default 40, at most 170) is how long this call waits for the user.\nReturns state \"connected\" with the session status, or state \"pairing\" with the code while the user has not decided yet: call photofresco_connect again to keep waiting (the request expires after 3 minutes). A session starts with no permissions; the editing tools appear (tools/list_changed) once the user grants them in the Permissions dialog.\nEffect: starts a browser process and loads photofresco.com on the first call; nothing is edited. Safe to call again while connected (returns the current status).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "object",
+            "description": "Permissions to ask the user for once connected. Asking grants nothing; the user decides in the PhotoFresco window",
+            "properties": {
+              "capabilities": {
+                "type": "array",
+                "description": "Permissions to ask for: read (see the document and previews), edit (change documents, open/close tabs), export (files leave the editor), external-write (send data to PhotoFresco services), spend (paid AI up to budget_credits)",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "read",
+                    "edit",
+                    "export",
+                    "external-write",
+                    "spend"
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "budget_credits": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000,
+                "description": "Credit budget for paid AI (required with spend)"
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "Why, shown to the user (at most 200 characters)"
+              }
+            },
+            "required": [
+              "capabilities"
+            ],
+            "additionalProperties": false
+          },
+          "document": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "\"active\" (default), \"none\", or a document_id from photofresco_documents"
+          },
+          "wait_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 170,
+            "description": "Seconds to wait for the user's decision before returning the pending code (default 40)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "photofresco_status",
+      "title": "PhotoFresco status",
+      "description": "Connection state, the pending connection code, the session (target document_id, revision, granted permissions, pending permission request, credit budget, pause state), folders granted for import/export and the enabled tool groups.\nInputs: none. Effect: reads state only; never starts a browser.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_request_access",
+      "title": "Ask the user for permissions",
+      "description": "Ask the user for permissions in the PhotoFresco window (replaces any pending request). The user may grant fewer; nothing is granted until they click Allow there. Tools appear as permissions arrive (tools/list_changed); photofresco_status shows grants and the pending request.\nInputs: capabilities (required), budget_credits (required with spend, 1–100000 credits), reason (shown to the user, at most 200 characters).\nEffect: shows a request in the editor; changes no document. Needs a connected session.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "capabilities": {
+            "type": "array",
+            "description": "Permissions to ask for: read (see the document and previews), edit (change documents, open/close tabs), export (files leave the editor), external-write (send data to PhotoFresco services), spend (paid AI up to budget_credits)",
+            "items": {
+              "type": "string",
+              "enum": [
+                "read",
+                "edit",
+                "export",
+                "external-write",
+                "spend"
+              ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "budget_credits": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000,
+            "description": "Credit budget for paid AI (required with spend)"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Why, shown to the user (at most 200 characters)"
+          }
+        },
+        "required": [
+          "capabilities"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_documents",
+      "title": "List open documents",
+      "description": "Open documents in the PhotoFresco window: document_id, name, whether it is the active tab, revision, which agent controls it and whether it is paused. Inputs: none. Effect: reads state only. Needs a connected session.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_attach",
+      "title": "Target a document",
+      "description": "Make this session target another open document by document_id (from photofresco_documents). Operations run only while the target is the active tab, so ask the user to switch tabs if needed. Inputs: document (required). Effect: changes the session target; no document edit. Needs a connected session.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "document": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "document_id to target"
+          }
+        },
+        "required": [
+          "document"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_disconnect",
+      "title": "Disconnect from PhotoFresco",
+      "description": "End this session (same as the user pressing Stop): in-flight work is interrupted, permissions are cleared, applied edits stay in History. The window stays open for the user unless close_window is true. Reconnecting needs the user's Allow again. Inputs: close_window (optional). Effect: ends the session; edits nothing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "close_window": {
+            "type": "boolean",
+            "description": "Also close the PhotoFresco browser window this server opened"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_list_tool_groups",
+      "title": "List PhotoFresco tool groups",
+      "description": "The op groups this server can list as tools, which are enabled, and how many tools each adds now. Inputs: none. Effect: reads server state only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "photofresco_select_tool_groups",
+      "title": "Enable or disable tool groups",
+      "description": "Enable or disable op groups to change which PhotoFresco operations are listed as tools (sends tools/list_changed). Use it when a needed operation is not listed. Listing never grants permissions. Inputs: enable, disable (group IDs from photofresco_list_tool_groups, or \"all\"). Effect: changes this server's tool list only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "essentials",
+                "document",
+                "layers",
+                "selection",
+                "adjustments",
+                "painting",
+                "text",
+                "automation",
+                "workspace",
+                "cloud",
+                "other",
+                "all"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "Groups to add"
+          },
+          "disable": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "essentials",
+                "document",
+                "layers",
+                "selection",
+                "adjustments",
+                "painting",
+                "text",
+                "automation",
+                "workspace",
+                "cloud",
+                "other",
+                "all"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "Groups to remove"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "adjust_add",
+      "title": "Adjustment: Add",
+      "description": "Add a non-destructive adjustment layer above the active node. Types include brightness-contrast, levels, curves, exposure, hue-saturation, vibrance, color-balance, black-white, photo-filter, channel-mixer, gradient-map, selective-color, color-lookup, shadows-highlights, match-replace-color, invert, posterize, and threshold. Pass type-specific params in \"params\". Match color accepts source_layer_id/target_layer_id to sample RGB statistics. Set clipped=true (layer.set_props) to affect only the layer below.\n\nInputs: adjustment_type (required), params. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: adjust.add.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "adjustment_type": {
+            "type": "string",
+            "description": "Which adjustment",
+            "enum": [
+              "brightness-contrast",
+              "levels",
+              "curves",
+              "exposure",
+              "hue-saturation",
+              "vibrance",
+              "color-balance",
+              "black-white",
+              "photo-filter",
+              "channel-mixer",
+              "gradient-map",
+              "selective-color",
+              "color-lookup",
+              "shadows-highlights",
+              "match-replace-color",
+              "invert",
+              "posterize",
+              "threshold"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Adjustment parameter patch. Choose the branch matching adjustment_type for adjust.add, or the existing adjustment type for adjust.set_params; type may be omitted. Only supplied top-level fields change. Nested objects and arrays replace the previous value, not deep-merge. Bounds describe supported UI controls and are enforced at admission: the op rejects fields, ranges, array lengths or a type outside the branch for the target adjustment.",
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "brightness-contrast parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "brightness-contrast"
+                    ]
+                  },
+                  "brightness": {
+                    "type": "number",
+                    "description": "Brightness",
+                    "minimum": -150,
+                    "maximum": 150
+                  },
+                  "contrast": {
+                    "type": "number",
+                    "description": "Contrast",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "levels parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "levels"
+                    ]
+                  },
+                  "inBlack": {
+                    "type": "number",
+                    "description": "Input black point; keep below inWhite",
+                    "minimum": 0,
+                    "maximum": 253
+                  },
+                  "inWhite": {
+                    "type": "number",
+                    "description": "Input white point; keep above inBlack",
+                    "minimum": 2,
+                    "maximum": 255
+                  },
+                  "gamma": {
+                    "type": "number",
+                    "description": "Midtone gamma",
+                    "minimum": 0.1,
+                    "maximum": 9.99
+                  },
+                  "outBlack": {
+                    "type": "number",
+                    "description": "Output black point",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "outWhite": {
+                    "type": "number",
+                    "description": "Output white point",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "curves parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "curves"
+                    ]
+                  },
+                  "points": {
+                    "type": "array",
+                    "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                    "items": {
+                      "type": "object",
+                      "description": "Curve control point",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "description": "Input intensity",
+                          "minimum": 0,
+                          "maximum": 255
+                        },
+                        "y": {
+                          "type": "number",
+                          "description": "Output intensity",
+                          "minimum": 0,
+                          "maximum": 255
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "channels": {
+                    "type": "object",
+                    "description": "Per-channel curves, applied after the composite points curve. Replaces the channels object; omitted channels are identity curves.",
+                    "properties": {
+                      "red": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "green": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "blue": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "exposure parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "exposure"
+                    ]
+                  },
+                  "exposure": {
+                    "type": "number",
+                    "description": "Exposure in stops",
+                    "minimum": -20,
+                    "maximum": 20
+                  },
+                  "offset": {
+                    "type": "number",
+                    "description": "Offset",
+                    "minimum": -0.5,
+                    "maximum": 0.5
+                  },
+                  "gamma": {
+                    "type": "number",
+                    "description": "Gamma correction",
+                    "minimum": 0.01,
+                    "maximum": 9.99
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "hue-saturation parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "hue-saturation"
+                    ]
+                  },
+                  "hue": {
+                    "type": "number",
+                    "description": "Hue shift in degrees",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "lightness": {
+                    "type": "number",
+                    "description": "Lightness (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "vibrance parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "vibrance"
+                    ]
+                  },
+                  "vibrance": {
+                    "type": "number",
+                    "description": "Vibrance (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "color-balance parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "color-balance"
+                    ]
+                  },
+                  "shadows": {
+                    "type": "array",
+                    "description": "Shadow color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "midtones": {
+                    "type": "array",
+                    "description": "Midtone color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "highlights": {
+                    "type": "array",
+                    "description": "Highlight color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "preserveLuminosity": {
+                    "type": "boolean",
+                    "description": "Preserve original luminosity"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "black-white parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "black-white"
+                    ]
+                  },
+                  "reds": {
+                    "type": "number",
+                    "description": "Red contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "yellows": {
+                    "type": "number",
+                    "description": "Yellow contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "greens": {
+                    "type": "number",
+                    "description": "Green contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "cyans": {
+                    "type": "number",
+                    "description": "Cyan contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "blues": {
+                    "type": "number",
+                    "description": "Blue contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "magentas": {
+                    "type": "number",
+                    "description": "Magenta contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "photo-filter parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "photo-filter"
+                    ]
+                  },
+                  "color": {
+                    "type": "array",
+                    "description": "Filter color, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "density": {
+                    "type": "number",
+                    "description": "Filter density (0 = none, 1 = full)",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "preserveLuminosity": {
+                    "type": "boolean",
+                    "description": "Preserve original luminosity"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "channel-mixer parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "channel-mixer"
+                    ]
+                  },
+                  "red": {
+                    "type": "array",
+                    "description": "Red output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "green": {
+                    "type": "array",
+                    "description": "Green output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "blue": {
+                    "type": "array",
+                    "description": "Blue output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "gray": {
+                    "type": "array",
+                    "description": "Monochrome output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "monochrome": {
+                    "type": "boolean",
+                    "description": "Use the gray row for monochrome output"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "gradient-map parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "gradient-map"
+                    ]
+                  },
+                  "stops": {
+                    "type": "array",
+                    "description": "Replacement gradient stops sorted by position. Empty array gives black-to-white; endpoint colors are extended to 0 and 1.",
+                    "items": {
+                      "type": "object",
+                      "description": "Gradient stop",
+                      "properties": {
+                        "pos": {
+                          "type": "number",
+                          "description": "Position along luminance gradient",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "color": {
+                          "type": "array",
+                          "description": "Stop color, in [red, green, blue] order (0–255).",
+                          "items": {
+                            "type": "number",
+                            "description": "Component value",
+                            "minimum": 0,
+                            "maximum": 255
+                          },
+                          "minItems": 3,
+                          "maxItems": 3
+                        }
+                      },
+                      "required": [
+                        "pos",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "selective-color parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "selective-color"
+                    ]
+                  },
+                  "colors": {
+                    "type": "object",
+                    "description": "Replacement color-range map, not a deep merge. Omitted ranges have no correction.",
+                    "properties": {
+                      "reds": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "yellows": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "greens": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cyans": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "blues": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "magentas": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "whites": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "neutrals": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "blacks": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "Relative or absolute CMYK correction",
+                    "enum": [
+                      "relative",
+                      "absolute"
+                    ]
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "color-lookup parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "color-lookup"
+                    ]
+                  },
+                  "preset": {
+                    "type": "string",
+                    "description": "Built-in color lookup table",
+                    "enum": [
+                      "identity",
+                      "warm",
+                      "cool",
+                      "cross-process",
+                      "bw-contrast"
+                    ]
+                  },
+                  "intensity": {
+                    "type": "number",
+                    "description": "Lookup intensity (0 = none, 1 = full)",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "shadows-highlights parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "shadows-highlights"
+                    ]
+                  },
+                  "shadowsAmount": {
+                    "type": "number",
+                    "description": "Shadow brightening amount (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "shadowsTone": {
+                    "type": "number",
+                    "description": "Shadow tonal width (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "shadowsRadius": {
+                    "type": "number",
+                    "description": "Shadow local adaptation radius in pixels",
+                    "minimum": 0,
+                    "maximum": 250
+                  },
+                  "highlightsAmount": {
+                    "type": "number",
+                    "description": "Highlight darkening amount (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "highlightsTone": {
+                    "type": "number",
+                    "description": "Highlight tonal width (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "highlightsRadius": {
+                    "type": "number",
+                    "description": "Highlight local adaptation radius in pixels",
+                    "minimum": 0,
+                    "maximum": 250
+                  },
+                  "color": {
+                    "type": "number",
+                    "description": "Color correction (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "midtone": {
+                    "type": "number",
+                    "description": "Midtone contrast (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "match-replace-color parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "match-replace-color"
+                    ]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "description": "Match source statistics or replace a sampled color",
+                    "enum": [
+                      "match",
+                      "replace"
+                    ]
+                  },
+                  "sourceMean": {
+                    "type": "array",
+                    "description": "Source mean for match mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "sourceStdDev": {
+                    "type": "array",
+                    "description": "Source standard deviations in [red, green, blue] order for match mode",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 1,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "targetMean": {
+                    "type": "array",
+                    "description": "Target mean for match mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "targetStdDev": {
+                    "type": "array",
+                    "description": "Target standard deviations in [red, green, blue] order for match mode",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 1,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "source_layer_id": {
+                    "type": "string",
+                    "description": "Pixel-layer id for match mode; computes source statistics and overrides sourceMean/sourceStdDev."
+                  },
+                  "target_layer_id": {
+                    "type": "string",
+                    "description": "Pixel-layer id used with source_layer_id in match mode; computes target statistics, defaulting to the active pixel layer."
+                  },
+                  "luminance": {
+                    "type": "number",
+                    "description": "Match luminance (%)",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "colorIntensity": {
+                    "type": "number",
+                    "description": "Match color intensity (%)",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "fade": {
+                    "type": "number",
+                    "description": "Match fade (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "sample": {
+                    "type": "array",
+                    "description": "Color to replace in replace mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "fuzziness": {
+                    "type": "number",
+                    "description": "Replace color selection fuzziness",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "hue": {
+                    "type": "number",
+                    "description": "Replacement hue shift in degrees",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Replacement saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "lightness": {
+                    "type": "number",
+                    "description": "Replacement lightness (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "invert parameters (no configurable fields)",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "invert"
+                    ]
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "posterize parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "posterize"
+                    ]
+                  },
+                  "levels": {
+                    "type": "number",
+                    "description": "Number of tonal levels (whole number)",
+                    "minimum": 2,
+                    "maximum": 32
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "threshold parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "threshold"
+                    ]
+                  },
+                  "level": {
+                    "type": "number",
+                    "description": "Threshold intensity",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "adjustment_type"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "adjust_set_params",
+      "title": "Adjustment: Set params",
+      "description": "Update the active adjustment layer’s parameters (same shapes as adjust.add). Undoable.\n\nInputs: params (required). Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: adjust.set_params.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "params": {
+            "type": "object",
+            "description": "Adjustment parameter patch. Choose the branch matching adjustment_type for adjust.add, or the existing adjustment type for adjust.set_params; type may be omitted. Only supplied top-level fields change. Nested objects and arrays replace the previous value, not deep-merge. Bounds describe supported UI controls and are enforced at admission: the op rejects fields, ranges, array lengths or a type outside the branch for the target adjustment.",
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "brightness-contrast parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "brightness-contrast"
+                    ]
+                  },
+                  "brightness": {
+                    "type": "number",
+                    "description": "Brightness",
+                    "minimum": -150,
+                    "maximum": 150
+                  },
+                  "contrast": {
+                    "type": "number",
+                    "description": "Contrast",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "levels parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "levels"
+                    ]
+                  },
+                  "inBlack": {
+                    "type": "number",
+                    "description": "Input black point; keep below inWhite",
+                    "minimum": 0,
+                    "maximum": 253
+                  },
+                  "inWhite": {
+                    "type": "number",
+                    "description": "Input white point; keep above inBlack",
+                    "minimum": 2,
+                    "maximum": 255
+                  },
+                  "gamma": {
+                    "type": "number",
+                    "description": "Midtone gamma",
+                    "minimum": 0.1,
+                    "maximum": 9.99
+                  },
+                  "outBlack": {
+                    "type": "number",
+                    "description": "Output black point",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "outWhite": {
+                    "type": "number",
+                    "description": "Output white point",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "curves parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "curves"
+                    ]
+                  },
+                  "points": {
+                    "type": "array",
+                    "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                    "items": {
+                      "type": "object",
+                      "description": "Curve control point",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "description": "Input intensity",
+                          "minimum": 0,
+                          "maximum": 255
+                        },
+                        "y": {
+                          "type": "number",
+                          "description": "Output intensity",
+                          "minimum": 0,
+                          "maximum": 255
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "channels": {
+                    "type": "object",
+                    "description": "Per-channel curves, applied after the composite points curve. Replaces the channels object; omitted channels are identity curves.",
+                    "properties": {
+                      "red": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "green": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "blue": {
+                        "type": "array",
+                        "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+                        "items": {
+                          "type": "object",
+                          "description": "Curve control point",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "description": "Input intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            },
+                            "y": {
+                              "type": "number",
+                              "description": "Output intensity",
+                              "minimum": 0,
+                              "maximum": 255
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "exposure parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "exposure"
+                    ]
+                  },
+                  "exposure": {
+                    "type": "number",
+                    "description": "Exposure in stops",
+                    "minimum": -20,
+                    "maximum": 20
+                  },
+                  "offset": {
+                    "type": "number",
+                    "description": "Offset",
+                    "minimum": -0.5,
+                    "maximum": 0.5
+                  },
+                  "gamma": {
+                    "type": "number",
+                    "description": "Gamma correction",
+                    "minimum": 0.01,
+                    "maximum": 9.99
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "hue-saturation parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "hue-saturation"
+                    ]
+                  },
+                  "hue": {
+                    "type": "number",
+                    "description": "Hue shift in degrees",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "lightness": {
+                    "type": "number",
+                    "description": "Lightness (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "vibrance parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "vibrance"
+                    ]
+                  },
+                  "vibrance": {
+                    "type": "number",
+                    "description": "Vibrance (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "color-balance parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "color-balance"
+                    ]
+                  },
+                  "shadows": {
+                    "type": "array",
+                    "description": "Shadow color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "midtones": {
+                    "type": "array",
+                    "description": "Midtone color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "highlights": {
+                    "type": "array",
+                    "description": "Highlight color balance: [cyan–red, magenta–green, yellow–blue]; positive values add red, green, blue respectively.",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -100,
+                      "maximum": 100
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "preserveLuminosity": {
+                    "type": "boolean",
+                    "description": "Preserve original luminosity"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "black-white parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "black-white"
+                    ]
+                  },
+                  "reds": {
+                    "type": "number",
+                    "description": "Red contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "yellows": {
+                    "type": "number",
+                    "description": "Yellow contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "greens": {
+                    "type": "number",
+                    "description": "Green contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "cyans": {
+                    "type": "number",
+                    "description": "Cyan contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "blues": {
+                    "type": "number",
+                    "description": "Blue contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  },
+                  "magentas": {
+                    "type": "number",
+                    "description": "Magenta contribution (%)",
+                    "minimum": -200,
+                    "maximum": 300
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "photo-filter parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "photo-filter"
+                    ]
+                  },
+                  "color": {
+                    "type": "array",
+                    "description": "Filter color, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "density": {
+                    "type": "number",
+                    "description": "Filter density (0 = none, 1 = full)",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "preserveLuminosity": {
+                    "type": "boolean",
+                    "description": "Preserve original luminosity"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "channel-mixer parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "channel-mixer"
+                    ]
+                  },
+                  "red": {
+                    "type": "array",
+                    "description": "Red output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "green": {
+                    "type": "array",
+                    "description": "Green output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "blue": {
+                    "type": "array",
+                    "description": "Blue output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "gray": {
+                    "type": "array",
+                    "description": "Monochrome output: [red %, green %, blue %, constant %].",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": -200,
+                      "maximum": 200
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  },
+                  "monochrome": {
+                    "type": "boolean",
+                    "description": "Use the gray row for monochrome output"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "gradient-map parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "gradient-map"
+                    ]
+                  },
+                  "stops": {
+                    "type": "array",
+                    "description": "Replacement gradient stops sorted by position. Empty array gives black-to-white; endpoint colors are extended to 0 and 1.",
+                    "items": {
+                      "type": "object",
+                      "description": "Gradient stop",
+                      "properties": {
+                        "pos": {
+                          "type": "number",
+                          "description": "Position along luminance gradient",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "color": {
+                          "type": "array",
+                          "description": "Stop color, in [red, green, blue] order (0–255).",
+                          "items": {
+                            "type": "number",
+                            "description": "Component value",
+                            "minimum": 0,
+                            "maximum": 255
+                          },
+                          "minItems": 3,
+                          "maxItems": 3
+                        }
+                      },
+                      "required": [
+                        "pos",
+                        "color"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "selective-color parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "selective-color"
+                    ]
+                  },
+                  "colors": {
+                    "type": "object",
+                    "description": "Replacement color-range map, not a deep merge. Omitted ranges have no correction.",
+                    "properties": {
+                      "reds": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "yellows": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "greens": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "cyans": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "blues": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "magentas": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "whites": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "neutrals": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "blacks": {
+                        "type": "object",
+                        "description": "CMYK corrections for this color range; supply all four components.",
+                        "properties": {
+                          "cyan": {
+                            "type": "number",
+                            "description": "Cyan correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "magenta": {
+                            "type": "number",
+                            "description": "Magenta correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "yellow": {
+                            "type": "number",
+                            "description": "Yellow correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          },
+                          "black": {
+                            "type": "number",
+                            "description": "Black correction (%)",
+                            "minimum": -100,
+                            "maximum": 100
+                          }
+                        },
+                        "required": [
+                          "cyan",
+                          "magenta",
+                          "yellow",
+                          "black"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "Relative or absolute CMYK correction",
+                    "enum": [
+                      "relative",
+                      "absolute"
+                    ]
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "color-lookup parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "color-lookup"
+                    ]
+                  },
+                  "preset": {
+                    "type": "string",
+                    "description": "Built-in color lookup table",
+                    "enum": [
+                      "identity",
+                      "warm",
+                      "cool",
+                      "cross-process",
+                      "bw-contrast"
+                    ]
+                  },
+                  "intensity": {
+                    "type": "number",
+                    "description": "Lookup intensity (0 = none, 1 = full)",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "shadows-highlights parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "shadows-highlights"
+                    ]
+                  },
+                  "shadowsAmount": {
+                    "type": "number",
+                    "description": "Shadow brightening amount (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "shadowsTone": {
+                    "type": "number",
+                    "description": "Shadow tonal width (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "shadowsRadius": {
+                    "type": "number",
+                    "description": "Shadow local adaptation radius in pixels",
+                    "minimum": 0,
+                    "maximum": 250
+                  },
+                  "highlightsAmount": {
+                    "type": "number",
+                    "description": "Highlight darkening amount (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "highlightsTone": {
+                    "type": "number",
+                    "description": "Highlight tonal width (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "highlightsRadius": {
+                    "type": "number",
+                    "description": "Highlight local adaptation radius in pixels",
+                    "minimum": 0,
+                    "maximum": 250
+                  },
+                  "color": {
+                    "type": "number",
+                    "description": "Color correction (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "midtone": {
+                    "type": "number",
+                    "description": "Midtone contrast (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "match-replace-color parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "match-replace-color"
+                    ]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "description": "Match source statistics or replace a sampled color",
+                    "enum": [
+                      "match",
+                      "replace"
+                    ]
+                  },
+                  "sourceMean": {
+                    "type": "array",
+                    "description": "Source mean for match mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "sourceStdDev": {
+                    "type": "array",
+                    "description": "Source standard deviations in [red, green, blue] order for match mode",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 1,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "targetMean": {
+                    "type": "array",
+                    "description": "Target mean for match mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "targetStdDev": {
+                    "type": "array",
+                    "description": "Target standard deviations in [red, green, blue] order for match mode",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 1,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "source_layer_id": {
+                    "type": "string",
+                    "description": "Pixel-layer id for match mode; computes source statistics and overrides sourceMean/sourceStdDev."
+                  },
+                  "target_layer_id": {
+                    "type": "string",
+                    "description": "Pixel-layer id used with source_layer_id in match mode; computes target statistics, defaulting to the active pixel layer."
+                  },
+                  "luminance": {
+                    "type": "number",
+                    "description": "Match luminance (%)",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "colorIntensity": {
+                    "type": "number",
+                    "description": "Match color intensity (%)",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "fade": {
+                    "type": "number",
+                    "description": "Match fade (%)",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "sample": {
+                    "type": "array",
+                    "description": "Color to replace in replace mode, in [red, green, blue] order (0–255).",
+                    "items": {
+                      "type": "number",
+                      "description": "Component value",
+                      "minimum": 0,
+                      "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  },
+                  "fuzziness": {
+                    "type": "number",
+                    "description": "Replace color selection fuzziness",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "hue": {
+                    "type": "number",
+                    "description": "Replacement hue shift in degrees",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  "saturation": {
+                    "type": "number",
+                    "description": "Replacement saturation (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  },
+                  "lightness": {
+                    "type": "number",
+                    "description": "Replacement lightness (%)",
+                    "minimum": -100,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "invert parameters (no configurable fields)",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "invert"
+                    ]
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "posterize parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "posterize"
+                    ]
+                  },
+                  "levels": {
+                    "type": "number",
+                    "description": "Number of tonal levels (whole number)",
+                    "minimum": 2,
+                    "maximum": 32
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "threshold parameters",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Optional; must equal the adjustment type when supplied",
+                    "enum": [
+                      "threshold"
+                    ]
+                  },
+                  "level": {
+                    "type": "number",
+                    "description": "Threshold intensity",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "canvas_resize",
+      "title": "Canvas: Resize",
+      "description": "Change canvas size without resampling; content shifts by (dx, dy) px (e.g. dx=(newW−oldW)/2 to center). Clears the selection. Undoable.\n\nInputs: width (required), height (required), dx, dy. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: canvas.resize.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "number",
+            "description": "New width px"
+          },
+          "height": {
+            "type": "number",
+            "description": "New height px"
+          },
+          "dx": {
+            "type": "number",
+            "description": "Content shift x (default 0)"
+          },
+          "dy": {
+            "type": "number",
+            "description": "Content shift y (default 0)"
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "crop_apply",
+      "title": "Crop: Apply",
+      "description": "Apply pending crop or set a rectangle then apply. Undoable.\n\nInputs: x, y, width, height. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: crop.apply.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Document x"
+          },
+          "y": {
+            "type": "number",
+            "description": "Document y"
+          },
+          "width": {
+            "type": "number",
+            "description": "Width"
+          },
+          "height": {
+            "type": "number",
+            "description": "Height"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "doc_get_state",
+      "title": "Document: Get state",
+      "description": "Get the full document state: document_id and content revision (agent sessions), dimensions, color mode, the layer tree (ids, names, kinds, blend modes, opacity, visibility, locks, pixel bounds), the active node id, and the current selection bounds. Call this first to orient yourself.\n\nInputs: none.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: doc.get_state.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "doc_histogram",
+      "title": "Document: Histogram",
+      "description": "Return 256-bin histogram counts for the flattened visible document, restricted to the active selection when one exists. mode defaults to luminosity; rgb returns composite plus red/green/blue counts.\n\nInputs: mode. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: doc.histogram.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "rgb, red, green, blue, or luminosity",
+            "enum": [
+              "rgb",
+              "red",
+              "green",
+              "blue",
+              "luminosity"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "doc_new",
+      "title": "Document: New",
+      "description": "Create a new document tab. Width/height use unit (px, in, cm, mm) and resolution; background is white, transparent, or color.\n\nInputs: name, width, height, unit, resolution, background, background_color, preset. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Opens, closes, duplicates or reverts documents (tabs); history_undo does not reverse it.\nUndo: not reversible with history_undo.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: doc.new.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Document name (default Untitled)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Width in the selected unit"
+          },
+          "height": {
+            "type": "number",
+            "description": "Height in the selected unit"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Measurement unit",
+            "enum": [
+              "px",
+              "in",
+              "cm",
+              "mm"
+            ]
+          },
+          "resolution": {
+            "type": "number",
+            "description": "Pixels per inch for physical units"
+          },
+          "background": {
+            "type": "string",
+            "description": "Background contents",
+            "enum": [
+              "white",
+              "transparent",
+              "color"
+            ]
+          },
+          "background_color": {
+            "type": "array",
+            "description": "[r,g,b] when background=color"
+          },
+          "preset": {
+            "type": "string",
+            "description": "Preset id for UI bookkeeping"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "doc_sample_color",
+      "title": "Document: Sample color",
+      "description": "Read the flattened composite color at document coordinate (x, y). Returns RGB, RGBA, and HSB; does not change the foreground color.\n\nInputs: x (required), y (required). Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: doc.sample_color.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Doc x"
+          },
+          "y": {
+            "type": "number",
+            "description": "Doc y"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "edit_fill",
+      "title": "Edit: Fill",
+      "description": "Fill the selection (or the whole canvas if none) on the active layer. Default contents=color uses color [r,g,b] or the current foreground; contents=pattern uses the active pattern or pattern_id.\n\nInputs: contents, color, pattern_id, blend_mode, opacity. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: edit.fill.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contents": {
+            "type": "string",
+            "description": "color (default) or pattern",
+            "enum": [
+              "color",
+              "pattern"
+            ]
+          },
+          "color": {
+            "type": "array",
+            "description": "[r, g, b] each 0-255"
+          },
+          "pattern_id": {
+            "type": "string",
+            "description": "Pattern preset id; defaults to the active pattern when contents=pattern"
+          },
+          "blend_mode": {
+            "type": "string",
+            "description": "Pattern blend mode (default normal)",
+            "enum": [
+              "normal",
+              "dissolve",
+              "darken",
+              "multiply",
+              "color-burn",
+              "linear-burn",
+              "lighten",
+              "screen",
+              "color-dodge",
+              "linear-dodge",
+              "overlay",
+              "soft-light",
+              "hard-light",
+              "vivid-light",
+              "linear-light",
+              "difference",
+              "exclusion",
+              "pin-light",
+              "hard-mix",
+              "subtract",
+              "divide",
+              "darker-color",
+              "lighter-color",
+              "hue",
+              "saturation",
+              "color",
+              "luminosity"
+            ]
+          },
+          "opacity": {
+            "type": "number",
+            "description": "Pattern opacity 0..1 (default 1)"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "export_artifact",
+      "title": "Export: Artifact",
+      "description": "Export the active document and keep the file in the editor as a retrievable artifact instead of starting a browser download. format \"png\" is the flattened visible composite (or, with layer_id, that layer's own pixels at its content bounds); \"psd\" is the layered Photoshop interchange file from File > Save; \"pfd\" is PhotoFresco's native editable document from Save to My Documents. Returns { artifact_id, format, mime_type, filename, byte_length, sha256, document_id, revision, width, height, layer_id, fidelity, loss, created_at, expires_at }; read the bytes with artifact.read. Artifacts are bound to this caller and document, kept 10 minutes, at most 256.0 MiB each and 16 per caller (the oldest is evicted). Errors: export_failed, export_timeout (120 s), artifact_too_large, artifact_limit, stale_revision (the document changed during the export). Nothing is written to disk.\n\nThe result links an MCP resource (photofresco://artifact/<id>) holding the bytes; photofresco_export_file writes the export to a granted folder in one step.\nInputs: format (required), layer_id. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read + Export, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns when the operation has finished (it may take seconds).\nResults carry document_id and revision. PhotoFresco operation: export.artifact.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "description": "png (flattened or one layer), psd (layered interchange) or pfd (native, full fidelity)",
+            "enum": [
+              "png",
+              "psd",
+              "pfd"
+            ]
+          },
+          "layer_id": {
+            "type": "string",
+            "description": "PNG only: export this layer's own pixels instead of the composite",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "format"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "filter_apply",
+      "title": "Filter: Apply",
+      "description": "Apply a destructive filter to the active layer (selection restricts it). Types: gaussian-blur {radius px}, sharpen {amount 0..3, radius px}, sharpen-more, sharpen-edges, unsharp-mask {amount percent 1..500, radius px, threshold 0..255}, noise {amount 0..1}, box-blur {radius px}, motion-blur {angle deg, distance px}, radial-blur {amount 1..100, method spin|zoom}, average, median {radius 1..8}, mosaic {cellSize px}, high-pass {radius px}, ripple {amount px, wavelength px}, twirl {angle deg}, spherize {amount -100..100}, wave {amplitude px, wavelength px}, zigzag {amount px, ridges}, polar-coordinates {mode rect-to-polar|polar-to-rect}, crystallize {cellSize px}, pointillize {cellSize px}, facet, fragment, despeckle, dust-and-scratches {radius px, threshold 0..255}, emboss {angle deg, height px, amount 0..5}, find-edges, solarize, trace-contour {level 0..255, edge lower|upper}, wind {method wind|blast|stagger, direction left|right}, clouds, difference-clouds, lens-flare {brightness percent 10..300, centerX 0..1, centerY 0..1}, fibers {variance 1..64, strength 1..64}, maximum {radius px}, minimum {radius px}, offset {dx px, dy px}, custom {kernel 25 numbers, scale, offset}. Pass params in \"params\".\n\nInputs: filter_type (required), params. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: filter.apply.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filter_type": {
+            "type": "string",
+            "description": "Which filter",
+            "enum": [
+              "gaussian-blur",
+              "sharpen",
+              "sharpen-more",
+              "sharpen-edges",
+              "unsharp-mask",
+              "noise",
+              "box-blur",
+              "motion-blur",
+              "radial-blur",
+              "average",
+              "median",
+              "mosaic",
+              "high-pass",
+              "ripple",
+              "twirl",
+              "spherize",
+              "wave",
+              "zigzag",
+              "polar-coordinates",
+              "crystallize",
+              "pointillize",
+              "facet",
+              "fragment",
+              "despeckle",
+              "dust-and-scratches",
+              "emboss",
+              "find-edges",
+              "solarize",
+              "trace-contour",
+              "wind",
+              "clouds",
+              "difference-clouds",
+              "lens-flare",
+              "fibers",
+              "maximum",
+              "minimum",
+              "offset",
+              "custom"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "description": "Type-specific parameters"
+          }
+        },
+        "required": [
+          "filter_type"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "history_redo",
+      "title": "History: Redo",
+      "description": "Redo the next edit. Returns the label of what was redone, or null.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: history.redo.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "history_undo",
+      "title": "History: Undo",
+      "description": "Undo the last edit. Returns the label of what was undone, or null.\n\nReverts the last History entry, including edits made by the user.\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: history.undo.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "image_resize",
+      "title": "Image: Resize",
+      "description": "Resample the whole document to new pixel dimensions (bilinear). Undoable.\n\nInputs: width (required), height (required). Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: image.resize.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "number",
+            "description": "New width px"
+          },
+          "height": {
+            "type": "number",
+            "description": "New height px"
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "image_rotate",
+      "title": "Image: Rotate",
+      "description": "Rotate the whole canvas by quarter turns: 1 = 90° clockwise, 2 = 180°, 3 = 90° counter-clockwise. Undoable.\n\nInputs: turns (required). Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: image.rotate.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "turns": {
+            "type": "number",
+            "description": "1, 2, or 3 quarter turns"
+          }
+        },
+        "required": [
+          "turns"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "layer_add",
+      "title": "Layer: Add",
+      "description": "Add a new empty layer above the active node and make it active.\n\nInputs: name. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: layer.add.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Layer name (default \"Layer N\")"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "layer_delete",
+      "title": "Layer: Delete",
+      "description": "Delete the active node. Refused if it would leave no layers.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: layer.delete.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "layer_duplicate",
+      "title": "Layer: Duplicate",
+      "description": "Duplicate the active node (deep for groups); the copy becomes active.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: layer.duplicate.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "layer_set_active",
+      "title": "Layer: Set active",
+      "description": "Set the active node (layers paint/transform; groups move as a unit).\n\nInputs: id (required). Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Changes editor view or tool settings; not a document edit and not in History.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: layer.set_active.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Node id from doc.get_state"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "layer_set_props",
+      "title": "Layer: Set props",
+      "description": "Set properties on a node (default: the active one). Only provided fields change. blend_mode \"pass-through\" is groups-only.\n\nInputs: id, name, visible, opacity, blend_mode, locked, lock_pixels, lock_position, lock_transparency, clipped, blend_if, channel_mask, knockout, blend_interior_as_group, blend_clipped_as_group, transparency_shapes_layer, mask_hides_effects, vector_mask_hides_effects. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: layer.set_props.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Target node id (default: active)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Rename"
+          },
+          "visible": {
+            "type": "boolean",
+            "description": "Show/hide"
+          },
+          "opacity": {
+            "type": "number",
+            "description": "0..1"
+          },
+          "blend_mode": {
+            "type": "string",
+            "description": "Blend mode",
+            "enum": [
+              "normal",
+              "dissolve",
+              "darken",
+              "multiply",
+              "color-burn",
+              "linear-burn",
+              "lighten",
+              "screen",
+              "color-dodge",
+              "linear-dodge",
+              "overlay",
+              "soft-light",
+              "hard-light",
+              "vivid-light",
+              "linear-light",
+              "difference",
+              "exclusion",
+              "pin-light",
+              "hard-mix",
+              "subtract",
+              "divide",
+              "darker-color",
+              "lighter-color",
+              "hue",
+              "saturation",
+              "color",
+              "luminosity",
+              "pass-through"
+            ]
+          },
+          "locked": {
+            "type": "boolean",
+            "description": "Lock/unlock"
+          },
+          "lock_pixels": {
+            "type": "boolean",
+            "description": "Raster layer pixel lock"
+          },
+          "lock_position": {
+            "type": "boolean",
+            "description": "Raster layer position lock"
+          },
+          "lock_transparency": {
+            "type": "boolean",
+            "description": "Raster layer transparency lock"
+          },
+          "clipped": {
+            "type": "boolean",
+            "description": "Clipping mask: confine rendering to the alpha of the layer below (⌥⌘G)"
+          },
+          "blend_if": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Raster layer Blend If {channel,thisLayer:[b0,b1,w1,w0],underlying:[...]}; null clears it"
+          },
+          "channel_mask": {
+            "type": "object",
+            "description": "Raster layer RGB write mask {r:boolean,g:boolean,b:boolean}"
+          },
+          "knockout": {
+            "type": "string",
+            "description": "Knockout depth",
+            "enum": [
+              "none",
+              "shallow",
+              "deep"
+            ]
+          },
+          "blend_interior_as_group": {
+            "type": "boolean",
+            "description": "Blend fill and interior effects as one source"
+          },
+          "blend_clipped_as_group": {
+            "type": "boolean",
+            "description": "Apply the clipping base blend/opacity to the whole clip unit"
+          },
+          "transparency_shapes_layer": {
+            "type": "boolean",
+            "description": "Use source transparency to shape fill and interior effects"
+          },
+          "mask_hides_effects": {
+            "type": "boolean",
+            "description": "Apply the raster layer mask to generated effect output"
+          },
+          "vector_mask_hides_effects": {
+            "type": "boolean",
+            "description": "Apply the vector mask to generated effect output"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "mask_add",
+      "title": "Mask: Add",
+      "description": "Add a raster mask to the active layer. mode \"selection\" rasterizes the current selection (selected = visible); default is \"selection\" when one exists, else \"reveal\".\n\nInputs: mode. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: mask.add.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mask contents",
+            "enum": [
+              "reveal",
+              "hide",
+              "selection"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "mask_remove",
+      "title": "Mask: Remove",
+      "description": "Delete the active layer’s mask (the layer becomes fully visible again).\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: mask.remove.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "render_mask",
+      "title": "Preview: Mask",
+      "description": "Preview a mask over a document-space region as a grayscale PNG (black 0 = hidden/unselected, white 255 = shown/selected) with exact coverage statistics { pixels, nonzero, full, mean } computed at document resolution over the region. source \"layer\" (default) is a layer's raster mask (layer_id, default the active layer), placed at its document position; source \"selection\" is the current selection. Read-only. Returns image { mime_type: \"image/png\", data_base64, width, height, byte_length } plus document_id, revision (the document revision rendered), document { width, height }, requested and region { x, y, width, height } (region = requested clipped to the canvas; clipped: true when they differ), scale { x, y } and the coordinate convention. Errors carry code: invalid_region, region_out_of_bounds, preview_too_large, unknown_layer, unsupported_layer_kind, mask_unavailable, stale_revision (the document changed while rendering). Limits: output ≤ 2048 px per side and 4194304 px, PNG ≤ 8.0 MiB; the source is read in strips of ≤ 8.0 MiB so a small region of a huge document stays small.\n\nInputs: x, y, width, height, max_size, scale, source, layer_id. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns when the operation has finished (it may take seconds).\nResults carry document_id and revision. PhotoFresco operation: render.mask.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Left edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+            "minimum": -60000,
+            "maximum": 60000
+          },
+          "y": {
+            "type": "number",
+            "description": "Top edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+            "minimum": -60000,
+            "maximum": 60000
+          },
+          "width": {
+            "type": "number",
+            "description": "Region width in document pixels (whole number; default: to the right canvas edge)",
+            "minimum": 1,
+            "maximum": 60000
+          },
+          "height": {
+            "type": "number",
+            "description": "Region height in document pixels (whole number; default: to the bottom canvas edge)",
+            "minimum": 1,
+            "maximum": 60000
+          },
+          "max_size": {
+            "type": "number",
+            "description": "Fit the preview inside this many pixels per side, never magnifying (default 1024). Use scale instead for exact detail",
+            "minimum": 1,
+            "maximum": 2048
+          },
+          "scale": {
+            "type": "number",
+            "description": "Exact output pixels per document pixel (1 = actual pixels, 4 = 4× magnified with nearest sampling, 0.25 = area-averaged). Output is limited to 2048 px per side and 4194304 px",
+            "minimum": 0.0001,
+            "maximum": 16
+          },
+          "source": {
+            "type": "string",
+            "description": "layer: the raster mask of layer_id (default); selection: the active selection",
+            "enum": [
+              "layer",
+              "selection"
+            ]
+          },
+          "layer_id": {
+            "type": "string",
+            "description": "Layer whose raster mask to show (source layer; default the active layer)",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "render_preview",
+      "title": "Preview: Preview",
+      "description": "Render the whole flattened composite to a PNG data URL, downscaled to fit max_size (never magnified). Use after edits to see the result. For a region at detail scale, one layer, a mask, or coordinate metadata use render.region / render.mask.\n\nInputs: max_size. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: render.preview.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "max_size": {
+            "type": "number",
+            "description": "Max width/height in px (default 512, at most 2048)",
+            "minimum": 1,
+            "maximum": 2048
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "render_region",
+      "title": "Preview: Region",
+      "description": "Preview a document-space region at a chosen scale as a PNG, without rendering the whole document. Without layer_id it shows the flattened visible composite (same compositor as PNG export); with layer_id it shows that layer's own pixels (raster, text, shape or smart object) before its mask, opacity, blend mode and effects. Use scale 1–16 to inspect detail at actual or magnified pixels, or max_size to fit an overview. Read-only; nothing is added to history. Returns image { mime_type: \"image/png\", data_base64, width, height, byte_length } plus document_id, revision (the document revision rendered), document { width, height }, requested and region { x, y, width, height } (region = requested clipped to the canvas; clipped: true when they differ), scale { x, y } and the coordinate convention. Errors carry code: invalid_region, region_out_of_bounds, preview_too_large, unknown_layer, unsupported_layer_kind, mask_unavailable, stale_revision (the document changed while rendering). Limits: output ≤ 2048 px per side and 4194304 px, PNG ≤ 8.0 MiB; the source is read in strips of ≤ 8.0 MiB so a small region of a huge document stays small.\n\nInputs: x, y, width, height, max_size, scale, layer_id. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Reads the document or editor state; changes nothing.\nPermission: Read, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns when the operation has finished (it may take seconds).\nResults carry document_id and revision. PhotoFresco operation: render.region.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Left edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+            "minimum": -60000,
+            "maximum": 60000
+          },
+          "y": {
+            "type": "number",
+            "description": "Top edge in document pixels (whole number, default 0). May be negative; the region is clipped to the canvas",
+            "minimum": -60000,
+            "maximum": 60000
+          },
+          "width": {
+            "type": "number",
+            "description": "Region width in document pixels (whole number; default: to the right canvas edge)",
+            "minimum": 1,
+            "maximum": 60000
+          },
+          "height": {
+            "type": "number",
+            "description": "Region height in document pixels (whole number; default: to the bottom canvas edge)",
+            "minimum": 1,
+            "maximum": 60000
+          },
+          "max_size": {
+            "type": "number",
+            "description": "Fit the preview inside this many pixels per side, never magnifying (default 1024). Use scale instead for exact detail",
+            "minimum": 1,
+            "maximum": 2048
+          },
+          "scale": {
+            "type": "number",
+            "description": "Exact output pixels per document pixel (1 = actual pixels, 4 = 4× magnified with nearest sampling, 0.25 = area-averaged). Output is limited to 2048 px per side and 4194304 px",
+            "minimum": 0.0001,
+            "maximum": 16
+          },
+          "layer_id": {
+            "type": "string",
+            "description": "Optional layer id (doc.get_state) to preview that layer alone instead of the composite",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "selection_all",
+      "title": "Selection: All",
+      "description": "Select the whole document.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: selection.all.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "selection_ellipse",
+      "title": "Selection: Ellipse",
+      "description": "Select an ellipse inscribed in the given rect (doc coordinates).\n\nInputs: x (required), y (required), w (required), h (required), mode, feather. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: selection.ellipse.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Left"
+          },
+          "y": {
+            "type": "number",
+            "description": "Top"
+          },
+          "w": {
+            "type": "number",
+            "description": "Width"
+          },
+          "h": {
+            "type": "number",
+            "description": "Height"
+          },
+          "mode": {
+            "type": "string",
+            "description": "How to combine with the existing selection",
+            "enum": [
+              "replace",
+              "add",
+              "subtract",
+              "intersect"
+            ]
+          },
+          "feather": {
+            "type": "number",
+            "description": "Feather radius in px (softens the edge)"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "selection_invert",
+      "title": "Selection: Invert",
+      "description": "Invert the current selection.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: selection.invert.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "selection_none",
+      "title": "Selection: None",
+      "description": "Deselect — clear the selection so edits affect the whole canvas again.\n\nInputs: none.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: selection.none.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "selection_rect",
+      "title": "Selection: Rect",
+      "description": "Select a rectangle in doc coordinates.\n\nInputs: x (required), y (required), w (required), h (required), mode, feather. Units, ranges and allowed values are in the input schema; the editor rejects arguments outside it before anything runs.\nEffect: Edits the document through an undoable command that appears in History.\nUndo: history_undo reverts it.\nPermission: Edit, granted by the user in the PhotoFresco window (ask with photofresco_request_access).\nReturns immediately with the result.\nResults carry document_id and revision. PhotoFresco operation: selection.rect.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "Left"
+          },
+          "y": {
+            "type": "number",
+            "description": "Top"
+          },
+          "w": {
+            "type": "number",
+            "description": "Width"
+          },
+          "h": {
+            "type": "number",
+            "description": "Height"
+          },
+          "mode": {
+            "type": "string",
+            "description": "How to combine with the existing selection",
+            "enum": [
+              "replace",
+              "add",
+              "subtract",
+              "intersect"
+            ]
+          },
+          "feather": {
+            "type": "number",
+            "description": "Feather radius in px (softens the edge)"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "version": "0.1.0"
+}

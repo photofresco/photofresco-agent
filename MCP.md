@@ -17,9 +17,12 @@ Choose the folders the agent may open files from (`--read`) and save exports int
 Without them the agent can still edit and preview, but cannot touch your files.
 
 > **npm release pending.** The `photofresco` npm package is published in mid-October 2026; until
-> then the `npx` lines below do not work. Install the plugin, or run from a clone with
-> `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of the `npx -y photofresco`
-> part.
+> then the `npx` lines below do not work. Use the README's one-click buttons (they run the same
+> version from GitHub), install the plugin, put
+> `--package=https://github.com/photofresco/photofresco-agent/archive/328cfaf3caf6483c5660381f19f2afdb2059a215.tar.gz photofresco`
+> in place of `photofresco@0.1.0`, or run from a clone with
+> `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of the `npx -y photofresco` part.
+> Agents such as Cline can follow [llms-install.md](llms-install.md).
 
 **Claude Desktop** — `claude_desktop_config.json` (Settings → Developer → Edit Config):
 

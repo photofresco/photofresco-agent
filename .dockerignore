@@ -1,0 +1,6 @@
+# The image needs only package.json, LICENSE, src/ and vendor/ (see Dockerfile).
+*
+!package.json
+!LICENSE
+!src/
+!vendor/
