@@ -181,7 +181,7 @@ export async function runDaemonProcess() {
  * @returns {Promise<void>}
  */
 export function spawnDaemon(config, env) {
-  const bin = fileURLToPath(new URL('../../bin/photofresco.js', import.meta.url))
+  const bin = fileURLToPath(new URL('../bin/photofresco.js', import.meta.url))
   const child = spawn(process.execPath, [bin, '__daemon'], {
     detached: true,
     stdio: ['ignore', 'ignore', 'ignore', 'ipc'],

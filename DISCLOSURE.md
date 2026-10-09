@@ -96,7 +96,7 @@ Anything not observed in those runs is marked "not verified".
 - **Runs** as a Node.js process your MCP client starts and talks to over stdin/stdout. With
   `npx photofresco …`, npm downloads the package from the npm registry first (npm's fetch, before
   the server runs); as a Claude Code, Codex, Cursor or Gemini CLI plugin, the client copies this
-  repository and runs `node <plugin folder>/bin/photofresco.js mcp`, downloading nothing at start.
+  repository and runs `node <plugin folder>/src/bin/photofresco.js mcp`, downloading nothing at start.
   Runtime dependencies: none to install. The official MCP SDK (`@modelcontextprotocol/server` and
   `@modelcontextprotocol/core` 2.2.0, `zod` 4.6.5) is bundled readable in `vendor/` (versions,
   tarball SHA-256 and licenses in `vendor/README.md`); the server uses only its stdio transport. It

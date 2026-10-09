@@ -13,7 +13,7 @@ import { Client, StdioClientTransport } from './support/mcpClient.js'
  * (.claude-plugin/plugin.json, .claude-plugin/marketplace.json, .mcp.json), Agent Plugins clients such
  * as Codex (plugin.json, mcp.json), Cursor (.cursor-plugin/plugin.json) and Gemini CLI
  * (gemini-extension.json). Each manifest agrees with package.json and the listing, points at files that
- * exist, and starts the bundled server as `node <plugin root>/bin/photofresco.js mcp` (no npx, shell or
+ * exist, and starts the bundled server as `node <plugin root>/src/bin/photofresco.js mcp` (no npx, shell or
  * npm script). The repository stays within Claude's plugin-directory file rules, and every launcher,
  * run from a copy of the repository without node_modules, starts the server and lists its tools.
  * The platforms' own validators (claude plugin validate, gemini extensions validate, codex plugin add)
@@ -74,7 +74,8 @@ describe('plugin bundle', () => {
     // Claude's directory: lowercase-hyphen name, not one of Anthropic's reserved spellings.
     assert.match(CLAUDE.name, /^[a-z0-9]+(-[a-z0-9]+)*$/)
     assert.doesNotMatch(CLAUDE.name, /claude|anthropic|official|mcp|plugin|test/)
-    assert.equal(CLAUDE.documentationUrl, `${REPO}#readme`)
+    assert.equal(CLAUDE.documentationUrl, 'https://photofresco.com/docs/ai-agents/')
+    assert.equal(CLAUDE.privacyPolicyUrl, 'https://photofresco.com/docs/privacy/')
     assert.equal(CLAUDE.supportUrl, `${REPO}/issues`)
   })
 
@@ -129,7 +130,8 @@ describe('plugin bundle', () => {
   it('every launcher runs the bundled server file with node and plain arguments', () => {
     for (const { client, server, root } of LAUNCHERS) {
       assert.equal(server.command, 'node', client)
-      assert.deepEqual(server.args, [`${root}bin${root.endsWith('${/}') ? '${/}' : '/'}photofresco.js`, 'mcp'], client)
+      const sep = root.endsWith('${/}') ? '${/}' : '/'
+      assert.deepEqual(server.args, [`${root}src${sep}bin${sep}photofresco.js`, 'mcp'], client)
       assert.equal(server.env, undefined, client)
     }
     assert.equal(AGENT_MCP.mcpServers.photofresco.type, 'stdio')

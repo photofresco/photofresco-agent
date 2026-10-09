@@ -1,6 +1,6 @@
 # Vendored MCP SDK
 
-These files let `bin/photofresco.js mcp` run straight from a clone of this repository, which is how the
+These files let `src/bin/photofresco.js mcp` run straight from a clone of this repository, which is how the
 Claude Code, Cursor, Gemini CLI and Codex plugins start it, and from the npm package, which therefore has no
 runtime dependencies. `src/mcp/server.js` is their only importer; there is no second copy of the SDK.
 

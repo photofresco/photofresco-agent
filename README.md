@@ -44,6 +44,11 @@ The editor itself is not in this repository; the connector opens it at photofres
 Choose the folders the agent may open files from (`--read`) and save exports into (`--write`).
 Without them the agent can still edit and preview, but cannot touch your files.
 
+> **npm release pending.** The `photofresco` npm package is published in mid-October 2026, so the
+> `npx` commands below do not work yet. Until then, [install the plugin](#install-as-a-plugin)
+> or run from a clone of this repository: use `node /path/to/photofresco-agent/src/bin/photofresco.js`
+> in place of the `npx -y photofresco` part (no `npm install` needed).
+
 **Claude Code**:
 
 ```sh
@@ -111,7 +116,7 @@ tools starts no browser.
 
 This repository is also a plugin for Claude Code, Codex, Cursor and Gemini CLI: one install adds the
 MCP server and the [Agent Skill](#agent-skill). The client copies the repository and starts the server
-with `node <plugin folder>/bin/photofresco.js mcp`; nothing is downloaded from npm, because the MCP SDK
+with `node <plugin folder>/src/bin/photofresco.js mcp`; nothing is downloaded from npm, because the MCP SDK
 is bundled readable in [vendor/](vendor/README.md). Node.js 22 or newer must be on your `PATH`.
 
 A plugin install grants **no folders**: the agent edits the image open in the PhotoFresco window, and
@@ -168,7 +173,9 @@ list (`photofresco_list_tool_groups`, or `photofresco ops` on the command line).
 ## Command line
 
 The same package installs a `photofresco` command for scripts and agents that have a shell but no
-MCP client. It drives the same kind of approved window through a background connector process:
+MCP client. It drives the same kind of approved window through a background connector process.
+Until the npm package is published (mid-October 2026), run it from a clone instead of
+`npm install -g`: `alias photofresco="node /path/to/photofresco-agent/src/bin/photofresco.js"`.
 
 ```sh
 npm install -g photofresco@0.1.0

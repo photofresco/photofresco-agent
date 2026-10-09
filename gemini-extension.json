@@ -6,7 +6,7 @@
     "photofresco": {
       "command": "node",
       "args": [
-        "${extensionPath}${/}bin${/}photofresco.js",
+        "${extensionPath}${/}src${/}bin${/}photofresco.js",
         "mcp"
       ]
     }

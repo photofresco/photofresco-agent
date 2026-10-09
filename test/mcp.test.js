@@ -18,7 +18,7 @@ import { Client, StdioClientTransport } from './support/mcpClient.js'
  * is scripts/agent-mcp-e2e.mjs.
  */
 
-const BIN = new URL('../bin/photofresco.js', import.meta.url).pathname
+const BIN = new URL('../src/bin/photofresco.js', import.meta.url).pathname
 const FAKE_BROWSER = new URL('./fixtures/fake-browser.mjs', import.meta.url).pathname
 const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 const SERVER_JSON = JSON.parse(readFileSync(new URL('../server.json', import.meta.url), 'utf8'))
@@ -246,9 +246,9 @@ describe('listing metadata', () => {
     assert.equal(SERVER_JSON.packages.length, 1)
     assert.deepEqual({ registryType: pkg.registryType, identifier: pkg.identifier, transport: pkg.transport }, { registryType: 'npm', identifier: PACKAGE.name, transport: { type: 'stdio' } })
     assert.deepEqual(pkg.packageArguments.map((/** @type {any} */ arg) => arg.value), ['mcp'])
-    assert.equal(PACKAGE.bin.photofresco, 'bin/photofresco.js')
+    assert.equal(PACKAGE.bin.photofresco, 'src/bin/photofresco.js')
     assert.match(SERVER_JSON.repository.url, /^https:\/\/github\.com\/photofresco\//)
-    assert.ok(PACKAGE.files.includes('bin') && PACKAGE.files.includes('server.json'))
+    assert.ok(PACKAGE.files.includes('src') && PACKAGE.files.includes('server.json'))
   })
 })
 

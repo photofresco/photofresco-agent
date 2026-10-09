@@ -27,14 +27,13 @@
   "mcpName": "io.github.photofresco/photofresco",
   "type": "module",
   "bin": {
-    "photofresco": "bin/photofresco.js"
+    "photofresco": "src/bin/photofresco.js"
   },
   "exports": {
     ".": "./src/index.js",
     "./mcp": "./src/mcp/server.js"
   },
   "files": [
-    "bin",
     "src",
     "vendor",
     "skills",

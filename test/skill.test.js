@@ -22,7 +22,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const PACKAGE = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
 const SERVER_JSON = JSON.parse(readFileSync(join(ROOT, 'server.json'), 'utf8'))
 const MCP_DOC = readFileSync(join(ROOT, 'MCP.md'), 'utf8')
-const MCP_USAGE = readFileSync(join(ROOT, 'bin', 'photofresco.js'), 'utf8')
+const MCP_USAGE = readFileSync(join(ROOT, 'src', 'bin', 'photofresco.js'), 'utf8')
 const CATALOG = loadCatalog().operations
 const OPS = new Map(CATALOG.map((op) => [op.name, op]))
 

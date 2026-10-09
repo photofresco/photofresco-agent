@@ -12,7 +12,7 @@ headless real-browser run). **Not published**: the npm package is a later releas
 owner approval pending), so run it from a checkout until then (nothing to install):
 
 ```sh
-alias photofresco="node $PWD/agent/bin/photofresco.js"
+alias photofresco="node $PWD/agent/src/bin/photofresco.js"
 ```
 
 A Chromium-based browser (Chrome, Edge or Chromium 120+) must be installed, or pass `--browser`

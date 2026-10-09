@@ -37,8 +37,8 @@ const expandHome = (path) => (path === '~' || path.startsWith('~/') ? homedir() 
 
 /** @param {string[]} args Arguments after `mcp`. */
 async function runMcp(args) {
-  const { runStdioServer } = await import('../src/mcp/server.js')
-  const { TOOL_GROUPS, parseToolGroups } = await import('../src/mcp/tools.js')
+  const { runStdioServer } = await import('../mcp/server.js')
+  const { TOOL_GROUPS, parseToolGroups } = await import('../mcp/tools.js')
   const usage = MCP_USAGE.replace('%GROUPS%', Object.keys(TOOL_GROUPS).join(', '))
   const { values, positionals } = parseArgs({
     args,
@@ -57,7 +57,7 @@ async function runMcp(args) {
     },
   })
   if (values.version) {
-    process.stdout.write(`${JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version}\n`)
+    process.stdout.write(`${JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version}\n`)
     return
   }
   if (values.help) {
@@ -85,7 +85,7 @@ async function runMcp(args) {
 
 /** @param {string[]} args Arguments after the program name. */
 async function runCommandLine(args) {
-  const { runCli } = await import('../src/cli/main.js')
+  const { runCli } = await import('../cli/main.js')
   const controller = new AbortController()
   let interrupts = 0
   process.on('SIGINT', () => {
@@ -100,7 +100,7 @@ async function main() {
   const args = process.argv.slice(2)
   if (args[0] === 'mcp') return runMcp(args.slice(1))
   if (args[0] === '__daemon') {
-    const { runDaemonProcess } = await import('../src/cli/daemon.js')
+    const { runDaemonProcess } = await import('../cli/daemon.js')
     return runDaemonProcess()
   }
   return runCommandLine(args)

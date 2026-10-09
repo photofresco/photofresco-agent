@@ -23,7 +23,7 @@ import { assertCliResult } from './support/cliSchema.js'
  * test/agent-cli.test.mjs in the editor repository; the real browser run is scripts/agent-cli-e2e.mjs.
  */
 
-const BIN = new URL('../bin/photofresco.js', import.meta.url).pathname
+const BIN = new URL('../src/bin/photofresco.js', import.meta.url).pathname
 const base = realpathSync(mkdtempSync(join(tmpdir(), 'pfcli-')))
 after(() => rmSync(base, { recursive: true, force: true }))
 let counter = 0

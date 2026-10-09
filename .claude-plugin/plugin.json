@@ -23,6 +23,7 @@
     "cli"
   ],
   "icon": "./assets/logo.png",
-  "documentationUrl": "https://github.com/photofresco/photofresco-agent#readme",
+  "documentationUrl": "https://photofresco.com/docs/ai-agents/",
+  "privacyPolicyUrl": "https://photofresco.com/docs/privacy/",
   "supportUrl": "https://github.com/photofresco/photofresco-agent/issues"
 }

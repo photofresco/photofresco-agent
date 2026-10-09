@@ -16,6 +16,11 @@ release. Until then, run it from a checkout (see "From a checkout").
 Choose the folders the agent may open files from (`--read`) and save exports into (`--write`).
 Without them the agent can still edit and preview, but cannot touch your files.
 
+> **npm release pending.** The `photofresco` npm package is published in mid-October 2026; until
+> then the `npx` lines below do not work. Install the plugin, or run from a clone with
+> `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of the `npx -y photofresco`
+> part.
+
 **Claude Desktop** — `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
 ```json
@@ -54,7 +59,7 @@ same arguments under `"servers"` with `"type": "stdio"`:
 ```
 
 **From a checkout** (before publication; nothing to install, the MCP SDK is bundled in `vendor/`):
-use `"command": "node"` with `"args": ["/path/to/agent/bin/photofresco.js", "mcp", "--read", …]`.
+use `"command": "node"` with `"args": ["/path/to/agent/src/bin/photofresco.js", "mcp", "--read", …]`.
 
 These configurations follow each client's documented `command`/`args` stdio format. The server
 itself was exercised with the official MCP client; it has not yet been run inside Claude Desktop,

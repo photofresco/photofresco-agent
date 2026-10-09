@@ -52,13 +52,13 @@ describe('public repository package', () => {
     assert.equal(PACKAGE.repository.url, `git+${REPO}.git`)
     assert.equal(PACKAGE.bugs.url, `${REPO}/issues`)
     for (const keyword of ['mcp', 'image-editor', 'photoshop-alternative', 'ai-agents']) assert.ok(PACKAGE.keywords.includes(keyword), keyword)
-    assert.deepEqual(PACKAGE.bin, { photofresco: 'bin/photofresco.js' })
+    assert.deepEqual(PACKAGE.bin, { photofresco: 'src/bin/photofresco.js' })
     assert.match(PACKAGE.engines.node, /^>=\d+/)
     // The owner approved publication (pf-agent-platform-nkwn.39, 2026-10-09): no private flag or note.
     assert.equal(PACKAGE.private, undefined)
     assert.equal(PACKAGE['//'], undefined)
     assert.equal(PACKAGE.mcpName, 'io.github.photofresco/photofresco')
-    assert.deepEqual(PACKAGE.files, ['bin', 'src', 'vendor', 'skills', 'server.json', 'CONNECTOR.md', 'DISCLOSURE.md', 'MCP.md', 'CLI.md'])
+    assert.deepEqual(PACKAGE.files, ['src', 'vendor', 'skills', 'server.json', 'CONNECTOR.md', 'DISCLOSURE.md', 'MCP.md', 'CLI.md'])
     // The MCP SDK ships bundled in vendor/ (pf-agent-platform-nkwn.37): the package installs nothing else.
     assert.equal(PACKAGE.dependencies, undefined)
     for (const entry of PACKAGE.files) assert.ok(existsSync(join(ROOT, entry)), entry)
@@ -148,7 +148,7 @@ describe('public repository package', () => {
     const files = packed.files.map((/** @type {{ path: string }} */ file) => file.path).sort()
     const intended = /^(bin\/[^/]+\.js|src\/.+\.(js|json)|vendor\/([^/]+\.(js|d\.ts|md)|licenses\/[^/]+\.txt)|skills\/.+\.md|server\.json|package\.json|README\.md|LICENSE|(CONNECTOR|DISCLOSURE|MCP|CLI)\.md)$/
     for (const file of files) assert.match(file, intended)
-    for (const required of ['bin/photofresco.js', 'src/mcp/server.js', 'src/mcp/catalog/layer.json', 'vendor/mcp-server.js', 'vendor/README.md', 'vendor/licenses/zod.LICENSE.txt', 'skills/photofresco/SKILL.md', 'server.json', 'LICENSE', 'README.md', 'DISCLOSURE.md']) assert.ok(files.includes(required), required)
+    for (const required of ['src/bin/photofresco.js', 'src/mcp/server.js', 'src/mcp/catalog/layer.json', 'vendor/mcp-server.js', 'vendor/README.md', 'vendor/licenses/zod.LICENSE.txt', 'skills/photofresco/SKILL.md', 'server.json', 'LICENSE', 'README.md', 'DISCLOSURE.md']) assert.ok(files.includes(required), required)
     for (const file of packed.files) assert.ok(file.size <= MAX_FILE_BYTES, `${file.path} ${file.size} bytes`)
   })
 })

@@ -25,6 +25,11 @@ If no `photofresco_*` tools are available, ask the user to add the server. `--re
 where you may open files; `--write` folders are where you may save exports. Without them you can
 still create documents, edit and preview, but cannot touch their files.
 
+If `npx` reports that the `photofresco` package is not found (it is published to npm in
+mid-October 2026), the user can install the PhotoFresco plugin from
+`photofresco/photofresco-agent` instead, or run it from a clone with
+`node <clone>/src/bin/photofresco.js` in place of the `npx -y photofresco` part.
+
 Claude Code:
 
 ```sh
@@ -46,7 +51,7 @@ and other clients that take `command`/`args`:
 ```
 
 From a source checkout of the package instead of npm (nothing to install; the MCP SDK is bundled), use
-`"command": "node"` with `"args": ["/path/to/photofresco/bin/photofresco.js", "mcp", "--read", …]`.
+`"command": "node"` with `"args": ["/path/to/photofresco/src/bin/photofresco.js", "mcp", "--read", …]`.
 
 Other options: `--overwrite` (exports may replace existing files in `--write` folders; you must
 also pass `overwrite: true`), `--tools essentials|all|<group,…>` (which operations are listed as
@@ -223,7 +228,7 @@ Every code and its next step: [references/troubleshooting.md](references/trouble
 ## 9. Command line (when you have a shell but no MCP tools)
 
 The same `photofresco` program is also a CLI over the same window, permissions and limits (from a
-source checkout: `node /path/to/photofresco/bin/photofresco.js <command>`). Run
+source checkout: `node /path/to/photofresco/src/bin/photofresco.js <command>`). Run
 `photofresco --help` or `photofresco <command> --help` for every option; add `--json` to get one
 JSON object on stdout, on success and on failure (image data is left out unless `--include-data`).
 The example runs the workflow document from [references/workflows.md](references/workflows.md),

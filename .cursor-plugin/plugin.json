@@ -25,7 +25,7 @@
     "photofresco": {
       "command": "node",
       "args": [
-        "${CURSOR_PLUGIN_ROOT}/bin/photofresco.js",
+        "${CURSOR_PLUGIN_ROOT}/src/bin/photofresco.js",
         "mcp"
       ]
     }

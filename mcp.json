@@ -5,7 +5,7 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/bin/photofresco.js",
+        "${PLUGIN_ROOT}/src/bin/photofresco.js",
         "mcp"
       ]
     }
