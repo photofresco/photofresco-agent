@@ -11,21 +11,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "photofresco",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/photofresco/photofresco-agent/releases/download/v0.1.0/photofresco-mcp-0.1.0.mcpb",
       "version": "0.1.0",
-      "runtimeHint": "npx",
+      "fileSha256": "20f9166ddc236230362be8a13c6f7619dcfb2b21a7b152c18bd325d6a0bb58c5",
       "transport": {
         "type": "stdio"
       },
-      "packageArguments": [
-        {
-          "type": "positional",
-          "value": "mcp",
-          "description": "Run the MCP server (stdio)"
-        }
-      ],
       "environmentVariables": [
         {
           "name": "PHOTOFRESCO_BROWSER",

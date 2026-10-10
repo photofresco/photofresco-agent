@@ -7,10 +7,14 @@
 #      optional NPM_TOKEN secret exists only for the very first publish, before a trusted publisher can
 #      be configured on npmjs.com). Test `npx -y photofresco@next mcp` in real clients, then promote:
 #      `npm dist-tag add photofresco@<version> latest` (owner, 2FA).
-#   2. target=registry: publishes server.json with mcp-publisher once npm `latest` is that version.
-#      Registry versions are immutable. The server name `io.github.photofresco/photofresco` is the
-#      photofresco GitHub org's namespace: `mcp-publisher login github-oidc` with this job's OIDC
-#      token (the run must come from a photofresco org repository); no DNS record or key.
+#   2. target=registry: publishes server.json with mcp-publisher. Its npm package (if listed) must be npm
+#      `latest` at that version; its mcpb package must be the GitHub Release asset whose SHA-256 is the
+#      listed fileSha256 (the registry itself only checks that the URL answers). Registry versions are
+#      immutable. The server name `io.github.photofresco/photofresco` is the photofresco GitHub org's
+#      namespace: `mcp-publisher login github-oidc` with this job's OIDC token (the run must come from a
+#      photofresco org repository); no DNS record or key. Version 0.1.0 lists only the mcpb package (npm
+#      was not yet published; the registry rejects an npm package it cannot find) and may be published
+#      from a laptop instead: see the editor repository's pf-agent-platform-nkwn.35 runbook.
 name: Release
 
 on:
@@ -72,11 +76,18 @@ jobs:
             const fail = (message) => { console.error(`::error::${message}`); process.exitCode = 1 }
             if (REF_NAME !== DEFAULT_BRANCH) fail(`Run from ${DEFAULT_BRANCH}, not ${REF_NAME}`)
             if (pkg.private) fail("package.json is still private: removing it is the approved publication change (pf-agent-platform-nkwn.39)")
-            for (const [what, value] of [["package.json", pkg.version], ["server.json", server.version], ["server.json packages[0]", server.packages[0].version]]) {
+            for (const [what, value] of [["package.json", pkg.version], ["server.json", server.version], ...server.packages.filter((p) => p.version !== undefined).map((p) => [`server.json ${p.registryType} package`, p.version])]) {
               if (value !== VERSION) fail(`${what} version is ${value}, not ${VERSION}`)
             }
             if (server.name !== pkg.mcpName) fail(`server.json name ${server.name} differs from package.json mcpName ${pkg.mcpName}`)
-            if (server.packages[0].identifier !== pkg.name) fail(`server.json package ${server.packages[0].identifier} differs from ${pkg.name}`)
+            for (const p of server.packages) {
+              if (p.registryType === "npm" && p.identifier !== pkg.name) fail(`server.json npm package ${p.identifier} differs from ${pkg.name}`)
+              if (p.registryType === "mcpb") {
+                const url = `https://github.com/photofresco/photofresco-agent/releases/download/v${VERSION}/photofresco-mcp-${VERSION}.mcpb`
+                if (p.identifier !== url) fail(`server.json mcpb package ${p.identifier} is not ${url}`)
+                if (!/^[0-9a-f]{64}$/.test(p.fileSha256 ?? "")) fail("server.json mcpb package has no fileSha256")
+              }
+            }
             for (const [what, value] of [["package.json", pkg.description], ["server.json", server.description]]) {
               if (value !== listing.description) fail(`${what} description differs from assets/listing.json`)
             }
@@ -132,15 +143,25 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           package-manager-cache: false
-      - name: The npm package is live as latest
+      - name: The npm package is live as latest (if server.json lists one)
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          latest="$(npm view "photofresco@latest" version)"
-          if [ "$latest" != "$VERSION" ]; then
-            echo "::error::npm latest is ${latest}, not ${VERSION}: publish and promote the npm canary first"
-            exit 1
+          if node -e 'process.exit(require("./server.json").packages.some((p) => p.registryType === "npm") ? 0 : 1)'; then
+            latest="$(npm view "photofresco@latest" version)"
+            if [ "$latest" != "$VERSION" ]; then
+              echo "::error::npm latest is ${latest}, not ${VERSION}: publish and promote the npm canary first"
+              exit 1
+            fi
           fi
+      - name: The release asset matches fileSha256 (if server.json lists an mcpb package)
+        run: |
+          node -e 'for (const p of require("./server.json").packages) if (p.registryType === "mcpb") console.log(`${p.fileSha256} ${p.identifier}`)' |
+            while read -r sha url; do
+              curl -fsSLo bundle.mcpb "$url"
+              echo "${sha}  bundle.mcpb" | sha256sum --check --strict
+              rm bundle.mcpb
+            done
       - name: Install mcp-publisher (checksum-verified)
         run: |
           curl -fsSLo mcp-publisher.tar.gz "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz"

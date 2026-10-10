@@ -36,6 +36,15 @@ function proseWords(text) {
   return prose.split(/\s+/).filter((word) => /[A-Za-z]{2,}/.test(word))
 }
 
+/** Pixel size of a baseline or progressive JPEG (its SOF0/SOF2 segment). @param {Buffer} jpeg */
+function jpegSize(jpeg) {
+  for (let at = 2; at + 9 < jpeg.length; at += 2 + jpeg.readUInt16BE(at + 2)) {
+    if (jpeg[at] !== 0xff) break
+    if (jpeg[at + 1] === 0xc0 || jpeg[at + 1] === 0xc2) return { width: jpeg.readUInt16BE(at + 7), height: jpeg.readUInt16BE(at + 5) }
+  }
+  return null
+}
+
 describe('public repository package', () => {
   it('LICENSE is the MIT license with the recorded copyright holder', () => {
     const license = read('LICENSE')
@@ -76,32 +85,44 @@ describe('public repository package', () => {
     assert.equal(LISTING.homepage, PACKAGE.homepage)
   })
 
-  it('assets: an exactly 400×400 PNG logo and a demo GIF under the 256 KiB file cap, no video', () => {
+  it('assets: an exactly 400×400 PNG logo, a 2:1 JPEG banner and a demo GIF under the 256 KiB file cap, no video', () => {
     const logo = readFileSync(join(ROOT, LISTING.logo))
     assert.deepEqual([...logo.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], 'PNG signature')
     assert.equal(logo.toString('ascii', 12, 16), 'IHDR')
     assert.deepEqual([logo.readUInt32BE(16), logo.readUInt32BE(20)], [400, 400])
+    // The Hermes Agent plugin catalog shows a 2:1 banner (assets/brand/render.mjs agent renders it).
+    const banner = readFileSync(join(ROOT, LISTING.banner))
+    assert.deepEqual([...banner.subarray(0, 3)], [0xff, 0xd8, 0xff], 'JPEG signature')
+    assert.deepEqual(jpegSize(banner), { width: 1200, height: 600 })
     // Claude's plugin directory holds anything but text, images and fonts for review (pf-agent-platform-nkwn.37).
     assert.deepEqual(LISTING.demo, ['assets/demo.gif'])
     assert.equal(readFileSync(join(ROOT, LISTING.demo[0])).toString('ascii', 0, 6), 'GIF89a')
-    for (const file of [LISTING.logo, ...LISTING.demo]) assert.ok(statSync(join(ROOT, file)).size <= MAX_FILE_BYTES, file)
+    for (const file of [LISTING.logo, LISTING.banner, ...LISTING.demo]) assert.ok(statSync(join(ROOT, file)).size <= MAX_FILE_BYTES, file)
   })
 
   it('README: at least 40 words of prose, install lines for each client, skill line and badge', () => {
     const words = proseWords(README).length
     assert.ok(words >= 40, `${words} words of prose`)
     assert.match(README, /^## What this runs, sends and fetches$/m)
-    for (const heading of ['Configure your agent', 'Agent skill', 'Command line', 'Uninstall']) assert.match(README, new RegExp(`^## ${heading}$`, 'm'))
-    for (const client of ['Claude Code', 'Claude Desktop', 'Cursor', 'VS Code']) assert.ok(README.includes(`**${client}**`), client)
+    for (const heading of ['Configure your agent', 'Agent skill', 'Command line', 'Uninstall', 'Support', 'License']) assert.match(README, new RegExp(`^## ${heading}$`, 'm'))
+    for (const client of ['From a clone', 'Claude Code', 'Claude Desktop', 'Cursor', 'VS Code', 'OpenCode', 'Kiro']) assert.ok(README.includes(`**${client}**`), client)
     assert.ok(README.includes('npx skills add photofresco/photofresco-agent'))
     assert.ok(README.includes('[![skills.sh](https://skills.sh/b/photofresco/photofresco-agent)](https://skills.sh/photofresco/photofresco-agent)'))
     assert.ok(README.includes(`claude mcp add photofresco -- npx -y photofresco@${PACKAGE.version} mcp`))
     const configs = fences(README).filter((block) => block.lang === 'json').map((block) => JSON.parse(block.body))
-    assert.deepEqual(configs.map((config) => Object.keys(config)), [['mcpServers'], ['servers']])
-    const desktop = configs[0].mcpServers.photofresco
-    const vscode = configs[1].servers.photofresco
+    assert.deepEqual(configs.map((config) => Object.keys(config)), [['mcpServers'], ['mcpServers'], ['servers'], ['$schema', 'mcp']])
+    // From a clone (works before the npm release): node runs the cloned server file.
+    const clone = configs[0].mcpServers.photofresco
+    assert.equal(clone.command, 'node')
+    assert.match(clone.args[0], /^\/Users\/you\/photofresco-agent\/src\/bin\/photofresco\.js$/)
+    assert.equal(clone.args[1], 'mcp')
+    const desktop = configs[1].mcpServers.photofresco
+    const vscode = configs[2].servers.photofresco
     assert.deepEqual(vscode, { type: 'stdio', ...desktop })
     assert.deepEqual(desktop.args.slice(0, 3), ['-y', `photofresco@${PACKAGE.version}`, 'mcp'])
+    // OpenCode: a local server whose command array is the clone entry's command and arguments.
+    const opencode = configs[3].mcp.photofresco
+    assert.deepEqual(opencode, { type: 'local', command: [clone.command, ...clone.args], enabled: true })
     for (const [, version] of README.matchAll(/photofresco@([0-9][^\s"`]*)/g)) assert.equal(version, PACKAGE.version)
   })
 

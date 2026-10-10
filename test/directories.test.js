@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 import { after, describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { Ajv } from '@modelcontextprotocol/client/validators/ajv'
-import { buildMcpb, bundleSourceFiles, listServerTools, MANIFEST_VERSION, unzip } from '../scripts/build-mcpb.mjs'
+import { buildMcpb, bundleSourceFiles, listServerTools, MANIFEST_VERSION, mcpbFileName, unzip } from '../scripts/build-mcpb.mjs'
 import { deeplinks, END, GITHUB_COMMIT, npxArgs, readmeBlock, REPO, serverConfig, SOURCE, START, webLinks } from '../scripts/install-links.mjs'
 import { Client, StdioClientTransport } from './support/mcpClient.js'
 import { fences } from './support/skillDoc.js'
@@ -193,7 +193,9 @@ describe('MCP directory packaging', () => {
     const second = await buildMcpb({ outDir: join(work, 'mcpb-b') })
     assert.equal(first.sha256, second.sha256)
     assert.ok(readFileSync(first.path).equals(readFileSync(second.path)))
-    assert.equal(readFileSync(`${first.path}.sha256`, 'utf8'), `${first.sha256}  photofresco-${PACKAGE.version}.mcpb\n`)
+    assert.equal(readFileSync(`${first.path}.sha256`, 'utf8'), `${first.sha256}  ${mcpbFileName(PACKAGE.version)}\n`)
+    // The release asset name: the Official MCP Registry needs "mcp" in an MCPB package URL.
+    assert.equal(mcpbFileName(PACKAGE.version), `photofresco-mcp-${PACKAGE.version}.mcpb`)
 
     const files = unzip(readFileSync(first.path))
     const manifest = JSON.parse(files.get('manifest.json')?.toString('utf8') ?? '{}')

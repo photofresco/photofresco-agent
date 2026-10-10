@@ -21,13 +21,5 @@
     "cli"
   ],
   "logo": "assets/logo.png",
-  "mcpServers": {
-    "photofresco": {
-      "command": "node",
-      "args": [
-        "${CURSOR_PLUGIN_ROOT}/src/bin/photofresco.js",
-        "mcp"
-      ]
-    }
-  }
+  "mcpServers": "./.mcp.json"
 }

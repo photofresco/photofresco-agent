@@ -4,11 +4,15 @@
   "category": "Design / image editing",
   "directoryCategories": {
     "punkpeye/awesome-mcp-servers": "Multimedia Process",
-    "mcpservers.org": "Design"
+    "mcpservers.org": "Design",
+    "hermes-agent plugin catalog": "tools",
+    "clawhub plugins": "media",
+    "clawhub skills": "creative"
   },
   "homepage": "https://photofresco.com/",
   "repository": "https://github.com/photofresco/photofresco-agent",
   "license": "MIT",
   "logo": "assets/logo.png",
+  "banner": "assets/banner.jpg",
   "demo": ["assets/demo.gif"]
 }

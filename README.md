@@ -62,8 +62,28 @@ and preview, but cannot touch your files.
 > `npx -y photofresco@0.1.0` commands below do not work yet. Until then, put
 > `--package=https://github.com/photofresco/photofresco-agent/archive/328cfaf3caf6483c5660381f19f2afdb2059a215.tar.gz photofresco`
 > (the same version, from GitHub) in place of `photofresco@0.1.0`, [install the plugin](#install-as-a-plugin),
-> or run from a clone of this repository: use `node /path/to/photofresco-agent/src/bin/photofresco.js`
+> or run from a clone of this repository as below: `node /path/to/photofresco-agent/src/bin/photofresco.js`
 > in place of the `npx -y photofresco@0.1.0` part (no `npm install` needed).
+
+**From a clone** (works today; the MCP SDK is bundled, so there is nothing to install):
+
+```sh
+git clone https://github.com/photofresco/photofresco-agent.git ~/photofresco-agent
+```
+
+Then add this entry to any client that reads `mcpServers` (Claude Desktop, Cursor, Windsurf, Kiro and
+most others), with your own home folder in place of `/Users/you`:
+
+```json
+{
+  "mcpServers": {
+    "photofresco": {
+      "command": "node",
+      "args": ["/Users/you/photofresco-agent/src/bin/photofresco.js", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+    }
+  }
+}
+```
 
 **Claude Code**:
 
@@ -117,6 +137,25 @@ gemini mcp add -s user photofresco npx -y photofresco@0.1.0 mcp --read ~/Picture
 codex mcp add photofresco -- npx -y photofresco@0.1.0 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
 ```
 
+**OpenCode**: `opencode.json` in a project, or `~/.config/opencode/opencode.json` for all of them
+(from a clone, as above):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "photofresco": {
+      "type": "local",
+      "command": ["node", "/Users/you/photofresco-agent/src/bin/photofresco.js", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"],
+      "enabled": true
+    }
+  }
+}
+```
+
+**Kiro**: the clone's `mcpServers` entry above, in `~/.kiro/settings/mcp.json` (all workspaces) or
+`.kiro/settings/mcp.json` (one workspace).
+
 **Cline**: give Cline this repository; [llms-install.md](llms-install.md) walks it through installing,
 connecting and stopping.
 
@@ -133,8 +172,10 @@ app's documented stdio format. Options:
 | `--browser <path>` | Chromium-based browser to use (same as `PHOTOFRESCO_BROWSER`) |
 
 **MCP Bundle** (Claude Desktop and other apps that install `.mcpb` files): `node scripts/build-mcpb.mjs`
-builds `dist/photofresco-0.1.0.mcpb` and its SHA-256 from this repository (reproducible with the same
-Node.js version). The bundle starts the same server and, like a plugin, grants no folders.
+builds `dist/photofresco-mcp-0.1.0.mcpb` and its SHA-256 from this repository (reproducible with the same
+Node.js version). The bundle starts the same server and, like a plugin, grants no folders. Each
+GitHub release attaches this file; its SHA-256 is the `fileSha256` in [server.json](server.json), the
+Official MCP Registry entry.
 
 **Docker** (for MCP registries that check servers in a container): `docker build -t photofresco-mcp .`
 then `docker run -i --rm photofresco-mcp` runs the server over stdio. The image has no browser, so it
@@ -157,7 +198,8 @@ tools starts no browser.
 
 ## Install as a plugin
 
-This repository is also a plugin for Claude Code, Codex, Cursor and Gemini CLI: one install adds the
+This repository is also a plugin for Claude Code, Codex, Cursor, Gemini CLI, Hermes Agent, OpenClaw,
+Antigravity, Devin and Kiro: one install adds the
 MCP server and the [Agent Skill](#agent-skill). The client copies the repository and starts the server
 with `node <plugin folder>/src/bin/photofresco.js mcp`; nothing is downloaded from npm, because the MCP SDK
 is bundled readable in [vendor/](vendor/README.md). Node.js 22 or newer must be on your `PATH`.
@@ -193,9 +235,40 @@ reach this one; with a browser outside the standard locations, use the MCP confi
 **Cursor**: install PhotoFresco from **Customize** once it is listed, or copy this repository into
 `~/.cursor/plugins/local/photofresco` and reload the window.
 
-The manifests are `.claude-plugin/` (Claude Code), `plugin.json` with `mcp.json` (the
-[Agent Plugins](https://agent-plugins.org) standard, used by Codex), `.cursor-plugin/plugin.json`
-(Cursor) and `gemini-extension.json` (Gemini CLI).
+**Hermes Agent** (a version with Agent Plugins support, which has `hermes plugins validate`). Plugins
+install disabled; enabling loads the server and skill in the next session:
+
+```sh
+hermes plugins install photofresco/photofresco-agent --no-enable
+hermes plugins enable photofresco
+```
+
+**OpenClaw** (it asks you to review the source, then to accept the plugin's MCP server and skill):
+
+```sh
+openclaw plugins install photofresco --marketplace photofresco/photofresco-agent
+```
+
+**Antigravity** (CLI):
+
+```sh
+agy plugin install https://github.com/photofresco/photofresco-agent
+```
+
+**Devin** (CLI; or **Customize → Plugins → Add plugin → From repository** in the app):
+
+```sh
+devin plugins install photofresco/photofresco-agent
+```
+
+**Kiro**: **Powers → Add Custom Power → Import power from GitHub**, then
+`https://github.com/photofresco/photofresco-agent`.
+
+The manifests are `.claude-plugin/` (Claude Code, also read by Devin), `plugin.json` with `mcp.json`
+(the [Agent Plugins](https://agent-plugins.org) standard, used by Codex, Hermes Agent and Kiro),
+`.cursor-plugin/plugin.json` (Cursor and OpenClaw, which reads `.mcp.json` through it),
+`gemini-extension.json` (Gemini CLI), `mcp_config.json` (Antigravity) and `openclaw.plugin.json`
+(OpenClaw and ClawHub metadata).
 
 ## Agent skill
 
@@ -329,13 +402,21 @@ connector closes its window.
 Remove the MCP entry from your client configuration (or run `photofresco stop` and
 `npm uninstall -g photofresco`), or remove the plugin (`/plugin uninstall photofresco@photofresco` in
 Claude Code, `codex plugin remove photofresco@photofresco`, `gemini extensions uninstall photofresco`,
-or **Customize** in Cursor). Remove the skill with `npx skills remove photofresco`, and delete the
-data folder above. Nothing else is installed.
+`hermes plugins remove photofresco`, `openclaw plugins uninstall photofresco`,
+`agy plugin uninstall photofresco`, `devin plugins remove photofresco`, or **Customize** in Cursor and
+the Powers panel in Kiro). Remove the skill with `npx skills remove photofresco`, and delete the data
+folder above. Nothing else is installed.
 
-## Support and license
+## Support
 
-Questions and bugs: [GitHub issues](https://github.com/photofresco/photofresco-agent/issues) or
-hello@photofresco.com. Website: [photofresco.com](https://photofresco.com/?pf_ref=github).
+- Questions and bugs: [GitHub issues](https://github.com/photofresco/photofresco-agent/issues) or
+  hello@photofresco.com.
+- Documentation: [Use PhotoFresco with AI agents](https://photofresco.com/docs/ai-agents/).
+- Privacy policy: [photofresco.com/docs/privacy](https://photofresco.com/docs/privacy/).
+- Terms of service: [photofresco.com/docs/terms](https://photofresco.com/docs/terms/).
+- Website: [photofresco.com](https://photofresco.com/?pf_ref=github).
+
+## License
 
 This repository (the MCP server, command line, connector and skill) is released under the
 [MIT License](LICENSE). The PhotoFresco editor and the photofresco.com service are not part of it.

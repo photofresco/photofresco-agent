@@ -1,0 +1,14 @@
+{
+  "id": "photofresco",
+  "name": "PhotoFresco",
+  "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
+  "version": "0.1.0",
+  "categories": [
+    "media"
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

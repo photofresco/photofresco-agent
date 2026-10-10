@@ -36,7 +36,9 @@
           "Export PNG and PSD"
         ],
         "websiteURL": "https://photofresco.com/",
-        "supportURL": "https://github.com/photofresco/photofresco-agent/issues",
+        "supportURL": "https://photofresco.com/docs/ai-agents/#get-help",
+        "privacyPolicyURL": "https://photofresco.com/docs/privacy/",
+        "termsOfServiceURL": "https://photofresco.com/docs/terms/",
         "defaultPrompt": [
           "Connect to PhotoFresco and warm up the highlights of the open image with a curves layer, then preview it.",
           "In PhotoFresco, crop the open photo to 4:5, show me a preview, then undo if I don't like it."

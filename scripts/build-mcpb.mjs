@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Build the MCP Bundle (pf-agent-platform-nkwn.35): `dist/photofresco-<version>.mcpb` plus its `.sha256`.
+ * Build the MCP Bundle (pf-agent-platform-nkwn.35): `dist/photofresco-mcp-<version>.mcpb` plus its `.sha256`.
  *
  *   node scripts/build-mcpb.mjs [--out <folder>]
  *
@@ -14,7 +14,9 @@
  *
  * Reproducible: entries are sorted, timestamps fixed (1980-01-01) and modes 0644, so the same source
  * and Node.js version produce the same bytes and SHA-256. Validate with the official CLI:
- * `npx -y @anthropic-ai/mcpb@2.1.2 info dist/photofresco-<version>.mcpb`.
+ * `npx -y @anthropic-ai/mcpb@2.1.2 info dist/photofresco-mcp-<version>.mcpb`. The file is also the
+ * GitHub Release asset that server.json's `mcpb` package points at (Official MCP Registry); its name
+ * must contain "mcp", and server.json's `fileSha256` must equal the hash printed here.
  */
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -26,6 +28,11 @@ import { deflateRawSync, inflateRawSync } from 'node:zlib'
 export const ROOT = fileURLToPath(new URL('..', import.meta.url))
 export const MANIFEST_VERSION = '0.3'
 const REPO = 'https://github.com/photofresco/photofresco-agent'
+
+/** File name of the bundle for `version`: the GitHub Release asset name. @param {string} version */
+export const mcpbFileName = (version) => `photofresco-mcp-${version}.mcpb`
+/** Where the release `v<version>` serves the bundle (server.json's mcpb package identifier). @param {string} version */
+export const mcpbReleaseUrl = (version) => `${REPO}/releases/download/v${version}/${mcpbFileName(version)}`
 
 const json = (/** @type {string} */ file, root = ROOT) => JSON.parse(readFileSync(join(root, file), 'utf8'))
 
@@ -222,7 +229,7 @@ export async function buildMcpb({ root = ROOT, outDir = join(root, 'dist') } = {
   ].sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
   const archive = zip(entries)
   const sha256 = createHash('sha256').update(archive).digest('hex')
-  const name = `${manifest.name}-${manifest.version}.mcpb`
+  const name = mcpbFileName(manifest.version)
   mkdirSync(outDir, { recursive: true })
   const path = join(outDir, name)
   writeFileSync(path, archive)

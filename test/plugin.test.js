@@ -10,14 +10,17 @@ import { Client, StdioClientTransport } from './support/mcpClient.js'
 
 /**
  * pf-agent-platform-nkwn.37: the repository root is also a plugin for Claude Code
- * (.claude-plugin/plugin.json, .claude-plugin/marketplace.json, .mcp.json), Agent Plugins clients such
- * as Codex (plugin.json, mcp.json), Cursor (.cursor-plugin/plugin.json) and Gemini CLI
- * (gemini-extension.json). Each manifest agrees with package.json and the listing, points at files that
- * exist, and starts the bundled server as `node <plugin root>/src/bin/photofresco.js mcp` (no npx, shell or
- * npm script). The repository stays within Claude's plugin-directory file rules, and every launcher,
- * run from a copy of the repository without node_modules, starts the server and lists its tools.
- * The platforms' own validators (claude plugin validate, gemini extensions validate, codex plugin add)
- * are recorded in the editor repository's evidence.
+ * (.claude-plugin/plugin.json, .claude-plugin/marketplace.json, .mcp.json; Devin reads the same),
+ * Agent Plugins clients such as Codex, Hermes Agent and Kiro (plugin.json, mcp.json), Cursor
+ * (.cursor-plugin/plugin.json, pointing at .mcp.json), Gemini CLI (gemini-extension.json), Antigravity
+ * (mcp_config.json next to plugin.json) and OpenClaw/ClawHub (openclaw.plugin.json; OpenClaw loads the
+ * Cursor bundle). Each manifest agrees with package.json and the listing, points at files that exist,
+ * and starts the bundled server as `node <plugin root>/src/bin/photofresco.js mcp` (no npx, shell or npm
+ * script). The repository stays within Claude's plugin-directory file rules, and every launcher, run
+ * from a copy of the repository without node_modules, starts the server and lists its tools. The
+ * platforms' own validators and installs (claude plugin validate, gemini extensions validate, codex
+ * plugin add, hermes plugins validate, agy plugin validate, clawhub package validate, openclaw plugins
+ * install) are recorded in the editor repository's evidence.
  */
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
@@ -34,12 +37,14 @@ const AGENT_PLUGIN = json('plugin.json')
 const AGENT_MCP = json('mcp.json')
 const CURSOR = json('.cursor-plugin/plugin.json')
 const GEMINI = json('gemini-extension.json')
+const ANTIGRAVITY_MCP = json('mcp_config.json')
+const OPENCLAW = json('openclaw.plugin.json')
 
 /** Each launcher, with the variable its client replaces by the plugin's installed folder. */
 const LAUNCHERS = [
-  { client: 'Claude Code', file: '.mcp.json', server: CLAUDE_MCP.mcpServers.photofresco, root: '${CLAUDE_PLUGIN_ROOT}/' },
-  { client: 'Agent Plugins (Codex)', file: 'mcp.json', server: AGENT_MCP.mcpServers.photofresco, root: '${PLUGIN_ROOT}/' },
-  { client: 'Cursor', file: '.cursor-plugin/plugin.json', server: CURSOR.mcpServers.photofresco, root: '${CURSOR_PLUGIN_ROOT}/' },
+  { client: 'Claude Code, Cursor, Devin, OpenClaw', file: '.mcp.json', server: CLAUDE_MCP.mcpServers.photofresco, root: '${CLAUDE_PLUGIN_ROOT}/' },
+  { client: 'Agent Plugins (Codex, Hermes Agent, Kiro)', file: 'mcp.json', server: AGENT_MCP.mcpServers.photofresco, root: '${PLUGIN_ROOT}/' },
+  { client: 'Antigravity', file: 'mcp_config.json', server: ANTIGRAVITY_MCP.mcpServers.photofresco, root: '${PLUGIN_ROOT}/' },
   { client: 'Gemini CLI', file: 'gemini-extension.json', server: GEMINI.mcpServers.photofresco, root: '${extensionPath}${/}' },
 ]
 
@@ -78,6 +83,11 @@ describe('plugin bundle', () => {
     assert.equal(CLAUDE.privacyPolicyUrl, 'https://photofresco.com/docs/privacy/')
     assert.equal(CLAUDE.termsOfServiceUrl, 'https://photofresco.com/docs/terms/')
     assert.equal(CLAUDE.supportUrl, `${REPO}/issues`)
+    // OpenClaw/ClawHub sidecar: id, display name, a single catalog category and an empty config schema.
+    assert.deepEqual(OPENCLAW, {
+      id: PACKAGE.name, name: LISTING.name, description: LISTING.description, version: PACKAGE.version,
+      categories: ['media'], configSchema: { type: 'object', additionalProperties: false, properties: {} },
+    })
   })
 
   it('the Claude marketplace lists the repository root as the plugin', () => {
@@ -107,9 +117,19 @@ describe('plugin bundle', () => {
       '/plugin install photofresco --marketplace photofresco/photofresco-agent',
       'codex plugin marketplace add photofresco/photofresco-agent', 'codex plugin add photofresco@photofresco',
       'gemini extensions install https://github.com/photofresco/photofresco-agent', '~/.cursor/plugins/local/photofresco',
+      'hermes plugins install photofresco/photofresco-agent --no-enable', 'hermes plugins enable photofresco',
+      'openclaw plugins install photofresco --marketplace photofresco/photofresco-agent',
+      'agy plugin install https://github.com/photofresco/photofresco-agent',
+      'devin plugins install photofresco/photofresco-agent', 'Import power from GitHub',
       'grants **no folders**', 'vendor/README.md',
     ]) assert.ok(section.includes(line), line)
-    for (const line of ['/plugin uninstall photofresco@photofresco', 'codex plugin remove photofresco@photofresco', 'gemini extensions uninstall photofresco']) assert.ok(readme.includes(line), line)
+    for (const line of [
+      '/plugin uninstall photofresco@photofresco', 'codex plugin remove photofresco@photofresco', 'gemini extensions uninstall photofresco',
+      'hermes plugins remove photofresco', 'openclaw plugins uninstall photofresco', 'agy plugin uninstall photofresco', 'devin plugins remove photofresco',
+    ]) assert.ok(readme.includes(line), line)
+    // Support: privacy policy and terms (Kiro's registry and the OpenAI listing ask for them).
+    const support = readme.slice(readme.indexOf('## Support'), readme.indexOf('## License'))
+    for (const url of ['https://photofresco.com/docs/privacy/', 'https://photofresco.com/docs/terms/', `${REPO}/issues`]) assert.ok(support.includes(url), url)
   })
 
   it('the Agent Plugins manifests validate against the standard\'s 1.0.0 schemas, with OpenAI listing limits', () => {
@@ -126,6 +146,10 @@ describe('plugin bundle', () => {
     assert.ok(listing.capabilities.length <= 20 && listing.capabilities.every((/** @type {string} */ label) => label.length <= 120))
     assert.ok(listing.defaultPrompt.length <= 3 && listing.defaultPrompt.every((/** @type {string} */ prompt) => prompt.length <= 128))
     for (const url of [listing.websiteURL, listing.supportURL]) assert.match(url, /^https:\/\//)
+    // Listing URLs from the publisher's own site: the OpenAI submission takes these four.
+    assert.equal(listing.supportURL, 'https://photofresco.com/docs/ai-agents/#get-help')
+    assert.equal(listing.privacyPolicyURL, CLAUDE.privacyPolicyUrl)
+    assert.equal(listing.termsOfServiceURL, CLAUDE.termsOfServiceUrl)
   })
 
   it('every launcher runs the bundled server file with node and plain arguments', () => {
@@ -136,8 +160,11 @@ describe('plugin bundle', () => {
       assert.equal(server.env, undefined, client)
     }
     assert.equal(AGENT_MCP.mcpServers.photofresco.type, 'stdio')
-    for (const file of ['.mcp.json', 'mcp.json']) assert.deepEqual(Object.keys(json(file).mcpServers), ['photofresco'], file)
-    assert.deepEqual(Object.keys(CURSOR.mcpServers), ['photofresco'])
+    for (const file of ['.mcp.json', 'mcp.json', 'mcp_config.json']) assert.deepEqual(Object.keys(json(file).mcpServers), ['photofresco'], file)
+    assert.deepEqual(Object.keys(ANTIGRAVITY_MCP), ['mcpServers'], 'Antigravity reads mcpServers only')
+    // Cursor (and OpenClaw, which loads this repository as a Cursor bundle) take the server from
+    // .mcp.json: both expand ${CLAUDE_PLUGIN_ROOT}, and OpenClaw does not expand ${CURSOR_PLUGIN_ROOT}.
+    assert.equal(CURSOR.mcpServers, './.mcp.json')
     assert.deepEqual(Object.keys(GEMINI.mcpServers), ['photofresco'])
     // The server needs nothing installed: the MCP SDK is bundled in vendor/.
     assert.equal(PACKAGE.dependencies, undefined)
@@ -152,7 +179,7 @@ describe('plugin bundle', () => {
       assert.ok(!lstatSync(full).isSymbolicLink(), `${file}: symlink`)
       assert.ok(statSync(full).size <= 256 * 1024, `${file}: ${statSync(full).size} bytes`)
       assert.ok(!/(^|\/)(\.DS_Store|\.npmrc|\.env[^/]*)$/.test(file), file)
-      assert.match(file, /(^|\/)(LICENSE|\.gitignore|\.dockerignore|Dockerfile)$|\.(md|js|mjs|ts|json|ya?ml|txt|png|gif)$/, `${file}: only text and image files`)
+      assert.match(file, /(^|\/)(LICENSE|\.gitignore|\.dockerignore|Dockerfile)$|\.(md|js|mjs|ts|json|ya?ml|txt|png|gif|jpg)$/, `${file}: only text and image files`)
       if (/\.m?js$/.test(file)) {
         const text = readFileSync(full, 'utf8')
         assert.doesNotMatch(text, /^\s*\/\/[#@] sourceMappingURL=/m, `${file}: source map comment`)
