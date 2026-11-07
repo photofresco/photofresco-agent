@@ -1,3 +1,4 @@
+// @ts-self-types="./client.d.ts"
 // @ts-check
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'

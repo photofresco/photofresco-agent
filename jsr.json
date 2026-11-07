@@ -1,0 +1,25 @@
+{
+  "name": "@photofresco/photofresco",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./mcp": "./src/mcp/server.js",
+    "./rpc": "./src/rpc/client.js"
+  },
+  "publish": {
+    "include": [
+      "src/**/*.js",
+      "src/**/*.d.ts",
+      "src/**/*.json",
+      "README.md",
+      "LICENSE",
+      "jsr.json",
+      "vendor/*.js",
+      "vendor/*.d.ts",
+      "vendor/README.md",
+      "vendor/licenses/*.txt",
+      "protocol/**/*.json"
+    ]
+  }
+}

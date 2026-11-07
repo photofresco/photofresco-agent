@@ -55,6 +55,19 @@ describe('public repository package', () => {
     assert.equal(LISTING.license, 'MIT')
   })
 
+  it('jsr.json mirrors the npm package: same version and entry points, source files only (pf-ww6c)', () => {
+    const jsr = JSON.parse(readFileSync(join(ROOT, 'jsr.json'), 'utf8'))
+    assert.equal(jsr.name, '@photofresco/photofresco')
+    assert.equal(jsr.version, PACKAGE.version)
+    assert.equal(jsr.license, PACKAGE.license)
+    assert.deepEqual(jsr.exports, { '.': PACKAGE.exports['.'], './mcp': PACKAGE.exports['./mcp'], './rpc': PACKAGE.exports['./rpc'] })
+    // Entry points name their declaration file (JSR "slow types"); the .d.ts files are generated at release time.
+    for (const file of Object.values(jsr.exports)) {
+      const first = readFileSync(join(ROOT, file), 'utf8').split('\n')[0]
+      assert.equal(first, `// @ts-self-types="./${file.split('/').pop().replace(/\.js$/, '.d.ts')}"`, file)
+    }
+  })
+
   it('package.json carries the public metadata and is publishable (pf-agent-platform-nkwn.39)', () => {
     assert.equal(PACKAGE.name, 'photofresco')
     assert.equal(PACKAGE.homepage, 'https://photofresco.com/')

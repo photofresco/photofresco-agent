@@ -1,6 +1,8 @@
 // @ts-check
 import { readFileSync } from 'node:fs'
 import { createConnector } from '../connector.js'
+/** @typedef {import('../connector.js').Connector} Connector */
+/** @typedef {import('../connector.js').ConnectorOptions} ConnectorOptions */
 import { ConnectorError } from '../errors.js'
 import { loadProtocolCatalog } from './catalog.js'
 import { validate } from './schema.js'
@@ -109,7 +111,7 @@ export class RpcAdapter {
 }
 
 /** Owns only its connector window; concurrent dispatch keeps Stop usable during pairing/edits.
- * @param {{ connector?: import('../connector.js').Connector, options?: Omit<import('../connector.js').ConnectorOptions, 'surface'>,
+ * @param {{ connector?: Connector, options?: Omit<ConnectorOptions, 'surface'>,
  * input?: import('node:stream').Readable, output?: NodeJS.WritableStream, signals?: boolean }} [options] */
 export async function runRpcStdio({ connector = createConnector({ surface: 'sdk' }), options, input = process.stdin, output = process.stdout, signals = true } = {}) {
   if (options) connector = createConnector({ ...options, surface: 'sdk' })

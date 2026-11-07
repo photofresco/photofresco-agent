@@ -7,7 +7,9 @@
 #      optional NPM_TOKEN secret exists only for the very first publish, before a trusted publisher can
 #      be configured on npmjs.com). Test `npx -y photofresco@next mcp` in real clients, then promote:
 #      `npm dist-tag add photofresco@<version> latest` (owner, 2FA).
-#   2. target=registry: publishes server.json with mcp-publisher. Its npm package (if listed) must be npm
+#   2. target=jsr: publishes jsr.json (@photofresco/photofresco) to JSR over GitHub OIDC (pf-ww6c). The package
+#      must first exist on jsr.io and be linked to this repository (package settings).
+#   3. target=registry: publishes server.json with mcp-publisher. Its npm package (if listed) must be npm
 #      `latest` at that version; its mcpb package must be the GitHub Release asset whose SHA-256 is the
 #      listed fileSha256 (the registry itself only checks that the URL answers). Registry versions are
 #      immutable. The server name `io.github.photofresco/photofresco` is the photofresco GitHub org's
@@ -23,7 +25,7 @@ on:
       target:
         description: What to publish
         type: choice
-        options: [npm, registry]
+        options: [npm, jsr, registry]
         default: npm
       version:
         description: Version to publish (must equal package.json and server.json)
@@ -43,6 +45,7 @@ concurrency:
 
 env:
   NODE_VERSION: 24.21.0 # LTS; bundles npm 11.19.0 (trusted publishing needs npm >= 11.5.1, Node >= 22.14)
+  JSR_CLI_VERSION: 0.14.3 # jsr on npm; runs deno publish
   MCP_PUBLISHER_VERSION: v1.8.0
   MCP_PUBLISHER_SHA256: 1370446bbe74d562608e8005a6ccce02d146a661fbd78674e11cc70b9618d6cf # mcp-publisher_linux_amd64.tar.gz in registry_1.8.0_checksums.txt
 
@@ -125,6 +128,35 @@ jobs:
           # Empty once a trusted publisher is configured (npm then authenticates with GitHub OIDC).
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --access public --tag "$NPM_TAG"
+
+  jsr:
+    name: Publish to JSR
+    needs: verify
+    if: inputs.target == 'jsr'
+    runs-on: ubuntu-24.04
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # JSR links the package to this repository and accepts its OIDC token
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+      - name: jsr.json matches the version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          [ "$(node -p 'require("./jsr.json").version')" = "$VERSION" ] || { echo "::error::jsr.json version is not ${VERSION}"; exit 1; }
+      # JSR needs a declaration file next to each JavaScript entry point (no "slow types"): generate them
+      # from the JSDoc types, beside the sources, for this publish only.
+      - run: npm install --no-save
+      - run: npx tsc -p tsconfig.jsr.json && cp -R types/. src/
+      - name: jsr publish
+        run: npx --yes "jsr@${JSR_CLI_VERSION}" publish --allow-dirty
 
   registry:
     name: Publish to the MCP Registry

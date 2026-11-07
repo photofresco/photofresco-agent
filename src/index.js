@@ -1,3 +1,4 @@
+// @ts-self-types="./index.d.ts"
 // @ts-check
 /**
  * PhotoFresco local connector: the shared in-process API behind the MCP server, the CLI and

@@ -1,3 +1,4 @@
+// @ts-self-types="./server.d.ts"
 // @ts-check
 import { readFileSync } from 'node:fs'
 // The MCP SDK (@modelcontextprotocol/server), bundled into vendor/ by scripts/agent-vendor.mjs so plugin
