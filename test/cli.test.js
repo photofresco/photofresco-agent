@@ -264,8 +264,11 @@ describe('attach path: one connector process, local user only', () => {
       assert.equal(protocol.replies[0].error.code, RPC_ERRORS.protocol)
       const garbage = await exchange(socket, ['not json\n'], 1)
       assert.equal(garbage.replies[0].error.code, RPC_ERRORS.parse)
-      const long = await exchange(socket, ['x'.repeat(17 * 1024 * 1024)], 1)
+      // The daemon answers an over-long line with an error and then closes. Wait for the close itself:
+      // on Linux the error reply reaches the client before the close, and a count of 1 would stop early.
+      const long = await exchange(socket, ['x'.repeat(17 * 1024 * 1024)], Number.POSITIVE_INFINITY)
       assert.equal(long.closed, true)
+      assert.ok(long.replies.every((reply) => reply.error?.code === RPC_ERRORS.invalidRequest), 'only the size error may come back')
       const silent = await exchange(socket, [], 1)
       assert.equal(silent.closed, true, 'a connection that never says hello is closed')
     } finally {
