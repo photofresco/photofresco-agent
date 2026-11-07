@@ -23,7 +23,7 @@ const README = fileURLToPath(new URL('../README.md', import.meta.url))
 const PACKAGE = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 
 /** 'github' until the npm package is published (pf-agent-platform-nkwn.39), then 'npm'. */
-export const SOURCE = /** @type {'github' | 'npm'} */ ('github')
+export const SOURCE = /** @type {'github' | 'npm'} */ ('npm')
 /** A public commit of photofresco/photofresco-agent whose package.json version is the package version. */
 export const GITHUB_COMMIT = '328cfaf3caf6483c5660381f19f2afdb2059a215'
 export const REPO = 'https://github.com/photofresco/photofresco-agent'

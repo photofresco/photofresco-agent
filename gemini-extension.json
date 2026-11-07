@@ -1,6 +1,6 @@
 {
   "name": "photofresco",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
   "mcpServers": {
     "photofresco": {

@@ -3,10 +3,9 @@
 #
 # Manual trigger only, from the default branch, through the protected `release` environment (add the
 # owner as required reviewer). Two separate runs, as in the canary plan:
-#   1. target=npm, npm_tag=next: npm publish with provenance (trusted publishing over GitHub OIDC; the
-#      optional NPM_TOKEN secret exists only for the very first publish, before a trusted publisher can
-#      be configured on npmjs.com). Test `npx -y photofresco@next mcp` in real clients, then promote:
-#      `npm dist-tag add photofresco@<version> latest` (owner, 2FA).
+#   1. target=npm: npm publish with provenance over GitHub OIDC (trusted publishing; no token or secret).
+#      npm_tag=latest publishes what `npx -y photofresco` installs; npm_tag=next is a canary that is
+#      promoted later with `npm dist-tag add photofresco@<version> latest` (owner, 2FA).
 #   2. target=jsr: publishes jsr.json (@photofresco/photofresco) to JSR over GitHub OIDC (pf-ww6c). The package
 #      must first exist on jsr.io and be linked to this repository (package settings).
 #   3. target=registry: publishes server.json with mcp-publisher. Its npm package (if listed) must be npm
@@ -14,9 +13,8 @@
 #      listed fileSha256 (the registry itself only checks that the URL answers). Registry versions are
 #      immutable. The server name `io.github.photofresco/photofresco` is the photofresco GitHub org's
 #      namespace: `mcp-publisher login github-oidc` with this job's OIDC token (the run must come from a
-#      photofresco org repository); no DNS record or key. Version 0.1.0 lists only the mcpb package (npm
-#      was not yet published; the registry rejects an npm package it cannot find) and may be published
-#      from a laptop instead: see the editor repository's pf-agent-platform-nkwn.35 runbook.
+#      photofresco org repository); no DNS record or key. Version 0.1.0 listed only the mcpb package; from 0.1.1 it lists
+#      the npm package too (the registry rejects an npm package it cannot find, so publish npm first).
 name: Release
 
 on:
@@ -122,12 +120,14 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
       # Publishing needs no install: nothing is built and the package has no runtime dependencies.
-      - name: npm publish (provenance)
+      # No token anywhere: npm trusted publishing (repo photofresco/photofresco-agent, workflow release.yml,
+      # environment release) authenticates this job with its GitHub OIDC token; provenance is automatic.
+      - name: npm publish (OIDC, provenance)
         env:
           NPM_TAG: ${{ inputs.npm_tag }}
-          # Empty once a trusted publisher is configured (npm then authenticates with GitHub OIDC).
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --provenance --access public --tag "$NPM_TAG"
+        run: |
+          npm --version
+          npm publish --provenance --access public --tag "$NPM_TAG"
 
   jsr:
     name: Publish to JSR

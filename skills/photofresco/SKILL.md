@@ -4,7 +4,7 @@ description: Edit photos and images in PhotoFresco, a Photoshop-class editor, th
 license: MIT
 compatibility: Needs the PhotoFresco MCP server (npm package photofresco, Node.js 22 or newer) and Chrome, Edge or Chromium 120+ installed on the user's computer.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://photofresco.com/
 ---
 
@@ -33,7 +33,7 @@ mid-October 2026), the user can install the PhotoFresco plugin from
 Claude Code:
 
 ```sh
-claude mcp add photofresco -- npx -y photofresco@0.1.0 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
+claude mcp add photofresco -- npx -y photofresco@0.1.1 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
 ```
 
 Claude Desktop (`claude_desktop_config.json`), Cursor (`~/.cursor/mcp.json` or `.cursor/mcp.json`)
@@ -44,7 +44,7 @@ and other clients that take `command`/`args`:
   "mcpServers": {
     "photofresco": {
       "command": "npx",
-      "args": ["-y", "photofresco@0.1.0", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+      "args": ["-y", "photofresco@0.1.1", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
     }
   }
 }

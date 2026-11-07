@@ -242,12 +242,14 @@ describe('listing metadata', () => {
     assert.equal(SERVER_JSON.name, 'io.github.photofresco/photofresco')
     assert.ok(SERVER_JSON.description.length <= 100)
     assert.equal(PACKAGE.description, SERVER_JSON.description)
-    for (const version of [SERVER_JSON.version, SERVER_JSON.packages[0].version, SERVER_INFO.version, CONNECTOR_VERSION]) assert.equal(version, PACKAGE.version)
-    // Until npm publishes the package, the registry entry is the MCP bundle on the GitHub Release
-    // (pf-agent-platform-nkwn.35): the registry refuses an npm package it cannot fetch, so npm joins
-    // in a later server version. The bundle's manifest supplies the `mcp` argument.
-    const [pkg] = SERVER_JSON.packages
-    assert.equal(SERVER_JSON.packages.length, 1)
+    for (const version of [SERVER_JSON.version, SERVER_JSON.packages[0].version, SERVER_JSON.packages[1].version, SERVER_INFO.version, CONNECTOR_VERSION]) assert.equal(version, PACKAGE.version)
+    // From 0.1.1 the entry lists the npm package (the registry refuses one it cannot fetch, so npm is
+    // published first) and the MCP bundle on the GitHub Release (pf-agent-platform-nkwn.35). The bundle's
+    // manifest supplies the `mcp` argument; the npm package gets it as a positional argument.
+    const [npm, pkg] = SERVER_JSON.packages
+    assert.equal(SERVER_JSON.packages.length, 2)
+    assert.deepEqual({ registryType: npm.registryType, identifier: npm.identifier, version: npm.version, runtimeHint: npm.runtimeHint, transport: npm.transport, packageArguments: npm.packageArguments },
+      { registryType: 'npm', identifier: PACKAGE.name, version: PACKAGE.version, runtimeHint: 'npx', transport: { type: 'stdio' }, packageArguments: [{ type: 'positional', value: 'mcp' }] })
     assert.deepEqual({ registryType: pkg.registryType, identifier: pkg.identifier, transport: pkg.transport }, { registryType: 'mcpb', identifier: mcpbReleaseUrl(PACKAGE.version), transport: { type: 'stdio' } })
     assert.match(pkg.identifier, /mcp/i, 'the registry requires "mcp" in an MCPB URL')
     assert.match(pkg.fileSha256, /^[0-9a-f]{64}$/)

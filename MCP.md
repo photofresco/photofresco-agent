@@ -16,13 +16,8 @@ release. Until then, run it from a checkout (see "From a checkout").
 Choose the folders the agent may open files from (`--read`) and save exports into (`--write`).
 Without them the agent can still edit and preview, but cannot touch your files.
 
-> **npm release pending.** The `photofresco` npm package is published in mid-October 2026; until
-> then the `npx` lines below do not work. Use the README's one-click buttons (they run the same
-> version from GitHub), install the plugin, put
-> `--package=https://github.com/photofresco/photofresco-agent/archive/328cfaf3caf6483c5660381f19f2afdb2059a215.tar.gz photofresco`
-> in place of `photofresco@0.1.0`, or run from a clone with
-> `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of the `npx -y photofresco` part.
-> Agents such as Cline can follow [llms-install.md](llms-install.md).
+> To run from a clone instead, use `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of
+> the `npx -y photofresco@0.1.1` part. Agents such as Cline can follow [llms-install.md](llms-install.md).
 
 **Claude Desktop** — `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
@@ -31,7 +26,7 @@ Without them the agent can still edit and preview, but cannot touch your files.
   "mcpServers": {
     "photofresco": {
       "command": "npx",
-      "args": ["-y", "photofresco@0.1.0", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+      "args": ["-y", "photofresco@0.1.1", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
     }
   }
 }
@@ -40,7 +35,7 @@ Without them the agent can still edit and preview, but cannot touch your files.
 **Claude Code**:
 
 ```sh
-claude mcp add photofresco -- npx -y photofresco@0.1.0 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
+claude mcp add photofresco -- npx -y photofresco@0.1.1 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
 ```
 
 **Cursor** — `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project): the same
@@ -55,7 +50,7 @@ same arguments under `"servers"` with `"type": "stdio"`:
     "photofresco": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "photofresco@0.1.0", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+      "args": ["-y", "photofresco@0.1.1", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
     }
   }
 }
