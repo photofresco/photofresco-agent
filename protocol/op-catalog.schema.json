@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PhotoFresco registry catalog manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_from", "regenerate", "operation_count", "sha256", "shards"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "generated_from": { "type": "string" },
+    "regenerate": { "type": "string" },
+    "operation_count": { "type": "integer", "minimum": 1 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "shards": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^\\.\\./src/mcp/catalog/[a-z_]+\\.json$" },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    }
+  }
+}

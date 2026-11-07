@@ -67,7 +67,9 @@ describe('public repository package', () => {
     assert.equal(PACKAGE.private, undefined)
     assert.equal(PACKAGE['//'], undefined)
     assert.equal(PACKAGE.mcpName, 'io.github.photofresco/photofresco')
-    assert.deepEqual(PACKAGE.files, ['src', 'vendor', 'skills', 'server.json', 'CONNECTOR.md', 'DISCLOSURE.md', 'MCP.md', 'CLI.md'])
+    assert.deepEqual(PACKAGE.files, ['src', 'protocol', 'vendor', 'skills', 'server.json', 'CONNECTOR.md', 'DISCLOSURE.md', 'MCP.md', 'CLI.md'])
+    // protocol/ is read by src/rpc/server.js and src/mcp/server.js at runtime.
+    // Language clients and sdkgen belong to photofresco/photofresco-sdks, never the npm adapter.
     // The MCP SDK ships bundled in vendor/ (pf-agent-platform-nkwn.37): the package installs nothing else.
     assert.equal(PACKAGE.dependencies, undefined)
     for (const entry of PACKAGE.files) assert.ok(existsSync(join(ROOT, entry)), entry)
@@ -167,9 +169,9 @@ describe('public repository package', () => {
   it('npm pack ships only the code, vendored SDK, catalog, skill, server.json and documentation', () => {
     const [packed] = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }))
     const files = packed.files.map((/** @type {{ path: string }} */ file) => file.path).sort()
-    const intended = /^(bin\/[^/]+\.js|src\/.+\.(js|json)|vendor\/([^/]+\.(js|d\.ts|md)|licenses\/[^/]+\.txt)|skills\/.+\.md|server\.json|package\.json|README\.md|LICENSE|(CONNECTOR|DISCLOSURE|MCP|CLI)\.md)$/
+    const intended = /^(bin\/[^/]+\.js|src\/.+\.(js|json)|protocol\/.+\.(json|mjs|md|png|txt)|vendor\/([^/]+\.(js|d\.ts|md)|licenses\/[^/]+\.txt)|skills\/.+\.md|server\.json|package\.json|README\.md|LICENSE|(CONNECTOR|DISCLOSURE|MCP|CLI)\.md)$/
     for (const file of files) assert.match(file, intended)
-    for (const required of ['src/bin/photofresco.js', 'src/mcp/server.js', 'src/mcp/catalog/layer.json', 'vendor/mcp-server.js', 'vendor/README.md', 'vendor/licenses/zod.LICENSE.txt', 'skills/photofresco/SKILL.md', 'server.json', 'LICENSE', 'README.md', 'DISCLOSURE.md']) assert.ok(files.includes(required), required)
+    for (const required of ['src/bin/photofresco.js', 'src/mcp/server.js', 'src/mcp/catalog/layer.json', 'protocol/connector.openrpc.json', 'protocol/op-catalog.json', 'vendor/mcp-server.js', 'vendor/README.md', 'vendor/licenses/zod.LICENSE.txt', 'skills/photofresco/SKILL.md', 'server.json', 'LICENSE', 'README.md', 'DISCLOSURE.md']) assert.ok(files.includes(required), required)
     for (const file of packed.files) assert.ok(file.size <= MAX_FILE_BYTES, `${file.path} ${file.size} bytes`)
   })
 })

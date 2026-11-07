@@ -98,6 +98,10 @@ async function runCommandLine(args) {
 
 async function main() {
   const args = process.argv.slice(2)
+  if (args[0] === 'connect' && args.includes('--stdio')) {
+    const { runRpcCommand } = await import('../rpc/cli.js')
+    return runRpcCommand(args.slice(1))
+  }
   if (args[0] === 'mcp') return runMcp(args.slice(1))
   if (args[0] === '__daemon') {
     const { runDaemonProcess } = await import('../cli/daemon.js')

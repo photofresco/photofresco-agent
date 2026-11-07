@@ -27,8 +27,12 @@ import { deflateRawSync, inflateRawSync } from 'node:zlib'
 
 export const ROOT = fileURLToPath(new URL('..', import.meta.url))
 export const MANIFEST_VERSION = '0.3'
-import { REPO, mcpbFileName } from './mcpb-release.mjs'
-export { mcpbFileName, mcpbReleaseUrl } from './mcpb-release.mjs'
+const REPO = 'https://github.com/photofresco/photofresco-agent'
+
+/** File name of the bundle for `version`: the GitHub Release asset name. @param {string} version */
+export const mcpbFileName = (version) => `photofresco-mcp-${version}.mcpb`
+/** Where the release `v<version>` serves the bundle (server.json's mcpb package identifier). @param {string} version */
+export const mcpbReleaseUrl = (version) => `${REPO}/releases/download/v${version}/${mcpbFileName(version)}`
 
 const json = (/** @type {string} */ file, root = ROOT) => JSON.parse(readFileSync(join(root, file), 'utf8'))
 

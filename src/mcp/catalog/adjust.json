@@ -121,7 +121,7 @@
          },
          "points": {
           "type": "array",
-          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "description": "Composite RGB curve. One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
           "items": {
            "type": "object",
            "description": "Curve control point",
@@ -152,7 +152,7 @@
           "properties": {
            "red": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -179,7 +179,7 @@
            },
            "green": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -206,7 +206,7 @@
            },
            "blue": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -1375,7 +1375,7 @@
          },
          "points": {
           "type": "array",
-          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "description": "Composite RGB curve. One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
           "items": {
            "type": "object",
            "description": "Curve control point",
@@ -1406,7 +1406,7 @@
           "properties": {
            "red": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -1433,7 +1433,7 @@
            },
            "green": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -1460,7 +1460,7 @@
            },
            "blue": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -2605,7 +2605,7 @@
          },
          "points": {
           "type": "array",
-          "description": "Composite RGB curve. Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+          "description": "Composite RGB curve. One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
           "items": {
            "type": "object",
            "description": "Curve control point",
@@ -2636,7 +2636,7 @@
           "properties": {
            "red": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -2663,7 +2663,7 @@
            },
            "green": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",
@@ -2690,7 +2690,7 @@
            },
            "blue": {
             "type": "array",
-            "description": "Curve control points in 0–255 input/output space. Sorted by x; endpoints are extended to 0 and 255. Empty array gives the identity curve.",
+            "description": "One point such as {\"x\":128,\"y\":142} maps every input to 142 (a flat curve). Points use 0–255 input/output values and are sorted by x. Missing x=0 and x=255 points retain the first and last y values, not implicit (0,0)/(255,255) endpoints. To preserve black and white, include {\"x\":0,\"y\":0} and {\"x\":255,\"y\":255}. Empty array gives the identity curve.",
             "items": {
              "type": "object",
              "description": "Curve control point",

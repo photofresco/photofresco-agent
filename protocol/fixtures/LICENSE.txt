@@ -1,0 +1,4 @@
+Original 8 x 8 gradient drawn algorithmically for PhotoFresco conformance.
+Copyright 2026 PhotoFresco / Josh Wardini. MIT; see ../../LICENSE.
+No third-party image data. Pixel (x,y) = RGBA(x*24,y*24,80,255).
+SHA-256: 39d8193829d7e862d489cd2ef7a838aa093db617f342f0c519a1eaea98dcf436

@@ -1,10 +1,11 @@
 // @ts-check
 import assert from 'node:assert/strict'
-import { cpSync, existsSync, lstatSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, relative, sep } from 'node:path'
+import { dirname, join } from 'node:path'
 import { after, describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 import { Ajv } from '@modelcontextprotocol/client/validators/ajv'
 import { Client, StdioClientTransport } from './support/mcpClient.js'
 
@@ -48,13 +49,15 @@ const LAUNCHERS = [
   { client: 'Gemini CLI', file: 'gemini-extension.json', server: GEMINI.mcpServers.photofresco, root: '${extensionPath}${/}' },
 ]
 
-/** Every repository file (node_modules, .git and the ignored build output dist/ excluded), as POSIX paths. @param {string} dir @returns {string[]} */
-function repoFiles(dir = ROOT) {
-  return readdirSync(dir).sort().flatMap((name) => {
-    const full = join(dir, name)
-    if (dir === ROOT && (name === 'node_modules' || name === '.git' || name === 'dist')) return []
-    return lstatSync(full).isDirectory() ? repoFiles(full) : [relative(ROOT, full).split(sep).join('/')]
-  })
+// Judge the actual export, never ignored SDK target/bin/obj/node_modules trees. In the
+// public plugin checkout the private exporter is absent, so use its git-tracked files.
+const exporter = new URL('../../scripts/agent-export.mjs', import.meta.url)
+const plan = existsSync(exporter) ? (await import(exporter.href)).planExport(ROOT) : null
+if (plan) assert.deepEqual(plan.problems, [], 'Public plugin export must pass its guards')
+/** @returns {string[]} */
+function repoFiles() {
+  return plan ? plan.files.map((/** @type {{path: string}} */ file) => file.path)
+    : execFileSync('git', ['-C', ROOT, 'ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean)
 }
 
 const work = mkdtempSync(join(tmpdir(), 'pf-plugin-test-'))
@@ -173,6 +176,7 @@ describe('plugin bundle', () => {
 
   it('the repository meets the plugin directory file rules: ≤512 files, ≤256 KiB, text/images only, readable JS', () => {
     const files = repoFiles()
+    assert.ok(!files.some((file) => /^(sdks|sdkgen)\//.test(file)), 'Language SDKs belong in photofresco/photofresco-sdks')
     assert.ok(files.length <= 512, `${files.length} files`)
     for (const file of files) {
       const full = join(ROOT, file)
@@ -195,7 +199,10 @@ describe('plugin bundle', () => {
 
   it('each launcher, run from a copy without node_modules, starts the server and lists its tools', async () => {
     const pluginRoot = join(work, 'installed plugin')
-    cpSync(ROOT, pluginRoot, { recursive: true, filter: (source) => !/[\\/](node_modules|\.git|dist|test|package-lock\.json)$/.test(source) })
+    for (const file of repoFiles()) {
+      mkdirSync(dirname(join(pluginRoot, file)), { recursive: true })
+      copyFileSync(join(ROOT, file), join(pluginRoot, file))
+    }
     // The public repo has no lockfile and nothing installed (pf-agent-platform-nkwn.37).
     assert.ok(!existsSync(join(pluginRoot, 'node_modules')) && !existsSync(join(pluginRoot, 'package-lock.json')))
     for (const { client, server, root } of LAUNCHERS) {

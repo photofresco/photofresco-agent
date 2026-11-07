@@ -1,0 +1,1374 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "PhotoFresco local connector",
+    "version": "1.0.0",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "methods": [
+    {
+      "name": "session.connect",
+      "summary": "Open the connector window and ask the user to pair; access is a request, never a grant.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "protocol_version",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "client",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          }
+        },
+        {
+          "name": "document",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        {
+          "name": "access",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/AccessRequest"
+          }
+        },
+        {
+          "name": "timeout_ms",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 180000
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "connector.status",
+      "summary": "Read cached connection state without launching a browser.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.status",
+      "summary": "Read fresh session status and user grants.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.requestAccess",
+      "summary": "Ask the user for permissions in the editor; cannot approve them.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "capabilities",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "read",
+                "edit",
+                "export",
+                "external-write",
+                "spend"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true
+          }
+        },
+        {
+          "name": "budget_credits",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          }
+        },
+        {
+          "name": "reason",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.documents",
+      "summary": "List open documents.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.attach",
+      "summary": "Target an existing document; does not switch the user tab.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "document",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.release",
+      "summary": "Release the mutation lease.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {}
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "session.stop",
+      "summary": "Stop this session; optionally close its connector window.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "close_window",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "null"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "ops.list",
+      "summary": "Public catalog before pairing, only currently granted operations after pairing.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Operation"
+          }
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "ops.describe",
+      "summary": "Describe one available operation by its canonical or model name.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "op",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/Operation"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "ops.execute",
+      "summary": "Execute through the shared connector and editor admission. Refusals carry the complete outcome in error.data.outcome.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "op",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        {
+          "name": "params",
+          "required": false,
+          "schema": {
+            "type": "object"
+          }
+        },
+        {
+          "name": "request_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        },
+        {
+          "name": "expected_revision",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/OperationOutcome"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "ops.outcome",
+      "summary": "Reconcile a lost response without rerunning an operation.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "request_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/OperationOutcome"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "artifact.fetch",
+      "summary": "Fetch a bounded artifact, verify SHA-256, return base64 bytes. Needs Read and Export grants.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "artifact_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        {
+          "name": "max_bytes",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6291456
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/Artifact"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "file.import",
+      "summary": "Open a file from a startup-granted folder; paths cannot be granted over this protocol.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        {
+          "name": "name",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        {
+          "name": "request_id",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    },
+    {
+      "name": "file.export",
+      "summary": "Export with connector folder checks, hash verification and atomic write.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        {
+          "name": "format",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "png",
+              "psd",
+              "pfd"
+            ]
+          }
+        },
+        {
+          "name": "layer_id",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        {
+          "name": "overwrite",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "request_id",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/not_connected"
+        },
+        {
+          "$ref": "#/components/errors/denied"
+        },
+        {
+          "$ref": "#/components/errors/validation_failed"
+        },
+        {
+          "$ref": "#/components/errors/stale_revision"
+        },
+        {
+          "$ref": "#/components/errors/canceled"
+        },
+        {
+          "$ref": "#/components/errors/unknown_outcome"
+        },
+        {
+          "$ref": "#/components/errors/resource_limit"
+        },
+        {
+          "$ref": "#/components/errors/version_mismatch"
+        },
+        {
+          "$ref": "#/components/errors/connector_failed"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "schemas": {
+      "AccessRequest": {
+        "type": "object",
+        "properties": {
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "read",
+                "edit",
+                "export",
+                "external-write",
+                "spend"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true
+          },
+          "budget_credits": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "capabilities"
+        ],
+        "additionalProperties": false
+      },
+      "ConnectRequest": {
+        "type": "object",
+        "properties": {
+          "protocol_version": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "document": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessRequest"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 180000
+          }
+        },
+        "required": [
+          "protocol_version"
+        ],
+        "additionalProperties": false
+      },
+      "ExecuteRequest": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "params": {
+            "type": "object"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "op",
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "required": [
+          "ok",
+          "status",
+          "request_id"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "failed",
+              "canceled",
+              "rejected",
+              "unknown"
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "document_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "result": {},
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      },
+      "Artifact": {
+        "type": "object",
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          },
+          "byte_length": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "data_base64": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "byte_length",
+          "sha256",
+          "data_base64"
+        ],
+        "additionalProperties": false
+      },
+      "Operation": {
+        "type": "object",
+        "required": [
+          "name",
+          "tool_name",
+          "input_schema",
+          "effects",
+          "capabilities",
+          "completion"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tool_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "input_schema": {
+            "type": "object"
+          },
+          "effects": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "completion": {
+            "type": "string",
+            "enum": [
+              "sync",
+              "async"
+            ]
+          }
+        }
+      },
+      "session_connectParams": {
+        "type": "object",
+        "properties": {
+          "protocol_version": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "document": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessRequest"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 180000
+          }
+        },
+        "required": [
+          "protocol_version"
+        ],
+        "additionalProperties": false
+      },
+      "connector_statusParams": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "session_statusParams": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "session_requestAccessParams": {
+        "type": "object",
+        "properties": {
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "read",
+                "edit",
+                "export",
+                "external-write",
+                "spend"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true
+          },
+          "budget_credits": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "capabilities"
+        ],
+        "additionalProperties": false
+      },
+      "session_documentsParams": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "session_attachParams": {
+        "type": "object",
+        "properties": {
+          "document": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "session_releaseParams": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "session_stopParams": {
+        "type": "object",
+        "properties": {
+          "close_window": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "ops_listParams": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "ops_describeParams": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "op"
+        ],
+        "additionalProperties": false
+      },
+      "ops_executeParams": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "params": {
+            "type": "object"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "op",
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "ops_outcomeParams": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "artifact_fetchParams": {
+        "type": "object",
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "max_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6291456
+          }
+        },
+        "required": [
+          "artifact_id",
+          "max_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "file_importParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "file_exportParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "psd",
+              "pfd"
+            ]
+          },
+          "layer_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "overwrite": {
+            "type": "boolean"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          }
+        },
+        "required": [
+          "path",
+          "format"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "errors": {
+      "not_connected": {
+        "code": -32001,
+        "message": "No connected editor session"
+      },
+      "denied": {
+        "code": -32002,
+        "message": "Permission or path denied"
+      },
+      "validation_failed": {
+        "code": -32602,
+        "message": "Invalid method or operation parameters"
+      },
+      "stale_revision": {
+        "code": -32003,
+        "message": "Expected revision does not match"
+      },
+      "canceled": {
+        "code": -32004,
+        "message": "Operation canceled"
+      },
+      "unknown_outcome": {
+        "code": -32005,
+        "message": "Outcome unknown; reconcile before retrying"
+      },
+      "resource_limit": {
+        "code": -32006,
+        "message": "Resource limit exceeded"
+      },
+      "version_mismatch": {
+        "code": -32007,
+        "message": "Unsupported protocol version"
+      },
+      "connector_failed": {
+        "code": -32000,
+        "message": "Connector or operation failed"
+      }
+    }
+  },
+  "x-transport": {
+    "framing": "One UTF-8 JSON-RPC 2.0 object per LF. No batch arrays. stdout is protocol only; stderr is diagnostics. No attach socket.",
+    "max_input_bytes": 50331648,
+    "max_in_flight": 8,
+    "notification": "connector.event",
+    "notifications": "All connector state, pairing, session and session_ended events are sent while the process is alive. Consume while requests are pending.",
+    "termination": "EOF, SIGINT or SIGTERM stops the session and closes only the connector-owned browser. A process lost during a write has unknown outcome; never blindly retry."
+  },
+  "x-protocol-version": "1.0.0",
+  "x-error-data": "data.code preserves the precise connector/editor refusal; data.stage identifies path, operation, retrieval or write; data.outcome preserves failed/canceled/rejected/unknown execution receipts.",
+  "x-scope": "Local connector only; no hosted job API or spending authority beyond the editor user grant."
+}

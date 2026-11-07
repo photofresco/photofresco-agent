@@ -130,8 +130,8 @@ export const TOOL_GROUPS = Object.freeze({
   },
   workspace: {
     title: 'Workspace',
-    description: 'Panels, view settings, editor dialogs, account usage and diagnostics',
-    prefixes: Object.freeze(['dock', 'view', 'ui', 'account', 'assistant', 'privacy', 'debug']),
+    description: 'Panels, view settings, editor dialogs (AI Assistant, Jev), account usage and diagnostics',
+    prefixes: Object.freeze(['dock', 'view', 'ui', 'account', 'assistant', 'jev', 'privacy', 'debug']),
   },
   cloud: {
     title: 'Cloud and paid AI',

@@ -1,0 +1,91 @@
+{
+  "bead": "pf-agent-platform-nkwn.47",
+  "date": "2026-10-20",
+  "state": "implemented and locally verified; NOT published",
+  "real_editor": {
+    "checks": [
+      "idle",
+      "early",
+      "wrong_version",
+      "connect",
+      "granted",
+      "catalog",
+      "describe",
+      "import",
+      "bad_path",
+      "state",
+      "stale",
+      "invalid",
+      "select",
+      "adjust",
+      "mask",
+      "mask_preview",
+      "preview",
+      "replay",
+      "undo",
+      "no_mask",
+      "redo",
+      "export",
+      "artifact",
+      "oversized",
+      "invalid_bound",
+      "denied",
+      "reserved",
+      "write",
+      "outside_write",
+      "outcome",
+      "stop",
+      "after"
+    ],
+    "pixels": "8x8 exact RGBA: left half inverted, right half original",
+    "events": [
+      "state",
+      "state",
+      "state",
+      "pairing",
+      "state",
+      "session",
+      "session",
+      "session",
+      "session_ended",
+      "state"
+    ],
+    "export_sha256": "f99341b7cd2087d0076c5fe1756c3090e180c9fed9a8cce245b874065b9205cb"
+  },
+  "focused_tests": {
+    "rpc_and_generator": 14,
+    "catalog_and_export": 11,
+    "agent_typecheck": "pass"
+  },
+  "schemas": {
+    "openrpc": "1.3.2",
+    "input_schemas": 267,
+    "validator": "jsonschema==4.25.1 (temporary uv environment; no project dependency)",
+    "meta_sha256": "6b62c3ca1c8230c79058a4ff25e6bd9abbad0a43bd86b52853af2b551fbeeea8"
+  },
+  "compilers": {
+    "python": "AST + Python3.12 runtime import/wire call",
+    "rust": "rustc --edition=2021 --crate-type lib",
+    "go": "GO111MODULE=off go test",
+    "ruby": "ruby:3.4-bookworm ruby -c + RBS parser",
+    "php": "php:8.4.14-cli-bookworm php -l",
+    "java": "eclipse-temurin:21.0.9_10-jdk-jammy javac",
+    "dotnet": "mcr.microsoft.com/dotnet/sdk:8.0.415-bookworm-slim net8.0, warnings as errors"
+  },
+  "php_split": "5 files; composer.json at root; 162964 bytes; differing targets preserved",
+  "source_sha256": {
+    "agent/protocol/connector.openrpc.json": "0476a617269868fde7c59c885941b3116d67cccc32ded7ea276e3c7dce8bf55d",
+    "agent/protocol/op-catalog.json": "0c6472932cf9f5bf7f32d05e21cdc7e787950d570874c45e1a570b5dae5ff70a",
+    "agent/sdkgen/generate.mjs": "ed7902bcf67e31423fdebf1b799f2230732a1e46aa60e7df76ff6f0f3ff8d7fb",
+    "agent/src/rpc/server.js": "5531b19cc96af6455e5ae38e435de0dccdab858497bdd9678426f464d20fd33c",
+    "agent/src/rpc/schema.js": "4e8ac02623891a12e11eed16aba274dc87ddd07c234c71cce864ca49e8533f74",
+    "agent/src/rpc/client.js": "7599e0da359aa995f8c9451b2930e387abf1c4fb64ec613d0e0a6573b0d6f74d",
+    "src/ops/catalog.ts": "3d0268b1788bb42df3939719f28f70936fe29c2422407772c759da2ddf26a18f"
+  },
+  "limits": [
+    "Language outputs are typed client skeletons over Transport; only Node includes the complete process transport.",
+    "Per-language runtime conformance, package/release identity and publication remain .48-.54/.33.",
+    "Go module target proposed; no vanity endpoint, tag, repo creation or publication.",
+    "Root integration suites are the batch owner duty; no public/paid/hosted action taken."
+  ]
+}

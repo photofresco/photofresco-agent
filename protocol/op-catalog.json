@@ -1,0 +1,229 @@
+{
+  "schema_version": "1.0.0",
+  "generated_from": "OpsRegistry.toolDefinitions() + describe(); src/ops/catalog.ts",
+  "regenerate": "UPDATE_AGENT_PROTOCOL=1 npx vitest run test/agent-protocol-catalog.test.mjs",
+  "operation_count": 267,
+  "sha256": "5bdb60a5b30b59f4c85e582ea04c6d0e6d912649661ef9cd5100015ea4068dc2",
+  "shards": [
+    {
+      "path": "../src/mcp/catalog/account.json",
+      "sha256": "87a8ce38528c88ecde245f605cfa71c53eafedce7f4a85b292724c37c066c2c6"
+    },
+    {
+      "path": "../src/mcp/catalog/action.json",
+      "sha256": "42a9cb24deb1a580d4ebad00f7039dfc1652fefbc2a6a1ff9862ce83bc7463d7"
+    },
+    {
+      "path": "../src/mcp/catalog/adjust.json",
+      "sha256": "9c26061bf9f36c7027ffa9fc439f90984d2f5a2db9bba027420285b7aa8af542"
+    },
+    {
+      "path": "../src/mcp/catalog/ai.json",
+      "sha256": "6c2ed3c88631146c1d57954861679760a6ac1a8d8ebd962c4082f90a09e66eed"
+    },
+    {
+      "path": "../src/mcp/catalog/artifact.json",
+      "sha256": "9c4ff7ff3626aefae0ccce27a2d54ecd1e25c8ec7a38e8866f8e93197786e51d"
+    },
+    {
+      "path": "../src/mcp/catalog/assistant.json",
+      "sha256": "4ce22c77fd1a594ff6fc9d5240d7c153fc61637f7a6d0d1552860d37a899032b"
+    },
+    {
+      "path": "../src/mcp/catalog/autosave.json",
+      "sha256": "6c4782d10344c189489a972f9bc6c9054de7e5d92056d578f1232348cc1b54bf"
+    },
+    {
+      "path": "../src/mcp/catalog/brush.json",
+      "sha256": "6636f062a2b8326e26d46c1e7d8747de0436114685c1d46840a50796d6de4da8"
+    },
+    {
+      "path": "../src/mcp/catalog/bucket.json",
+      "sha256": "a2b2f893ab2a1a329d669a3288645eae2b36ccd694d9946dba5ad2bf403e6652"
+    },
+    {
+      "path": "../src/mcp/catalog/canvas.json",
+      "sha256": "db5c1259b0d0b22bf2184f51ec36a3403d7cf55571ad9ab96a63363c9aad2e23"
+    },
+    {
+      "path": "../src/mcp/catalog/channel.json",
+      "sha256": "fbbcc71d72077cab292d9dab3eb1e8e67506e0bf7eac52c64409c12f4f722820"
+    },
+    {
+      "path": "../src/mcp/catalog/clone.json",
+      "sha256": "f2e48d9cfc1608d6d2e3994aed126d9a9572f745053856f20d7ff86902cf0bcc"
+    },
+    {
+      "path": "../src/mcp/catalog/color.json",
+      "sha256": "8fe1e2d68515646d1fbcf4e2e57b5f0f2bd0fe66054818ae2525ab05d54a82ec"
+    },
+    {
+      "path": "../src/mcp/catalog/color_sampler.json",
+      "sha256": "e7db478b7c0058198c3ee1c3f9daa587447f08629b759b2836ea252a30f6ce3b"
+    },
+    {
+      "path": "../src/mcp/catalog/count.json",
+      "sha256": "9eede48772b02a35dd5e7d98c6a074adb323505c06b16f1a7ffc42e4c184789e"
+    },
+    {
+      "path": "../src/mcp/catalog/crop.json",
+      "sha256": "7401a9ed2f447b7144fc164c7680c196f6ba7ec8130f4701f6c56256885b8296"
+    },
+    {
+      "path": "../src/mcp/catalog/debug.json",
+      "sha256": "d0316dd59ba2fa3c4be50b3c285287ebb013f564a328f996a325be1ae5edfde2"
+    },
+    {
+      "path": "../src/mcp/catalog/doc.json",
+      "sha256": "3b723ed012e8335b3718a5374173a8ee49bc41ba2b32645c5e4ceaebf3d321ad"
+    },
+    {
+      "path": "../src/mcp/catalog/dock.json",
+      "sha256": "00a50be7704558b07ce0cce53d1c5db57890c2f4c2a1c5f229df24cd194f30b6"
+    },
+    {
+      "path": "../src/mcp/catalog/drive.json",
+      "sha256": "0624d83c847f27ed791a1b48263ca6b7c02bedeb6500f529b75d2b4db49b4bc7"
+    },
+    {
+      "path": "../src/mcp/catalog/edit.json",
+      "sha256": "76a42b528b10af94df7e75023a31f6efd250e08907f38c83715e080881f81723"
+    },
+    {
+      "path": "../src/mcp/catalog/erase.json",
+      "sha256": "7772d36329494ba07b917b588fd87a1226e8c6b3ef9abdacf22cd0172f61c4ff"
+    },
+    {
+      "path": "../src/mcp/catalog/export.json",
+      "sha256": "05dac036ea37b62d13a4475ac2fdc628fbe8699947da5edef5f309494084b179"
+    },
+    {
+      "path": "../src/mcp/catalog/feedback.json",
+      "sha256": "46ed7eea864bd9f29f58bbfc8261e984476fc578a078e477367efc7ff7bd1bdf"
+    },
+    {
+      "path": "../src/mcp/catalog/file.json",
+      "sha256": "08017e3c902b28dc8dcd43a6ae259b192f3409d7c2f96d35e45b0ce8b6a92d53"
+    },
+    {
+      "path": "../src/mcp/catalog/filter.json",
+      "sha256": "d956fa4317cc3d1dba62d0ba9f8b6df81f084d53fdedc7c69d32f70828a581ce"
+    },
+    {
+      "path": "../src/mcp/catalog/frame.json",
+      "sha256": "8b0e18dd30d0c96fbf68b5d24f98e3f0508e0349bb2fce5090bc4c3e7ee0228d"
+    },
+    {
+      "path": "../src/mcp/catalog/gradient.json",
+      "sha256": "c0fe59fc903cb6ff8c52c1af17afaa976f242b485f5d92420a8609e247db5853"
+    },
+    {
+      "path": "../src/mcp/catalog/heal.json",
+      "sha256": "78290a06f2f1b836b492761e5af625f8e6d698bea63db1e6e949257cbaef5ef2"
+    },
+    {
+      "path": "../src/mcp/catalog/history.json",
+      "sha256": "f401d68432403ce804cd68c51fd4abdec649a7c694436ff3773efff50ed1142e"
+    },
+    {
+      "path": "../src/mcp/catalog/image.json",
+      "sha256": "c5b6d62c5c65975feb70903a65b617935b6e4bd7adb672579dad600f589ef49a"
+    },
+    {
+      "path": "../src/mcp/catalog/jev.json",
+      "sha256": "8b87fd0d0627dbfe18756801aad6a064c93e147811438c064da0531e892d0e9d"
+    },
+    {
+      "path": "../src/mcp/catalog/layer.json",
+      "sha256": "59d06036f4066ecb9ab8e419999dd2cc8f44d9c9178fb09c5c4dacb078e5d3d3"
+    },
+    {
+      "path": "../src/mcp/catalog/liquify.json",
+      "sha256": "738c6a8a0ba6d3c0f05b71f9138b8121ba75497586f8cb7b626ecf49523f051c"
+    },
+    {
+      "path": "../src/mcp/catalog/mask.json",
+      "sha256": "5a329a76dd7cd2927e66010f5467c5919d00a760acbc2a12dfdc6432928b3630"
+    },
+    {
+      "path": "../src/mcp/catalog/note.json",
+      "sha256": "c5c575cb655e032fa8cc4f192d8defe589291394de97f543ec047f4a54ba4f06"
+    },
+    {
+      "path": "../src/mcp/catalog/paint.json",
+      "sha256": "a7d584494ee21316aca264f2dd8e615d45e28d1a27dbe9a19706533fb3547ce8"
+    },
+    {
+      "path": "../src/mcp/catalog/path.json",
+      "sha256": "ac89c481a92bc2b6f9054196915300b4854e80038eee395bc2c268d9aac46b3a"
+    },
+    {
+      "path": "../src/mcp/catalog/pattern.json",
+      "sha256": "3f609ec37e4ed0b006033fbaa8bcdd9d93485ce9f9053049f10df70207b2d717"
+    },
+    {
+      "path": "../src/mcp/catalog/pattern_stamp.json",
+      "sha256": "843253ccdd240c4cedd644d9894d998893fbb5b265a3758c997449a226fefbcc"
+    },
+    {
+      "path": "../src/mcp/catalog/preset.json",
+      "sha256": "93ca3d494e2e56b320910cf0ac0a7f7d901faa12114919f38593111dfe84f312"
+    },
+    {
+      "path": "../src/mcp/catalog/privacy.json",
+      "sha256": "fccafdb0ce69f201fd9beefca8820522d660d048b35cdc9341acc75641b03b08"
+    },
+    {
+      "path": "../src/mcp/catalog/quickmask.json",
+      "sha256": "4aa4b6609e432c6a408d63a933a79e9883d7be75e9a754f240154b28e10da634"
+    },
+    {
+      "path": "../src/mcp/catalog/render.json",
+      "sha256": "7896fbda37e521e3474f1da6c41bfbdc3dc7fb38bb37267081dccd26cc7efe69"
+    },
+    {
+      "path": "../src/mcp/catalog/ruler.json",
+      "sha256": "5b801a5e441373ee99f059d49fcd63e28e02655cd3b2f6f410952eb524f24015"
+    },
+    {
+      "path": "../src/mcp/catalog/selection.json",
+      "sha256": "266a31a384ae8c0638b47fb9e4501fb3bcd69d3e0bdf70dd365958dcaffd92a4"
+    },
+    {
+      "path": "../src/mcp/catalog/shape.json",
+      "sha256": "1e50b83ce1f52d5052daad34c45700b1904fbb67411e8a11e07d63a963c42cfc"
+    },
+    {
+      "path": "../src/mcp/catalog/slice.json",
+      "sha256": "048f17586428ab9f9f6e17a57f3e0aa62362cf45f65962622a3f38db2a09142f"
+    },
+    {
+      "path": "../src/mcp/catalog/smart.json",
+      "sha256": "0d12f430c6e3c1101da1b9f27b771af2aa983fab4df675efe919732d4fd0da1a"
+    },
+    {
+      "path": "../src/mcp/catalog/style.json",
+      "sha256": "8a2b201897ac7b053a03ae31e4e59c826dd58056d316613b51c135bce2c470bc"
+    },
+    {
+      "path": "../src/mcp/catalog/text.json",
+      "sha256": "db4e57a2b555f99decedd0571eb1e1b4a3aae5bcf1b6376b7c0c5a0c7b5f9bd8"
+    },
+    {
+      "path": "../src/mcp/catalog/transform.json",
+      "sha256": "0d9aecb1464254f26662ebcd4c2920554b7ab95ada80f5baa8ed5f730e14ce8b"
+    },
+    {
+      "path": "../src/mcp/catalog/ui.json",
+      "sha256": "4603d87a42f8259bae43e21defa5115dfd4aeec0c7b9d182d45c8792c9fdba06"
+    },
+    {
+      "path": "../src/mcp/catalog/view.json",
+      "sha256": "0cf0edb9aab96a2f436c402c5dde6d8ee290e194fdb4c6d8052d828e1fcc7e5c"
+    },
+    {
+      "path": "../src/mcp/catalog/workflow.json",
+      "sha256": "78c5c04ceb88729ccff141d367a393f933ac8222cb6ef665a3ebe8e2cbf54d9e"
+    }
+  ]
+}

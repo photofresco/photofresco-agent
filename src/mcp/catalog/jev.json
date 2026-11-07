@@ -1,0 +1,28 @@
+{
+ "generated_by": "test/agent-mcp-catalog.test.mjs (UPDATE_AGENT_CATALOG=1)",
+ "operations": [
+  {
+   "name": "jev.open",
+   "tool_name": "jev_open",
+   "description": "Open or close the Jev panel (/app/jev/), where the user types a goal and Jev edits the image step by step. Fails, naming the reason, when this account may not use Jev: signed out, jev_agent flag off for it, or its plan does not meet the flag’s required tier.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "open": {
+      "type": "boolean",
+      "description": "Open the panel (default true)."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "effects": [
+    "view"
+   ],
+   "capabilities": [
+    "read"
+   ],
+   "completion": "sync"
+  }
+ ]
+}

@@ -270,6 +270,13 @@ The manifests are `.claude-plugin/` (Claude Code, also read by Devin), `plugin.j
 `gemini-extension.json` (Gemini CLI), `mcp_config.json` (Antigravity) and `openclaw.plugin.json`
 (OpenClaw and ClawHub metadata).
 
+## Language clients
+
+Python, Rust, Ruby, PHP, .NET, Java and Go clients are maintained separately in
+[photofresco/photofresco-sdks](https://github.com/photofresco/photofresco-sdks).
+They use the same local connector and user permissions. The language clients and
+their generator are not part of this plugin or the npm connector package.
+
 ## Agent skill
 
 The [Agent Skill](https://agentskills.io/specification) in `skills/photofresco` teaches

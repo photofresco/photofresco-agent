@@ -43,6 +43,7 @@
       "type": "string",
       "description": "Section to focus",
       "enum": [
+       "plans",
        "passes",
        "credits"
       ]

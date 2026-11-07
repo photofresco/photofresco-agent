@@ -1,0 +1,75 @@
+{
+  "protocol_version": "1.0.0",
+  "vectors": [
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "unknown",
+        "method": "no.such.method"
+      },
+      "error": {
+        "code": -32601
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "1.0",
+        "id": "bad",
+        "method": "connector.status"
+      },
+      "error": {
+        "code": -32600
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "bad-params",
+        "method": "ops.execute",
+        "params": {
+          "op": "doc.get_state"
+        }
+      },
+      "error": {
+        "code": -32602,
+        "data_code": "invalid_params"
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "version",
+        "method": "session.connect",
+        "params": {
+          "protocol_version": "999"
+        }
+      },
+      "error": {
+        "code": -32007,
+        "data_code": "version_mismatch"
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "early",
+        "method": "ops.execute",
+        "params": {
+          "op": "doc.get_state",
+          "request_id": "v1"
+        }
+      },
+      "error": {
+        "code": -32001,
+        "data_code": "not_connected"
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "connector.status"
+      },
+      "response": null
+    }
+  ]
+}

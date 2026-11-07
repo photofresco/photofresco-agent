@@ -31,10 +31,13 @@
   },
   "exports": {
     ".": "./src/index.js",
-    "./mcp": "./src/mcp/server.js"
+    "./mcp": "./src/mcp/server.js",
+    "./rpc": "./src/rpc/client.js",
+    "./protocol": "./protocol/connector.openrpc.json"
   },
   "files": [
     "src",
+    "protocol",
     "vendor",
     "skills",
     "server.json",

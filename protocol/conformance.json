@@ -1,0 +1,392 @@
+{
+  "schema_version": "1.0.0",
+  "protocol_version": "1.0.0",
+  "fixture": {
+    "path": "fixtures/gradient.png",
+    "sha256": "39d8193829d7e862d489cd2ef7a838aa093db617f342f0c519a1eaea98dcf436",
+    "width": 8,
+    "height": 8
+  },
+  "runner": "Sequential. Resolve {$from:path} against prior step results and vars. Catch exact error.data.code. poll retries only read-only status. The test user approves pairing and Read/Edit/Export in the real editor; the protocol never approves its own grants. Compare SHA-256 of decoded artifact bytes; verify 8x8 pixels (left half inverted, right half unchanged) in preview and export. Run on a new connector/profile, granted fixture folder for reading and output folder for writing, with a deliberately ungranted outside path. All deadlines <=180s.",
+  "steps": [
+    {
+      "id": "idle",
+      "method": "connector.status",
+      "params": {},
+      "assert_equal": {
+        "state": "idle",
+        "browser": null
+      }
+    },
+    {
+      "id": "early",
+      "method": "ops.execute",
+      "params": {
+        "op": "doc.get_state",
+        "request_id": "conformance-early"
+      },
+      "error_code": "not_connected"
+    },
+    {
+      "id": "wrong_version",
+      "method": "session.connect",
+      "params": {
+        "protocol_version": "0.0.0"
+      },
+      "error_code": "version_mismatch"
+    },
+    {
+      "id": "connect",
+      "method": "session.connect",
+      "params": {
+        "protocol_version": "1.0.0",
+        "client": "SDK conformance",
+        "document": "none",
+        "access": {
+          "capabilities": [
+            "read",
+            "edit",
+            "export"
+          ],
+          "reason": "Invert half of an owned fixture; test undo and export"
+        }
+      }
+    },
+    {
+      "id": "granted",
+      "method": "session.status",
+      "params": {},
+      "poll": {
+        "path": "grants",
+        "equals": [
+          "read",
+          "edit",
+          "export"
+        ],
+        "timeout_ms": 20000
+      }
+    },
+    {
+      "id": "catalog",
+      "method": "ops.list",
+      "params": {},
+      "contains_ops": [
+        "doc.get_state",
+        "adjust.add",
+        "mask.add"
+      ],
+      "excludes_ops": [
+        "session.grant",
+        "privacy.set_policy",
+        "ai.generate"
+      ]
+    },
+    {
+      "id": "describe",
+      "method": "ops.describe",
+      "params": {
+        "op": "adjust.add"
+      },
+      "assert_equal": {
+        "name": "adjust.add",
+        "input_schema.type": "object"
+      }
+    },
+    {
+      "id": "import",
+      "method": "file.import",
+      "params": {
+        "path": {
+          "$from": "vars.fixture"
+        }
+      },
+      "assert_equal": {
+        "response.result.width": 8,
+        "response.result.height": 8
+      }
+    },
+    {
+      "id": "bad_path",
+      "method": "file.import",
+      "params": {
+        "path": {
+          "$from": "vars.outside"
+        }
+      },
+      "error_code": "path_not_granted"
+    },
+    {
+      "id": "state",
+      "method": "ops.execute",
+      "params": {
+        "op": "doc.get_state",
+        "params": {},
+        "request_id": "conformance-state"
+      }
+    },
+    {
+      "id": "stale",
+      "method": "ops.execute",
+      "params": {
+        "op": "layer.add",
+        "params": {
+          "name": "Must not appear"
+        },
+        "request_id": "conformance-stale",
+        "expected_revision": 999999
+      },
+      "error_code": "stale_revision"
+    },
+    {
+      "id": "invalid",
+      "method": "ops.execute",
+      "params": {
+        "op": "selection.rect",
+        "params": {
+          "x": "bad",
+          "y": 0,
+          "w": 4,
+          "h": 8
+        },
+        "request_id": "conformance-invalid"
+      },
+      "error_code": "invalid_params"
+    },
+    {
+      "id": "select",
+      "method": "ops.execute",
+      "params": {
+        "op": "selection.rect",
+        "params": {
+          "x": 0,
+          "y": 0,
+          "w": 4,
+          "h": 8
+        },
+        "request_id": "conformance-select"
+      }
+    },
+    {
+      "id": "adjust",
+      "method": "ops.execute",
+      "params": {
+        "op": "adjust.add",
+        "params": {
+          "adjustment_type": "invert"
+        },
+        "request_id": "conformance-adjust"
+      }
+    },
+    {
+      "id": "mask",
+      "method": "ops.execute",
+      "params": {
+        "op": "mask.add",
+        "params": {
+          "mode": "selection"
+        },
+        "request_id": "conformance-mask"
+      }
+    },
+    {
+      "id": "mask_preview",
+      "method": "ops.execute",
+      "params": {
+        "op": "render.mask",
+        "params": {
+          "source": "layer",
+          "max_size": 8
+        },
+        "request_id": "conformance-mask_preview"
+      },
+      "assert_equal": {
+        "result.coverage.nonzero": 32,
+        "result.image.width": 8
+      }
+    },
+    {
+      "id": "preview",
+      "method": "ops.execute",
+      "params": {
+        "op": "render.region",
+        "params": {
+          "x": 0,
+          "y": 0,
+          "width": 8,
+          "height": 8,
+          "scale": 1
+        },
+        "request_id": "conformance-preview"
+      },
+      "assert_equal": {
+        "result.image.width": 8,
+        "result.image.height": 8
+      }
+    },
+    {
+      "id": "replay",
+      "method": "ops.execute",
+      "params": {
+        "op": "adjust.add",
+        "params": {
+          "adjustment_type": "invert"
+        },
+        "request_id": "conformance-adjust"
+      },
+      "assert_equal": {
+        "replayed": true
+      }
+    },
+    {
+      "id": "undo",
+      "method": "ops.execute",
+      "params": {
+        "op": "history.undo",
+        "params": {},
+        "request_id": "conformance-undo"
+      }
+    },
+    {
+      "id": "no_mask",
+      "method": "ops.execute",
+      "params": {
+        "op": "render.mask",
+        "params": {
+          "source": "layer"
+        },
+        "request_id": "conformance-no_mask"
+      },
+      "error_code": "mask_unavailable"
+    },
+    {
+      "id": "redo",
+      "method": "ops.execute",
+      "params": {
+        "op": "history.redo",
+        "params": {},
+        "request_id": "conformance-redo"
+      }
+    },
+    {
+      "id": "export",
+      "method": "ops.execute",
+      "params": {
+        "op": "export.artifact",
+        "params": {
+          "format": "png"
+        },
+        "request_id": "conformance-export"
+      }
+    },
+    {
+      "id": "artifact",
+      "method": "artifact.fetch",
+      "params": {
+        "artifact_id": {
+          "$from": "export.result.artifact_id"
+        },
+        "max_bytes": 1048576
+      },
+      "assert_sha256": true
+    },
+    {
+      "id": "oversized",
+      "method": "artifact.fetch",
+      "params": {
+        "artifact_id": {
+          "$from": "export.result.artifact_id"
+        },
+        "max_bytes": 1
+      },
+      "error_code": "artifact_too_large"
+    },
+    {
+      "id": "invalid_bound",
+      "method": "artifact.fetch",
+      "params": {
+        "artifact_id": {
+          "$from": "export.result.artifact_id"
+        },
+        "max_bytes": 6291457
+      },
+      "error_code": "invalid_params"
+    },
+    {
+      "id": "denied",
+      "method": "ops.execute",
+      "params": {
+        "op": "ai.remove_background",
+        "params": {},
+        "request_id": "conformance-denied"
+      },
+      "error_code": "capability_denied"
+    },
+    {
+      "id": "reserved",
+      "method": "ops.execute",
+      "params": {
+        "op": "session.grant",
+        "params": {
+          "session_id": {
+            "$from": "connect.session_id"
+          },
+          "capabilities": [
+            "read",
+            "edit",
+            "export"
+          ]
+        },
+        "request_id": "conformance-reserved"
+      },
+      "error_code": "reserved_operation"
+    },
+    {
+      "id": "write",
+      "method": "file.export",
+      "params": {
+        "path": {
+          "$from": "vars.output"
+        },
+        "format": "png"
+      }
+    },
+    {
+      "id": "outside_write",
+      "method": "file.export",
+      "params": {
+        "path": {
+          "$from": "vars.outside"
+        },
+        "format": "png"
+      },
+      "error_code": "path_not_granted"
+    },
+    {
+      "id": "outcome",
+      "method": "ops.outcome",
+      "params": {
+        "request_id": "conformance-adjust"
+      },
+      "assert_equal": {
+        "request_id": "conformance-adjust",
+        "status": "succeeded"
+      }
+    },
+    {
+      "id": "stop",
+      "method": "session.stop",
+      "params": {
+        "close_window": false
+      }
+    },
+    {
+      "id": "after",
+      "method": "ops.execute",
+      "params": {
+        "op": "doc.get_state",
+        "request_id": "conformance-after"
+      },
+      "error_code": "not_connected"
+    }
+  ]
+}
