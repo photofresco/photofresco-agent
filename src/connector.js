@@ -18,7 +18,7 @@ import { CHANNEL_PROTOCOL, EditorPage } from './page.js'
  */
 
 export const CONNECTOR_NAME = 'PhotoFresco connector'
-export const CONNECTOR_VERSION = '0.1.1'
+export const CONNECTOR_VERSION = '0.1.2'
 export const DEFAULT_EDITOR_URL = 'https://photofresco.com/app/'
 /** Adapter surfaces; each is shown to the user and used as the editor's acquisition entry token. */
 export const SURFACES = Object.freeze(['mcp', 'cli', 'sdk', 'vscode'])

@@ -28,7 +28,7 @@ the PhotoFresco window, and the user saves it there.
 
 ## 3. Install
 
-The `photofresco` package is on npm, so `npx -y photofresco@0.1.1` works. If npm is not reachable, install from this repository instead:
+The `photofresco` package is on npm, so `npx -y photofresco@0.1.2` works. If npm is not reachable, install from this repository instead:
 
 ```sh
 git clone https://github.com/photofresco/photofresco-agent.git ~/Documents/Cline/MCP/photofresco-agent
@@ -41,7 +41,7 @@ bundled in `vendor/`). Check that it starts:
 node ~/Documents/Cline/MCP/photofresco-agent/src/bin/photofresco.js mcp --version
 ```
 
-It prints the version (`0.1.1`). Use the absolute path of the clone (expand `~`) in the next step.
+It prints the version (`0.1.2`). Use the absolute path of the clone (expand `~`) in the next step.
 
 ## 4. Configure
 
@@ -68,7 +68,7 @@ MCP Servers → Configure → Configure MCP Servers), replacing the paths:
 ```
 
 Leave out the `--read`/`--write` pairs the user did not choose. With the package on npm,
-`"command": "npx"` with `"args": ["-y", "photofresco@0.1.1", "mcp", …]` works without a clone.
+`"command": "npx"` with `"args": ["-y", "photofresco@0.1.2", "mcp", …]` works without a clone.
 
 The server then appears with its tools (about 40: `photofresco_connect`, `photofresco_status`,
 `doc_get_state`, `render_preview`, …). Starting it and listing tools opens nothing and makes no

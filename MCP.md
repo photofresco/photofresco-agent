@@ -17,7 +17,7 @@ Choose the folders the agent may open files from (`--read`) and save exports int
 Without them the agent can still edit and preview, but cannot touch your files.
 
 > To run from a clone instead, use `node /path/to/photofresco-agent/src/bin/photofresco.js` in place of
-> the `npx -y photofresco@0.1.1` part. Agents such as Cline can follow [llms-install.md](llms-install.md).
+> the `npx -y photofresco@0.1.2` part. Agents such as Cline can follow [llms-install.md](llms-install.md).
 
 **Claude Desktop** — `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
@@ -26,7 +26,7 @@ Without them the agent can still edit and preview, but cannot touch your files.
   "mcpServers": {
     "photofresco": {
       "command": "npx",
-      "args": ["-y", "photofresco@0.1.1", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+      "args": ["-y", "photofresco@0.1.2", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
     }
   }
 }
@@ -35,7 +35,7 @@ Without them the agent can still edit and preview, but cannot touch your files.
 **Claude Code**:
 
 ```sh
-claude mcp add photofresco -- npx -y photofresco@0.1.1 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
+claude mcp add photofresco -- npx -y photofresco@0.1.2 mcp --read ~/Pictures --write ~/Pictures/PhotoFresco
 ```
 
 **Cursor** — `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project): the same
@@ -50,7 +50,7 @@ same arguments under `"servers"` with `"type": "stdio"`:
     "photofresco": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "photofresco@0.1.1", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
+      "args": ["-y", "photofresco@0.1.2", "mcp", "--read", "/Users/you/Pictures", "--write", "/Users/you/Pictures/PhotoFresco"]
     }
   }
 }

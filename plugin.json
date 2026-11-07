@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "photofresco",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
   "author": {
     "name": "PhotoFresco / Josh Wardini",

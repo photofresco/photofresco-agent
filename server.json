@@ -3,7 +3,7 @@
   "name": "io.github.photofresco/photofresco",
   "title": "PhotoFresco",
   "description": "Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "websiteUrl": "https://photofresco.com/?pf_ref=mcp-registry",
   "repository": {
     "url": "https://github.com/photofresco/photofresco-agent",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "photofresco",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
@@ -36,9 +36,9 @@
     },
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/photofresco/photofresco-agent/releases/download/v0.1.1/photofresco-mcp-0.1.1.mcpb",
-      "version": "0.1.1",
-      "fileSha256": "d192a85f1400a4ec469cc0e0e20aa103db233d18c732744510dae1876dc45481",
+      "identifier": "https://github.com/photofresco/photofresco-agent/releases/download/v0.1.2/photofresco-mcp-0.1.2.mcpb",
+      "version": "0.1.2",
+      "fileSha256": "c73d7bb55205b3994024bd73631751a1a6349e3e8af28922dd34541675a39daf",
       "transport": {
         "type": "stdio"
       },
